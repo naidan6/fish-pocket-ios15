@@ -105,7 +105,7 @@ final class SessionModel: ObservableObject {
                     if Task.isCancelled { return }
                     self.error = error.localizedDescription
                 }
-                try? await Task.sleep(for: .seconds(1))
+                try? await Task.sleep(nanoseconds: UInt64((1) * 1_000_000_000))
             }
         }
         refreshProjections()
@@ -202,7 +202,7 @@ final class SessionModel: ObservableObject {
     private func scheduleLivePublish() {
         guard livePublish == nil else { return }
         livePublish = Task { [weak self] in
-            try? await Task.sleep(for: .milliseconds(80))
+            try? await Task.sleep(nanoseconds: UInt64((80) * 1_000_000))
             guard let self, !Task.isCancelled else { return }
             self.livePublish = nil
             self.publishLive()
@@ -311,7 +311,7 @@ final class SessionModel: ObservableObject {
     func refreshProjections() {
         projectionTask?.cancel()
         projectionTask = Task { [weak self] in
-            try? await Task.sleep(for: .milliseconds(150))
+            try? await Task.sleep(nanoseconds: UInt64((150) * 1_000_000))
             guard let self, !Task.isCancelled else { return }
             if let value = try? await self.client.call("session/projections", ["request": ["sessionId": .string(self.sessionId)]]) {
                 self.applyProjections(value["values"])
@@ -528,7 +528,7 @@ final class SessionModel: ObservableObject {
         waitTimers[callId]?.cancel()
         guard case .counting(let deadline) = questionWaits[callId] else { return }
         waitTimers[callId] = Task { [weak self] in
-            try? await Task.sleep(for: .seconds(max(0, deadline.timeIntervalSinceNow)))
+            try? await Task.sleep(nanoseconds: UInt64((max(0, deadline.timeIntervalSinceNow)) * 1_000_000_000))
             guard let self, !Task.isCancelled, case .counting = self.questionWaits[callId] else { return }
             await self.timedOut(callId, eventId: eventId)
         }

@@ -435,7 +435,7 @@ private struct PluginCard: View {
         .confirmUninstall(package, isPresented: $confirmingUninstall)
         .task(id: manager.highlight) {
             guard manager.highlight == package.name else { return }
-            try? await Task.sleep(for: .seconds(2.4))
+            try? await Task.sleep(nanoseconds: UInt64((2.4) * 1_000_000_000))
             if manager.highlight == package.name { manager.highlight = nil }
         }
     }

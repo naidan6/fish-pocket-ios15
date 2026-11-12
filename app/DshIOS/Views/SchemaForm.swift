@@ -605,7 +605,7 @@ private struct CommitTextField: View {
             .focused($focused)
             .submitLabel(.done)
             .onSubmit { focused = false }
-            .onChange(of: focused) { _, now in if !now { commit() } }
+            .onChange(of: focused) { now in if !now { commit() } }
             .onDisappear { if focused { commit() } }
     }
 }
@@ -649,7 +649,7 @@ private struct NumberField: View {
             FieldNotes(node: node, problem: problem)
         }
         .onAppear { text = format(stored) }
-        .onChange(of: stored) { _, value in text = format(value); problem = nil }
+        .onChange(of: stored) { value in text = format(value); problem = nil }
     }
 
     private var placeholder: String {
@@ -683,7 +683,7 @@ private struct NumberField: View {
         text = format(next)
         stepTask?.cancel()
         stepTask = Task {
-            try? await Task.sleep(for: .milliseconds(600))
+            try? await Task.sleep(nanoseconds: UInt64((600) * 1_000_000))
             if !Task.isCancelled { commit() }
         }
     }
@@ -731,7 +731,7 @@ private struct StringField: View {
                     .frame(minHeight: 90)
                     .font(node.role == "markdown" ? .body.monospaced() : .body)
                     .focused($editorFocused)
-                    .onChange(of: editorFocused) { _, now in if !now { commit() } }
+                    .onChange(of: editorFocused) { now in if !now { commit() } }
                     .onDisappear { if editorFocused { commit() } }
             case "datetime", "date", "time":
                 DatePicker(selection: Binding(get: { Self.parseDate(stored) ?? Date() }, set: { context.save(path, .string(Self.formatDate($0, role: node.role))) }),
@@ -752,7 +752,7 @@ private struct StringField: View {
             FieldNotes(node: node, problem: problem)
         }
         .onAppear { text = stored ?? "" }
-        .onChange(of: stored) { _, value in text = value ?? ""; problem = nil }
+        .onChange(of: stored) { value in text = value ?? ""; problem = nil }
     }
 
     private func commit() {

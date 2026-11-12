@@ -272,13 +272,13 @@ struct ComposerView: View {
         .task(id: focusOnAppear) {
             guard focusOnAppear else { return }
             // After the push and the launch: a field taking focus mid-transition loses it again.
-            try? await Task.sleep(for: .milliseconds(400))
+            try? await Task.sleep(nanoseconds: UInt64((400) * 1_000_000))
             guard !Task.isCancelled else { return }
             focused = true
             consumeFocus()
         }
         .photosPicker(isPresented: $showPhotos, selection: $photos, maxSelectionCount: max(1, composer.remainingImageSlots), matching: .any(of: [.images, .videos]), preferredItemEncoding: .current)
-        .onChange(of: photos) { _, items in
+        .onChange(of: photos) { items in
             Task { await loadPhotos(items) }
         }
         .fullScreenCover(isPresented: $showCamera) {
@@ -314,21 +314,21 @@ struct ComposerView: View {
         }
         .permissionConfirmation($confirmingPermission, confirm: applyPermission)
         // A popover has no `onDismiss`. A picker presented before its dismissal ends never shows.
-        .onChange(of: showTray) { _, open in
+        .onChange(of: showTray) { open in
             guard !open, sizeClass == .regular else { return }
             Task {
-                try? await Task.sleep(for: .milliseconds(450))
+                try? await Task.sleep(nanoseconds: UInt64((450) * 1_000_000))
                 sheetClosed()
             }
         }
-        .onChange(of: showTray || showEditor || browsing != nil) { _, open in
+        .onChange(of: showTray || showEditor || browsing != nil) { open in
             if open { sheetUp.wrappedValue = true }
         }
         .onChange(of: composer.focusRequest) { focused = true }
-        .onChange(of: focused) { _, now in focusChanged(now) }
+        .onChange(of: focused) { now in focusChanged(now) }
         // A picker closing gives the keyboard back when it was up before: typed into
         // (`/model`, `/file`) or reached from the tray while it was up.
-        .onChange(of: pickerUp) { _, open in
+        .onChange(of: pickerUp) { open in
             if open {
                 refocus = refocus || focused
             } else {

@@ -17,13 +17,25 @@ struct DshIOSApp: App {
     }
 
     var body: some Scene {
+#if DSH_IOS15_BACKPORT
+        // 15.6 没有 `WindowGroup(id:for:)`（iOS 16），也没有多窗口：一个窗口，没有会话参数。
+        WindowGroup {
+            RootView(session: nil)
+                .environmentObject(engine)
+                .onAppear { engine.start() }
+        }
+        .commands { ShellCommands() }
+        .onChange(of: scenePhase) { phase in
+            scenePhaseChanged(phase)
+        }
+#else
         WindowGroup(id: Self.window, for: SessionWindow.self) { $window in
             RootView(session: window?.session)
                 .environmentObject(engine)
                 .onAppear { engine.start() }
         }
         .commands { ShellCommands() }
-        .onChange(of: scenePhase) { _, phase in
+        .onChange(of: scenePhase) { phase in
             BackgroundKeeper.shared.scenePhaseChanged(to: phase)
 #if !DSH_IOS15_BACKPORT
             LiveActivityController.shared.scenePhaseChanged(to: phase)
@@ -31,6 +43,12 @@ struct DshIOSApp: App {
 
             WatchLink.shared.scenePhaseChanged(to: phase)
         }
+#endif  // DSH_IOS15_BACKPORT
+    }
+
+    private func scenePhaseChanged(_ phase: ScenePhase) {
+        BackgroundKeeper.shared.scenePhaseChanged(to: phase)
+        WatchLink.shared.scenePhaseChanged(to: phase)
     }
 }
 
@@ -92,7 +110,7 @@ struct RootView: View {
             .onOpenURL { url in
                 if let parsed = DshLink(url: url) { link = LinkRequest(link: parsed) }
             }
-            .onChange(of: inbox.request?.token, initial: true) {
+            .compatChange(of: inbox.request?.token, initial: true) {
                 guard let request = inbox.request else { return }
                 inbox.request = nil
                 link = request
@@ -206,7 +224,7 @@ private struct EngineTrouble: View {
             // up with it: what is on screen is what gets copied.
             while !Task.isCancelled {
                 load()
-                try? await Task.sleep(for: .seconds(2))
+                try? await Task.sleep(nanoseconds: UInt64((2) * 1_000_000_000))
             }
         }
     }

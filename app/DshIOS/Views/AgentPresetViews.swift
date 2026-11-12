@@ -179,7 +179,7 @@ private struct AgentPresetSheet: View {
             let done = await select(option)
             if done {
                 // Long enough to see the tick land.
-                try? await Task.sleep(for: .milliseconds(200))
+                try? await Task.sleep(nanoseconds: UInt64((200) * 1_000_000))
                 dismiss()
             }
             pending = nil

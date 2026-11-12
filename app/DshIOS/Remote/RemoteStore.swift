@@ -192,7 +192,7 @@ final class RemoteStore: ObservableObject {
                 try finish(server: code.server, auth: value["auth"], refreshToken: value["refreshToken"].string)
                 return
             case "pending_web_confirm":
-                try await Task.sleep(for: .milliseconds(1500))
+                try await Task.sleep(nanoseconds: UInt64((1500) * 1_000_000))
             case "rejected":
                 throw RemoteError(kind: .rejected, message: String(localized: "电脑上拒绝了这次登录"))
             case "expired":
@@ -316,7 +316,7 @@ final class RemoteStore: ObservableObject {
                 guard let self, !Task.isCancelled else { return }
                 self.connected = false
                 attempt += 1
-                try? await Task.sleep(for: .seconds(min(pow(2, Double(attempt - 1)), 15)))
+                try? await Task.sleep(nanoseconds: UInt64(min(pow(2, Double(attempt - 1)), 15) * 1_000_000_000))
             }
         }
     }

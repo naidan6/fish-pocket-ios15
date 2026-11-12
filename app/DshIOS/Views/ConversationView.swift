@@ -84,7 +84,7 @@ struct ConversationView: View {
             case "workbench": openWorkbench(.terminal)
             case "approval": demoApproval = PendingApproval(id: "demo", toolName: "bash", callId: nil, reason: "允许本次操作使用 danger-full-access 权限：当前处于 workspace-write 模式，写不到工作区以外。这条命令会删除 build/ 下约 1.4 GB 的文件，再重新下载依赖，失败时不会自动恢复，需要手动重新构建一次才能继续。")
             case "timeline":
-                try? await Task.sleep(for: .seconds(2))
+                try? await Task.sleep(nanoseconds: UInt64((2) * 1_000_000_000))
                 model?.debugLoadFixture(TimelineFixture.events)
             default: break
             }
@@ -126,7 +126,7 @@ struct ConversationView: View {
             .environment(\.timelineScroll, TimelineScroll(keep: { id in
                 Task { @MainActor in
                     // The rows above have to be laid out before their height can be kept.
-                    try? await Task.sleep(for: .milliseconds(60))
+                    try? await Task.sleep(nanoseconds: UInt64((60) * 1_000_000))
                     proxy.scrollTo(id, anchor: .top)
                 }
             }, top: timelineTop))
@@ -139,10 +139,10 @@ struct ConversationView: View {
             .scrollBounceBehavior(.always)
             .simultaneousGesture(TapGesture().onEnded { dismissKeyboard() })
             // The bottom anchor only holds for the first layout; follow the user's own message and the start of a turn.
-            .onChange(of: model.items.last?.id) { _, _ in
+            .onChange(of: model.items.last?.id) { _ in
                 if case .user? = model.items.last { atBottom = true; scrollToBottom(proxy) }
             }
-            .onChange(of: model.running) { _, running in if running, atBottom { scrollToBottom(proxy) } }
+            .onChange(of: model.running) { running in if running, atBottom { scrollToBottom(proxy) } }
             .overlay(alignment: .bottomTrailing) {
                 // Animated here, not on the scroll view: its rows must not animate with the buttons.
                 ZStack {
@@ -169,7 +169,7 @@ struct ConversationView: View {
                     showTurns = false
                     Task {
                         if let anchor = await model.anchor(of: entry) {
-                            try? await Task.sleep(for: .milliseconds(120))
+                            try? await Task.sleep(nanoseconds: UInt64((120) * 1_000_000))
                             proxy.scrollTo(anchor, anchor: .top)
                         }
                     }
@@ -313,7 +313,7 @@ struct ConversationView: View {
                 // A pull over the terminal is meant for its scrollback; ✕ closes the sheet.
                 .interactiveDismissDisabled(workbenchTab == .terminal)
         }
-        .onChange(of: workbenchOpen) { _, open in if open, sizeClass == .regular { makeRoomForWorkbench() } }
+        .onChange(of: workbenchOpen) { open in if open, sizeClass == .regular { makeRoomForWorkbench() } }
         .focusedSceneValue(\.workbenchCommands, WorkbenchCommands(available: !blank && bot == nil, toggle: toggleWorkbench, open: openWorkbench))
         // The sheet leaves the background live, so the composer keeps its focus and the
         // keyboard would stay over the sheet; an answer comes first.
@@ -322,7 +322,7 @@ struct ConversationView: View {
         .onChange(of: waitingInteraction(model)?.id) { old, new in
             if let new, new != old { Haptics.warning() }
         }
-        .onChange(of: pendingApprovalIds, initial: true) { _, ids in
+        .compatChange(of: pendingApprovalIds, initial: true) { ids in
             if ids.isEmpty { approvalBatch = [] } else { approvalBatch.formUnion(ids) }
         }
         .task(id: app.questionRequests[sessionId]?.map(\.eventId)) { model.syncQuestionWaits() }
@@ -769,7 +769,7 @@ private struct TimelineList: View {
         .padding(.top, 20)
         .padding(.bottom, 12)
         .readableWidth()
-        .onChange(of: model.loaded, initial: true) { _, loaded in
+        .compatChange(of: model.loaded, initial: true) { loaded in
             guard loaded, bot != nil, seenThrough == nil else { return }
             seenThrough = model.items.reduce(0) { last, item in if case .user(let seq, _, _, _) = item { max(last, seq) } else { last } }
         }
@@ -932,7 +932,7 @@ private struct LoadOlderTrigger: View {
             .task(id: "\(inView)-\(model.items.first?.id ?? "")") {
                 guard inView else { return }
                 // The first layout has this in view until the bottom anchor takes hold.
-                try? await Task.sleep(for: .milliseconds(300))
+                try? await Task.sleep(nanoseconds: UInt64((300) * 1_000_000))
                 guard !Task.isCancelled else { return }
                 let anchor = model.items.first?.id
                 // Its own task: scrolling on must not cancel the request halfway.

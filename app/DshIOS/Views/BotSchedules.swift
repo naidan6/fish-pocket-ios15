@@ -200,7 +200,7 @@ struct BotScheduleCreateSheet: View {
             .navigationTitle("新建定时任务")
             .navigationBarTitleDisplayMode(.inline)
             .saveToolbar(canSave: canSave, saving: saving, cancel: { dismiss() }) { save() }
-            .onChange(of: unit) { _, _ in amount = min(amount, maxAmount) }
+            .onChange(of: unit) { _ in amount = min(amount, maxAmount) }
         }
     }
 

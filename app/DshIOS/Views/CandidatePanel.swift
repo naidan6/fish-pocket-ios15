@@ -102,7 +102,7 @@ struct CandidatePanel: View {
     /// Files and sessions in parallel, after a short pause in typing. Nil when a new key
     /// cancelled this load (the caller keeps what it shows).
     static func loadReferences(app: AppModel, model: SessionModel, query: String, quoted: Bool, bot: BotComposer? = nil) async -> [Row]? {
-        try? await Task.sleep(for: .milliseconds(120))
+        try? await Task.sleep(nanoseconds: UInt64((120) * 1_000_000))
         if Task.isCancelled { return nil }
         let client = app.client, sessionId = model.sessionId
         async let files = try? client.call("fileReferences/list", ["agentId": .string(sessionId), "query": .string(query)])

@@ -380,7 +380,7 @@ struct BotMark: View {
     /// Once the move has played the mark is back to what its mood does (a resting one stops redrawing).
     private func finishAct() async {
         guard let playing = act else { return }
-        try? await Task.sleep(for: .seconds(playing.length))
+        try? await Task.sleep(nanoseconds: UInt64((playing.length) * 1_000_000_000))
         if !Task.isCancelled { act = nil }
     }
 
@@ -483,7 +483,7 @@ struct BotPictureMotion: ViewModifier {
         .onChange(of: mood) { hopsFrom = mood == .alert ? .now : nil }
         .task(id: hopsFrom) {
             guard hopsFrom != nil else { return }
-            try? await Task.sleep(for: .seconds(1.1))
+            try? await Task.sleep(nanoseconds: UInt64((1.1) * 1_000_000_000))
             if !Task.isCancelled { hopsFrom = nil }
         }
     }

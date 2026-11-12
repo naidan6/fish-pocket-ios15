@@ -47,7 +47,7 @@ struct WorkbenchView: View {
                 }
             }
         }
-        .onChange(of: tab, initial: true) { _, selected in
+        .compatChange(of: tab, initial: true) { selected in
             // A keyboard belongs to the tab that raised it.
             dismissKeyboard()
             visited.insert(selected)
@@ -90,7 +90,7 @@ struct WorkbenchView: View {
                 }
                 .padding(.horizontal, 16)
             }
-            .onChange(of: tab) { _, item in withAnimation(.snappy) { proxy.scrollTo(item) } }
+            .onChange(of: tab) { item in withAnimation(.snappy) { proxy.scrollTo(item) } }
         }
         .padding(.vertical, 8)
     }
@@ -166,7 +166,7 @@ private struct WorkbenchTerminal: View {
         .task { await reload() }
         .task(id: app.revision("settings/document-updated")) { await loadFontSize() }
         // The attachment does not survive a dropped connection; the new one brings a fresh screen.
-        .onChange(of: app.generation) { _, _ in if connection?.phase == .disconnected { connection?.connect() } }
+        .onChange(of: app.generation) { _ in if connection?.phase == .disconnected { connection?.connect() } }
         .onDisappear { connection?.close() }
         .alert("终端名称", isPresented: $renaming) {
             TextField("终端名称", text: $newTitle)

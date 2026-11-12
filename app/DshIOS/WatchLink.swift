@@ -15,12 +15,12 @@ final class WatchLink: NSObject {
 
     /// The watch lists this many sessions.
     private static let limit = 8
-    private static let debounce = Duration.milliseconds(500)
+    private static let debounce: UInt64 = 500_000_000  // 0.5s
     /// Well inside `WatchSnapshot.staleAfter`.
-    private static let heartbeat = Duration.seconds(10 * 60)
+    private static let heartbeat: UInt64 = 600_000_000_000  // 10min
     /// The session list briefly reads idle between a prompt and its turn: a turn has
     /// ended only once its session stayed idle this long.
-    private static let settle = Duration.seconds(5)
+    private static let settle: UInt64 = 5_000_000_000  // 5s
     /// A completion nobody looked at is dropped after this.
     private static let completionLife: TimeInterval = 30 * 60
 
@@ -96,7 +96,7 @@ final class WatchLink: NSObject {
         guard next != sent else { return }
         pendingSend?.cancel()
         pendingSend = Task { [weak self] in
-            try? await Task.sleep(for: Self.debounce)
+            try? await Task.sleep(nanoseconds: Self.debounce)
             guard !Task.isCancelled else { return }
             self?.send()
         }
@@ -115,7 +115,7 @@ final class WatchLink: NSObject {
             } else if old == .running, settling[session.id] == nil {
                 let id = session.id
                 settling[id] = Task { [weak self] in
-                    try? await Task.sleep(for: Self.settle)
+                    try? await Task.sleep(nanoseconds: Self.settle)
                     guard !Task.isCancelled else { return }
                     self?.settled(id)
                 }
@@ -157,7 +157,7 @@ final class WatchLink: NSObject {
         // `send` cancels it once nothing is active.
         heartbeatTask = Task { [weak self] in
             while true {
-                try? await Task.sleep(for: Self.heartbeat)
+                try? await Task.sleep(nanoseconds: Self.heartbeat)
                 guard !Task.isCancelled, let self else { return }
                 self.send()
             }

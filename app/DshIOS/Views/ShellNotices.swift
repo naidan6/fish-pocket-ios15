@@ -39,7 +39,7 @@ struct ShellNotices: View {
         .animation(.snappy, value: showOffline)
         .task(id: app.connected) {
             guard !app.connected, app.generation > 0 else { showOffline = false; return }
-            try? await Task.sleep(for: .seconds(1.5))
+            try? await Task.sleep(nanoseconds: UInt64((1.5) * 1_000_000_000))
             if !Task.isCancelled { showOffline = true }
         }
     }
@@ -85,7 +85,7 @@ private struct ToastView: View {
         .onTapGesture(perform: dismiss)
         .accessibilityElement(children: .contain)
         .task {
-            try? await Task.sleep(for: .seconds(toast.duration))
+            try? await Task.sleep(nanoseconds: UInt64((toast.duration) * 1_000_000_000))
             // Cancelled means this host went away, and the sleep returns at once: the toast
             // itself is still due, on whichever host remains. Installing an enable failure
             // raises it just as the install sheet closes.

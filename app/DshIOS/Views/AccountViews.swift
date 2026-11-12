@@ -63,7 +63,7 @@ struct SignInSheet: View {
             if autoStart && !account.attemptActive && !account.signedIn { await start() }
             else { openBrowserIfNeeded() }
         }
-        .onChange(of: account.view) { _, _ in update() }
+        .onChange(of: account.view) { _ in update() }
         .onDisappear {
             // Closing the dialog gives the attempt up, as on the web; Safari covering it does not.
             guard safari?.presentingViewController == nil else { return }
@@ -171,7 +171,7 @@ struct SignInSheet: View {
             let open = safari?.presentingViewController != nil
             closeBrowser()
             Task {
-                if open { try? await Task.sleep(for: .milliseconds(450)) }
+                if open { try? await Task.sleep(nanoseconds: UInt64((450) * 1_000_000)) }
                 dismiss()
             }
             return
@@ -185,7 +185,7 @@ struct SignInSheet: View {
         copyToPasteboard(url.absoluteString)
         copied = true
         Task {
-            try? await Task.sleep(for: .seconds(2))
+            try? await Task.sleep(nanoseconds: UInt64((2) * 1_000_000_000))
             copied = nil
         }
     }
@@ -245,7 +245,7 @@ struct AccountPage: View {
         .task(id: app.revision("credentials/reference-updated")) { await loadKey() }
         .refreshable { await account.refresh() }
         .sheet(isPresented: $signingIn) {
-            SignInSheet(autoStart: autoStart, addAPIKey: { Task { try? await Task.sleep(for: .milliseconds(400)); editKey() } })
+            SignInSheet(autoStart: autoStart, addAPIKey: { Task { try? await Task.sleep(nanoseconds: UInt64((400) * 1_000_000)); editKey() } })
                 .environmentObject(app)
         }
         // Here, not on 设置: presenting from a covered view waits until it is back on screen.
@@ -473,7 +473,7 @@ struct AccountNotices: View {
                     .transition(.move(edge: .top).combined(with: .opacity))
                     .task(id: toast) {
                         Haptics.warning()
-                        try? await Task.sleep(for: .seconds(3))
+                        try? await Task.sleep(nanoseconds: UInt64((3) * 1_000_000_000))
                         withAnimation { app.account.toast = nil }
                     }
             }

@@ -396,7 +396,7 @@ final class ComposerModel: ObservableObject {
                 // Receipts now stand for the files: the private copies are done with.
                 for attachment in sent { if case .file(let url) = attachment.kind { try? FileManager.default.removeItem(at: url.deletingLastPathComponent()) } }
                 // A safety net: the message or its queue row normally retires the echo first.
-                try? await Task.sleep(for: .seconds(30))
+                try? await Task.sleep(nanoseconds: UInt64((30) * 1_000_000_000))
                 retire(requestId)
             } catch {
                 retire(requestId)
@@ -744,7 +744,7 @@ final class ComposerModel: ObservableObject {
         Task {
             let watch = Task { [weak self] in
                 while !Task.isCancelled {
-                    try? await Task.sleep(for: .milliseconds(250))
+                    try? await Task.sleep(nanoseconds: UInt64((250) * 1_000_000))
                     guard let self, let progress = self.reads[id], progress.totalUnitCount > 0,
                           let index = self.attachments.firstIndex(where: { $0.id == id }) else { continue }
                     let upload = DraftAttachment.Upload.reading(fraction: progress.fractionCompleted)

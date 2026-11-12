@@ -99,7 +99,7 @@ final class NodeEngine: ObservableObject {
             if case .starting = phase, let startedAt, Date().timeIntervalSince(startedAt) > Self.stallAfter {
                 stalled = true
             }
-            try? await Task.sleep(for: .milliseconds(500))
+            try? await Task.sleep(nanoseconds: UInt64((500) * 1_000_000))
         }
     }
 

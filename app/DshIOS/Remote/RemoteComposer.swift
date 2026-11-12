@@ -58,7 +58,7 @@ struct RemoteComposer: View {
             if model.draft.hasPrefix("/"), model.commands.isEmpty { await model.loadCommands() }
         }
         .photosPicker(isPresented: $showPhotos, selection: $photos, maxSelectionCount: max(1, Self.maxFiles - model.attachments.count - reading.count), matching: .any(of: [.images, .videos]), preferredItemEncoding: .current)
-        .onChange(of: photos) { _, items in
+        .onChange(of: photos) { items in
             guard !items.isEmpty else { return }
             photos = []
             Task { await add(photos: items) }
@@ -245,7 +245,7 @@ struct RemoteComposer: View {
     private func read(_ item: PhotosPickerItem, as id: UUID) async {
         let watch = Task {
             while !Task.isCancelled {
-                try? await Task.sleep(for: .milliseconds(250))
+                try? await Task.sleep(nanoseconds: UInt64((250) * 1_000_000))
                 guard let index = reading.firstIndex(where: { $0.id == id }), let progress = reading[index].progress,
                       progress.totalUnitCount > 0 else { continue }
                 reading[index].fraction = progress.fractionCompleted

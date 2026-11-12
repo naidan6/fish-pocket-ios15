@@ -82,7 +82,7 @@ final class RemoteSessionModel: Identifiable, ObservableObject {
     @Published private var patience: Task<Void, Never>?
 
     /// How long the channel may be down before the page says so.
-    private static let quietReconnect = Duration.seconds(5)
+    private static let quietReconnect: UInt64 = 5_000_000_000  // 5s
 
     private static let windowLimit = 1000
     /// What a session keeps once its page has closed: enough to show at once when it is opened
@@ -240,7 +240,7 @@ final class RemoteSessionModel: Identifiable, ObservableObject {
                     self.link = .reconnecting
                     self.worry()
                     attempt += 1
-                    try? await Task.sleep(for: .seconds(min(pow(2, Double(attempt - 1)), 15)))
+                    try? await Task.sleep(nanoseconds: UInt64(min(pow(2, Double(attempt - 1)), 15) * 1_000_000_000))
                 }
             }
         }
@@ -257,7 +257,7 @@ final class RemoteSessionModel: Identifiable, ObservableObject {
     private func worry() {
         guard patience == nil, !struggling, link != .live else { return }
         patience = Task { [weak self] in
-            try? await Task.sleep(for: Self.quietReconnect)
+            try? await Task.sleep(nanoseconds: Self.quietReconnect)
             guard !Task.isCancelled, let self else { return }
             self.patience = nil
             if self.link != .live { self.struggling = true }
@@ -580,7 +580,7 @@ final class RemoteSessionModel: Identifiable, ObservableObject {
         rebuild()
         if waits {
             // Until the channel is back, or the drop has lasted long enough to be said.
-            while sendWaits, !Task.isCancelled { try? await Task.sleep(for: .milliseconds(100)) }
+            while sendWaits, !Task.isCancelled { try? await Task.sleep(nanoseconds: UInt64((100) * 1_000_000)) }
             guard canSend else {
                 pending.removeAll { $0.id == message.id }
                 if draft.isEmpty, attachments.isEmpty { draft = text; attachments = files }

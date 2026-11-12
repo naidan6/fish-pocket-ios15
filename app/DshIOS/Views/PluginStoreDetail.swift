@@ -366,7 +366,7 @@ struct StoreInstallConfirm: View {
                     dismiss()
                     Task {
                         // Our sheet must be gone before the install sheet presents.
-                        try? await Task.sleep(for: .milliseconds(400))
+                        try? await Task.sleep(nanoseconds: UInt64((400) * 1_000_000))
                         app.pluginInstall.installFrom(spec: install["spec"].string ?? "", registry: install["registry"].string, title: title, version: number)
                     }
                 }

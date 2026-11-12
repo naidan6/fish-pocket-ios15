@@ -41,7 +41,7 @@ struct PluginStoreView: View {
             guard model.readiness == .ready else { return }
             await model.market.loadIndexes(app)
         }
-        .onChange(of: manager.marketEnabled) { _, enabled in if !enabled { model.marketTurnedOff() } }
+        .onChange(of: manager.marketEnabled) { enabled in if !enabled { model.marketTurnedOff() } }
         .followSettings()
     }
 
@@ -159,7 +159,7 @@ private struct StoreDiscoverPage: View {
         // Keystrokes settle for 250 ms before a read.
         .task(id: search) {
             guard search != market.query.text else { return }
-            try? await Task.sleep(for: .milliseconds(250))
+            try? await Task.sleep(nanoseconds: UInt64((250) * 1_000_000))
             guard !Task.isCancelled else { return }
             market.setText(search)
             await market.reload(app)
@@ -727,7 +727,7 @@ struct StoreSourcesSheet: View {
                         .keyboardType(.URL)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
-                        .onChange(of: draft) { _, _ in market.clearSourceFailure() }
+                        .onChange(of: draft) { _ in market.clearSourceFailure() }
                     if let failure = failureText { Text(failure).font(.caption).foregroundStyle(Palette.removed) }
                     Button("添加") {
                         let url = draft.trimmingCharacters(in: .whitespaces)

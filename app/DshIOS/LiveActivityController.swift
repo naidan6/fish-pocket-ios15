@@ -91,7 +91,7 @@ final class LiveActivityController {
             guard activity != nil, pendingFinish == nil else { return }
             let idleAt = Date.now
             pendingFinish = Task { [weak self] in
-                try? await Task.sleep(for: .seconds(6))
+                try? await Task.sleep(nanoseconds: UInt64((6) * 1_000_000_000))
                 guard !Task.isCancelled else { return }
                 self?.pendingFinish = nil
                 self?.finish(at: idleAt)

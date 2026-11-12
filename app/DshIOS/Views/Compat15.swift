@@ -250,3 +250,44 @@ extension View {
         UIApplication.shared.open(url)
     }
 }
+
+// MARK: - onChange(of:initial:_:)（iOS 17）
+
+extension View {
+    /// iOS 17 的 `onChange(of:initial:_:)`：15 上用 `onChange(of:perform:)` + 首次 `onAppear` 复现。
+    func compatChange<V: Equatable>(of value: V, initial: Bool = false,
+                                    _ action: @escaping (V) -> Void) -> some View {
+        self.onChange(of: value, perform: action)
+            .onAppear { if initial { action(value) } }
+    }
+}
+
+// MARK: - 正则字面量（iOS 16）的替代
+
+enum CompatRegex {
+    /// 单次匹配：返回（整体范围，第一个捕获组）
+    static func firstMatch(_ pattern: String, in text: String,
+                           caseInsensitive: Bool = false) -> (range: Range<String.Index>, group: String?)? {
+        var opts: NSRegularExpression.Options = []
+        if caseInsensitive { opts.insert(.caseInsensitive) }
+        guard let re = try? NSRegularExpression(pattern: pattern, options: opts) else { return nil }
+        let ns = text as NSString
+        guard let m = re.firstMatch(in: text, options: [], range: NSRange(location: 0, length: ns.length)),
+              let full = Range(m.range, in: text) else { return nil }
+        var group: String?
+        if m.numberOfRanges > 1, m.range(at: 1).location != NSNotFound, let r = Range(m.range(at: 1), in: text) {
+            group = String(text[r])
+        }
+        return (full, group)
+    }
+
+    static func replacing(_ pattern: String, in text: String, with template: String = "",
+                          caseInsensitive: Bool = false) -> String {
+        var opts: NSRegularExpression.Options = []
+        if caseInsensitive { opts.insert(.caseInsensitive) }
+        guard let re = try? NSRegularExpression(pattern: pattern, options: opts) else { return text }
+        let ns = text as NSString
+        return re.stringByReplacingMatches(in: text, options: [],
+                                          range: NSRange(location: 0, length: ns.length), withTemplate: template)
+    }
+}

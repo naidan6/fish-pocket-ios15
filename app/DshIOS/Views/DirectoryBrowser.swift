@@ -171,7 +171,7 @@ private struct DirectoryLevelView: View {
 
     private func load() async {
         failure = nil
-        let hint = Task { try? await Task.sleep(for: .milliseconds(300)); if !Task.isCancelled { slow = true } }
+        let hint = Task { try? await Task.sleep(nanoseconds: UInt64((300) * 1_000_000)); if !Task.isCancelled { slow = true } }
         defer { hint.cancel(); slow = false }
         do {
             let value = try await app.client.call("directoryPicker/list", ["path": .string(path)])

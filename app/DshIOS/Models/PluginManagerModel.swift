@@ -297,7 +297,7 @@ final class PluginManagerModel: ObservableObject {
         let hadList = status == .ready
         await load()
         let remaining = 0.4 - Date().timeIntervalSince(started)
-        if remaining > 0 { try? await Task.sleep(for: .seconds(remaining)) }
+        if remaining > 0 { try? await Task.sleep(nanoseconds: UInt64((remaining) * 1_000_000_000)) }
         refreshing = false
         if status == .error && hadList {
             status = .ready

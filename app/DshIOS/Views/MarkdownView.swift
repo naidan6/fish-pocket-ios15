@@ -304,7 +304,7 @@ struct CodeBlockView: View {
                 Button {
                     copyToPasteboard(code)
                     copied = true
-                    Task { try? await Task.sleep(for: .seconds(1.5)); copied = false }
+                    Task { try? await Task.sleep(nanoseconds: UInt64((1.5) * 1_000_000_000)); copied = false }
                 } label: {
                     Image(systemName: copied ? "checkmark" : "doc.on.doc").font(.caption).foregroundStyle(Palette.secondary).hitTarget()
                 }

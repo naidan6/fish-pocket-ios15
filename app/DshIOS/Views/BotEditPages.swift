@@ -298,7 +298,7 @@ struct BotAppearanceSheet: View {
                 .navigationTitle("头像")
                 .navigationBarTitleDisplayMode(.inline)
                 .closeButton(dismiss)
-                .onChange(of: photo) { _, item in
+                .onChange(of: photo) { item in
                     guard let item else { return }
                     Task {
                         defer { photo = nil }

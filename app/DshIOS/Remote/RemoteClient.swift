@@ -345,7 +345,7 @@ actor RemoteClient {
             }
             let watchdog = Task {
                 while !Task.isCancelled {
-                    try? await Task.sleep(for: .seconds(15))
+                    try? await Task.sleep(nanoseconds: UInt64((15) * 1_000_000_000))
                     if heard.silence > 45 {
                         continuation.finish(throwing: RemoteError(kind: .server, message: String(localized: "与服务器的连接中断")))
                         return

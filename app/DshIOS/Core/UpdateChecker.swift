@@ -31,8 +31,8 @@ struct AppUpdate: Equatable {
 /// Store comes first: once the app is listed there, it answers for everyone. Until
 /// then GitHub Releases does, except for builds Apple delivered (TestFlight, review),
 /// which never point at a download outside the store.
-@MainActor @Observable
-final class UpdateChecker {
+@MainActor
+final class UpdateChecker: ObservableObject {
     enum Status: Equatable { case idle, checking, upToDate, failed, available(AppUpdate) }
 
     static let shared = UpdateChecker()

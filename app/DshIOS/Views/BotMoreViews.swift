@@ -174,7 +174,7 @@ struct MemorySummarySection: View {
             .groupedRow()
             .task(id: writing) {
                 while writing && !Task.isCancelled {
-                    try? await Task.sleep(for: .seconds(2))
+                    try? await Task.sleep(nanoseconds: UInt64((2) * 1_000_000_000))
                     if !Task.isCancelled { await load(regenerate: false) }
                 }
             }

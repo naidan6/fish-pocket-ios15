@@ -363,7 +363,7 @@ final class BotModel: ObservableObject {
                     do { try await self.followFeed() } catch {}
                 }
                 if Task.isCancelled { return }
-                try? await Task.sleep(for: .seconds(self.reachable ? 1 : 4))
+                try? await Task.sleep(nanoseconds: UInt64((self.reachable ? 1 : 4) * 1_000_000_000))
             }
         }
     }
@@ -372,7 +372,7 @@ final class BotModel: ObservableObject {
     func refresh() {
         guard refreshTask == nil else { return }
         refreshTask = Task {
-            try? await Task.sleep(for: .milliseconds(120))
+            try? await Task.sleep(nanoseconds: UInt64((120) * 1_000_000))
             refreshTask = nil
             await refreshState()
         }
@@ -494,7 +494,7 @@ final class BotModel: ObservableObject {
         defer { if !rounds.isEmpty { rounds = [] } }
         while !Task.isCancelled {
             if let value = try? await call("room-progress", ["roomId": .string(roomId)]), value.array != rounds { rounds = value.array }
-            try? await Task.sleep(for: .seconds(rounds.isEmpty ? 3 : 1))
+            try? await Task.sleep(nanoseconds: UInt64((rounds.isEmpty ? 3 : 1) * 1_000_000_000))
         }
     }
 
@@ -631,7 +631,7 @@ final class BotModel: ObservableObject {
         for _ in 0..<60 where !reachable {
             await refreshState()
             if reachable { break }
-            try? await Task.sleep(for: .seconds(2))
+            try? await Task.sleep(nanoseconds: UInt64((2) * 1_000_000_000))
         }
     }
 
@@ -645,7 +645,7 @@ final class BotModel: ObservableObject {
         for _ in 0..<30 where !reachable {
             await refreshState()
             if reachable { break }
-            try? await Task.sleep(for: .seconds(2))
+            try? await Task.sleep(nanoseconds: UInt64((2) * 1_000_000_000))
         }
     }
 }

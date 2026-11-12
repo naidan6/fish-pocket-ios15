@@ -361,7 +361,7 @@ struct BotHomeView: View {
             if words.isEmpty { chatPages = [:] }
             return
         }
-        try? await Task.sleep(for: .milliseconds(300))
+        try? await Task.sleep(nanoseconds: UInt64((300) * 1_000_000))
         if Task.isCancelled { return }
         let team = app.botTeam
         var found: [ChatHit] = []
@@ -579,7 +579,7 @@ struct BotSetupView: View {
             .readableWidth()
         }
         .safeAreaInset(edge: .bottom) { action.padding(.horizontal, 20).padding(.bottom, 12).background(Palette.background) }
-        .onChange(of: team.status) { _, status in if status == .ready { Haptics.success() } }
+        .onChange(of: team.status) { status in if status == .ready { Haptics.success() } }
     }
 
     @ViewBuilder

@@ -68,7 +68,7 @@ struct RemoteConversationView: View {
             }
             .environment(\.timelineScroll, TimelineScroll(keep: { id in
                 Task { @MainActor in
-                    try? await Task.sleep(for: .milliseconds(60))
+                    try? await Task.sleep(nanoseconds: UInt64((60) * 1_000_000))
                     proxy.scrollTo(id, anchor: .top)
                 }
             }, top: timelineTop))
@@ -78,10 +78,10 @@ struct RemoteConversationView: View {
             .scrollDismissesKeyboard(.immediately)
             .scrollBounceBehavior(.always)
             .simultaneousGesture(TapGesture().onEnded { dismissKeyboard() })
-            .onChange(of: model.rows.last?.id) { _, _ in
+            .onChange(of: model.rows.last?.id) { _ in
                 if case .user? = model.rows.last { atBottom = true; scrollToBottom(proxy) }
             }
-            .onChange(of: model.busy) { _, busy in if busy, atBottom { scrollToBottom(proxy) } }
+            .onChange(of: model.busy) { busy in if busy, atBottom { scrollToBottom(proxy) } }
             .overlay(alignment: .bottomTrailing) {
                 ZStack {
                     if !atBottom, !model.rows.isEmpty {
@@ -141,9 +141,9 @@ struct RemoteConversationView: View {
         .onChange(of: waiting(model)?.id) { old, new in if let new, new != old { Haptics.warning() } }
         .onChange(of: model.optionsRequest) { panel = .options }
         // Archived from here or from another device: the main view moves on, as with a local session.
-        .onChange(of: model.meta?.archived) { _, archived in if archived == true { selection = nil } }
+        .onChange(of: model.meta?.archived) { archived in if archived == true { selection = nil } }
         // Read once it is on screen, and again when a turn ends while it is.
-        .onChange(of: "\(model.meta?.unread == true)-\(scenePhase == .active)", initial: true) {
+        .compatChange(of: "\(model.meta?.unread == true)-\(scenePhase == .active)", initial: true) {
             if scenePhase == .active { app.remote.markRead(sessionId) }
         }
         .sheet(item: interactionBinding(model)) { sheet(for: $0, model) }
@@ -166,7 +166,7 @@ struct RemoteConversationView: View {
         } message: { enable in
             Text(takeoverMessage(enable, model))
         }
-        .onChange(of: model.notice) { _, text in
+        .onChange(of: model.notice) { text in
             guard let text else { return }
             model.notice = nil
             app.showToast(text, tone: .warning)
@@ -445,7 +445,7 @@ private struct RemoteLoadOlder: View {
             .onGeometryChange(for: CGFloat.self) { $0.frame(in: .global).maxY } action: { inView = $0 > scroll.top }
             .task(id: "\(inView)-\(model.rows.first?.id ?? "")") {
                 guard inView else { return }
-                try? await Task.sleep(for: .milliseconds(300))
+                try? await Task.sleep(nanoseconds: UInt64((300) * 1_000_000))
                 guard !Task.isCancelled else { return }
                 let anchor = model.rows.first?.id
                 Task {

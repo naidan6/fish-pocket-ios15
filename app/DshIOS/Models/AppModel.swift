@@ -362,10 +362,10 @@ final class AppModel: ObservableObject {
                         scheduleCatalog = value.array
                         scheduleCount = value.array.count
                     } else {
-                        try? await Task.sleep(for: .seconds(5))
+                        try? await Task.sleep(nanoseconds: UInt64((5) * 1_000_000_000))
                     }
                 }
-                try? await Task.sleep(for: .milliseconds(500))
+                try? await Task.sleep(nanoseconds: UInt64((500) * 1_000_000))
             }
         }
     }
@@ -404,7 +404,7 @@ final class AppModel: ObservableObject {
     func scheduleRefresh() {
         refreshTask?.cancel()
         refreshTask = Task {
-            try? await Task.sleep(for: .milliseconds(400))
+            try? await Task.sleep(nanoseconds: UInt64((400) * 1_000_000))
             guard !Task.isCancelled else { return }
             await refreshSessions()
         }
@@ -421,7 +421,7 @@ final class AppModel: ObservableObject {
                 } catch {
                     if Task.isCancelled { return }
                 }
-                try? await Task.sleep(for: .seconds(1))
+                try? await Task.sleep(nanoseconds: UInt64((1) * 1_000_000_000))
             }
         }
     }
@@ -474,7 +474,7 @@ final class AppModel: ObservableObject {
                 } catch {
                     if Task.isCancelled { return }
                 }
-                try? await Task.sleep(for: .seconds(1))
+                try? await Task.sleep(nanoseconds: UInt64((1) * 1_000_000_000))
             }
         }
     }
@@ -504,7 +504,7 @@ final class AppModel: ObservableObject {
                 // The web client's backoff: caps 0.5, 1, 2, 4, 8, 10 s, 50–100 % jitter.
                 let cap = min(10, 0.5 * pow(2, Double(attempt)))
                 attempt += 1
-                try? await Task.sleep(for: .seconds(cap * Double.random(in: 0.5...1)))
+                try? await Task.sleep(nanoseconds: UInt64((cap * Double.random(in: 0.5...1)) * 1_000_000_000))
             }
         }
     }

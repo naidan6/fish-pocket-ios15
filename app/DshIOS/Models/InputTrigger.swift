@@ -124,9 +124,9 @@ func formatFileMention(path: String, directory: Bool, preserveQuote: Bool) -> St
 
 /// A session reference as the engine reads it, `@[标题](dsh-session:…)`; people read `@标题`.
 enum SessionMention {
-    private static let pattern = /@\[([^\]]*)\]\(dsh-session:[^)]*\)/
+    private static let pattern = #"@\[([^\]]*)\]\(dsh-session:[^)]*\)"#
 
     static func plain(_ text: String) -> String {
-        text.replacing(pattern) { "@\($0.1)" }
+        CompatRegex.replacing(pattern, in: text, with: "@$1")
     }
 }

@@ -55,8 +55,8 @@ struct QuestionSheet: View {
             footer(current).padding(EdgeInsets(top: 8, leading: 22, bottom: 10, trailing: 22))
         }
         .onAppear(perform: preselectRecommended)
-        .onChange(of: customFocused) { _, focused in model.setAnswerFocus(question, focused: focused) }
-        .onChange(of: question.eventId) { _, _ in failure = nil }
+        .onChange(of: customFocused) { focused in model.setAnswerFocus(question, focused: focused) }
+        .onChange(of: question.eventId) { _ in failure = nil }
     }
 
     // MARK: Pages
@@ -180,7 +180,7 @@ struct QuestionSheet: View {
         } else {
             // The field has to exist before it can take focus.
             Task {
-                try? await Task.sleep(for: .milliseconds(50))
+                try? await Task.sleep(nanoseconds: UInt64((50) * 1_000_000))
                 customFocused = true
             }
         }
@@ -362,10 +362,14 @@ private struct WaitStatus: View {
 
 /// `(推荐)` / `(Recommended)` at the end of an option's label: shown as a badge, sent as written.
 enum QuestionOption {
-    private static let suffix = #/\s*(?:\((?:recommended|推荐)\)|（(?:recommended|推荐)）)\s*$/#.ignoresCase()
+    private static let suffix = #"\s*(?:\((?:recommended|推荐)\)|（(?:recommended|推荐)）)\s*$"#
 
-    static func isRecommended(_ label: String) -> Bool { label.firstMatch(of: suffix) != nil }
-    static func displayLabel(_ label: String) -> String { label.replacing(suffix, with: "") }
+    static func isRecommended(_ label: String) -> Bool {
+        CompatRegex.firstMatch(suffix, in: label, caseInsensitive: true) != nil
+    }
+    static func displayLabel(_ label: String) -> String {
+        CompatRegex.replacing(suffix, in: label, caseInsensitive: true)
+    }
 }
 
 /// Plan review (C-119): the plan's title and first paragraph, the full text one tap away,

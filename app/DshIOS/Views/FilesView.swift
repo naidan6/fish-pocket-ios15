@@ -162,7 +162,7 @@ struct DirectoryView: View {
                 guard frame["kind"].string == "change" else { continue }
                 pendingReload?.cancel()
                 pendingReload = Task {
-                    try? await Task.sleep(for: .milliseconds(300))
+                    try? await Task.sleep(nanoseconds: UInt64((300) * 1_000_000))
                     if !Task.isCancelled { await load() }
                 }
             }

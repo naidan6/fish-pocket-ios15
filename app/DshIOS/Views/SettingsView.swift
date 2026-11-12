@@ -83,7 +83,7 @@ struct SettingsView: View {
                         Label("语言", systemImage: "globe")
                     }
                     .pickerValueTint()
-                    .onChange(of: languageChoice) { _, value in
+                    .onChange(of: languageChoice) { value in
                         AppLanguage.chosen = value == "system" ? nil : value
                         languageChanged = true
                     }
@@ -573,8 +573,14 @@ private struct EngineCard: View {
     private func detail(now: Date) -> String {
         var parts: [String] = []
         if case .running = engine.phase, let since = engine.runningSince {
-            let uptime = Duration.seconds(max(60, now.timeIntervalSince(since)))
-            parts.append(String(localized: "已运行 \(uptime.formatted(.units(allowed: [.days, .hours, .minutes], width: .narrow, maximumUnitCount: 2)))"))
+            // 15.6：没有 `Duration.formatted(.units:)`，自己拼「天 小时 分钟」，最多两段。
+            let seconds = Int(max(60, now.timeIntervalSince(since)))
+            let days = seconds / 86_400, hours = (seconds % 86_400) / 3_600, minutes = (seconds % 3_600) / 60
+            var bits: [String] = []
+            if days > 0 { bits.append(String(localized: "\(days) 天")) }
+            if bits.count < 2, hours > 0 { bits.append(String(localized: "\(hours) 小时")) }
+            if bits.count < 2 { bits.append(String(localized: "\(minutes) 分钟")) }
+            parts.append(String(localized: "已运行 \(bits.joined(separator: " "))"))
         }
         if let memory = Self.memoryFootprint() {
             parts.append(String(localized: "内存 \(ByteCountFormatter.string(fromByteCount: Int64(memory), countStyle: .memory))"))

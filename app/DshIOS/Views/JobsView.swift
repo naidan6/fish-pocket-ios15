@@ -92,7 +92,7 @@ final class JobsModel: ObservableObject {
             } catch {
                 if Task.isCancelled { return }
             }
-            try? await Task.sleep(for: .seconds(5))
+            try? await Task.sleep(nanoseconds: UInt64((5) * 1_000_000_000))
         }
     }
 }
@@ -340,7 +340,7 @@ struct JobOutputView: View {
                 if Task.isCancelled { return }
                 failure = error.localizedDescription
             }
-            try? await Task.sleep(for: .seconds(2))
+            try? await Task.sleep(nanoseconds: UInt64((2) * 1_000_000_000))
         }
     }
 }

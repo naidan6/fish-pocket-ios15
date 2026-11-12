@@ -140,9 +140,9 @@ private struct FeatureCard: View {
                 appeared = true
                 return
             }
-            try? await Task.sleep(for: .seconds(delay))
+            try? await Task.sleep(nanoseconds: UInt64((delay) * 1_000_000_000))
             withAnimation(.spring(response: 0.55, dampingFraction: 0.82)) { appeared = true }
-            try? await Task.sleep(for: .seconds(0.12))
+            try? await Task.sleep(nanoseconds: UInt64((0.12) * 1_000_000_000))
             nod += 1
         }
     }

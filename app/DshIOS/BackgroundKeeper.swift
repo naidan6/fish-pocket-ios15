@@ -119,7 +119,7 @@ final class BackgroundKeeper {
         pollTask = Task {
             while !Task.isCancelled {
                 await refresh?()
-                try? await Task.sleep(for: .seconds(10))
+                try? await Task.sleep(nanoseconds: 10_000_000_000)
             }
         }
     }

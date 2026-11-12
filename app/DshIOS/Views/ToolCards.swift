@@ -185,12 +185,12 @@ struct ExitStatus {
     var noCode = false
 
     init(_ text: String) {
-        if let match = text.firstMatch(of: #/\n\[killed by signal: ([^\]\n]+)\]$/#) {
+        if let match = CompatRegex.firstMatch(#"\n\[killed by signal: ([^\]\n]+)\]$"#, in: text) {
             output = String(text[..<match.range.lowerBound])
-            signal = String(match.output.1)
-        } else if let match = text.firstMatch(of: #/\n\[exit code: (-?\d+|null)\]$/#) {
+            signal = match.group
+        } else if let match = CompatRegex.firstMatch(#"\n\[exit code: (-?\d+|null)\]$"#, in: text) {
             output = String(text[..<match.range.lowerBound])
-            exitCode = Int(match.output.1)
+            exitCode = match.group.flatMap { Int($0) }
             noCode = exitCode == nil
         } else {
             output = text

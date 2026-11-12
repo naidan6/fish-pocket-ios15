@@ -117,7 +117,7 @@ final class AccountModel: ObservableObject {
                     if Task.isCancelled { return }
                     streamFailed = true
                 }
-                try? await Task.sleep(for: .seconds(1))
+                try? await Task.sleep(nanoseconds: UInt64((1) * 1_000_000_000))
             }
         }
     }
@@ -206,7 +206,7 @@ final class AccountModel: ObservableObject {
                     _ = try await client.call("account/ackBonusNotified", ["accountId": .string(notice.accountId), "orderId": .string(notice.orderId), "client": info])
                     return // false means Platform will not take it: do not retry either.
                 } catch {
-                    try? await Task.sleep(for: .seconds(delay))
+                    try? await Task.sleep(nanoseconds: UInt64((delay) * 1_000_000_000))
                     delay = min(delay * 2, 60)
                 }
             }

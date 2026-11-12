@@ -16,9 +16,9 @@ final class WidgetSnapshotWriter {
 
     /// Sessions in the snapshot: the large widget shows six.
     private static let limit = 6
-    private static let debounce = Duration.seconds(1)
+    private static let debounce: UInt64 = 1_000_000_000  // 1s
     /// Well inside `WidgetSnapshot.staleAfter`.
-    private static let heartbeat = Duration.seconds(10 * 60)
+    private static let heartbeat: UInt64 = 600_000_000_000  // 10min
 
     private weak var app: AppModel?
     /// The content last written, `writtenAt` aside.
@@ -65,7 +65,7 @@ final class WidgetSnapshotWriter {
         guard next != written else { return }
         pendingWrite?.cancel()
         pendingWrite = Task { [weak self] in
-            try? await Task.sleep(for: Self.debounce)
+            try? await Task.sleep(nanoseconds: Self.debounce)
             guard !Task.isCancelled else { return }
             self?.write()
         }
@@ -91,7 +91,7 @@ final class WidgetSnapshotWriter {
         // `write` cancels it once nothing is active.
         heartbeatTask = Task { [weak self] in
             while true {
-                try? await Task.sleep(for: Self.heartbeat)
+                try? await Task.sleep(nanoseconds: Self.heartbeat)
                 guard !Task.isCancelled, let self else { return }
                 self.write()
             }

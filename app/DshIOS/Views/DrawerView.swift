@@ -926,7 +926,7 @@ struct DrawerView: View {
         guard !query.isEmpty else { searching = false; return }
         searching = true
         defer { if !Task.isCancelled { searching = false } }
-        try? await Task.sleep(for: .milliseconds(250))
+        try? await Task.sleep(nanoseconds: UInt64((250) * 1_000_000))
         guard !Task.isCancelled,
               let value = try? await app.client.call("session/search", ["request": ["query": .string(query)]]),
               !Task.isCancelled else { return }

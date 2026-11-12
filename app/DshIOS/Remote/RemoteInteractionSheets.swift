@@ -512,7 +512,7 @@ struct RemoteNoticeSheet: View {
             others.insert(question.id)
             if !question.multiple { choices[question.id] = [] }
             Task {
-                try? await Task.sleep(for: .milliseconds(50))
+                try? await Task.sleep(nanoseconds: UInt64((50) * 1_000_000))
                 typing = true
             }
         }

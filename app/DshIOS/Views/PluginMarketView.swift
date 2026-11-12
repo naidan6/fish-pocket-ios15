@@ -248,7 +248,7 @@ struct PluginMarketPage: View {
         // Keystrokes settle for 250 ms before a read.
         .task(id: search) {
             guard search != model.query.text else { return }
-            try? await Task.sleep(for: .milliseconds(250))
+            try? await Task.sleep(nanoseconds: UInt64((250) * 1_000_000))
             guard !Task.isCancelled else { return }
             model.setText(search)
             await model.reload(app)
@@ -660,7 +660,7 @@ private struct MarketInstallConfirm: View {
                     dismiss()
                     Task {
                         // Our sheet must be gone before the install sheet presents.
-                        try? await Task.sleep(for: .milliseconds(400))
+                        try? await Task.sleep(nanoseconds: UInt64((400) * 1_000_000))
                         app.pluginInstall.installFrom(spec: install["spec"].string ?? "", registry: install["registry"].string, title: marketTitle(choice.entry), version: number)
                     }
                 }
@@ -709,7 +709,7 @@ private struct MarketSourcesSheet: View {
                         .keyboardType(.URL)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
-                        .onChange(of: draft) { _, _ in model.clearSourceFailure() }
+                        .onChange(of: draft) { _ in model.clearSourceFailure() }
                     if let failure = failureText { Text(failure).font(.caption).foregroundStyle(Palette.removed) }
                     Button("添加") {
                         let url = draft.trimmingCharacters(in: .whitespaces)

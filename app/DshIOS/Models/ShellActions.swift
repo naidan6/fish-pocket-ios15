@@ -107,7 +107,7 @@ extension AppModel {
         let covered = pluginInstall.open
         pluginInstall.close()
         Task {
-            if covered { try? await Task.sleep(for: .milliseconds(400)) }
+            if covered { try? await Task.sleep(nanoseconds: UInt64((400) * 1_000_000)) }
             newSessionRequest = NewSessionRequest(prompt: prompt)
         }
     }
