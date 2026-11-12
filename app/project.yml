@@ -2,8 +2,10 @@ name: DshIOS
 options:
   bundleIdPrefix: com.wsw
   deploymentTarget:
-    iOS: "17.0"
+    # yg: 回退到 iOS 15.6（原 17.0）。见 docs/backport/ios15-plan.md
+    iOS: "15.6"
     # The watch app (DshWatch): what an iPhone on iOS 17 pairs with.
+    # iOS 15.6 设备不配对 watchOS 10 应用，watch target 仍保留以不破坏上游工程结构。
     watchOS: "10.0"
   createIntermediateGroups: true
   # The String Catalogs' source language: the UI is written in Chinese (Shared/Localizable.xcstrings).
