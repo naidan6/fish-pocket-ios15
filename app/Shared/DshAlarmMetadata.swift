@@ -11,7 +11,6 @@ import Foundation
 /// presentation, which only ever travels outwards. So without this the alert
 /// could say no more than the time it is ringing at.
 @available(iOS 26.0, *)
-@available(iOS 16.1, *)
 struct DshAlarmMetadata: AlarmMetadata {
     /// What the user asked to be woken for, in their own words.
     var label: String

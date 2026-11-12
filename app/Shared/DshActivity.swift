@@ -34,6 +34,7 @@ struct DshActivityAttributes: ActivityAttributes {
 
 /// 允许 / 拒绝 on the Live Activity. A `LiveActivityIntent` runs in the app's
 /// process, where the engine connection answers the approval.
+#if !DSH_IOS15_BACKPORT
 @available(iOS 16.1, *)
 struct AnswerApprovalIntent: LiveActivityIntent {
     static var title: LocalizedStringResource = "答复工具审批"
@@ -66,3 +67,4 @@ enum DshActivityBridge {
         await handler?(eventId, agentId, allow)
     }
 }
+#endif  // !DSH_IOS15_BACKPORT
