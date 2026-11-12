@@ -48,7 +48,7 @@ struct RuleEditor: View {
                         chooseZone(zone)
                     }
                 } label: {
-                    LabeledContent("时区") {
+                    CompatLabeledContent("时区") {
                         Text(ScheduleFormat.zoneName(values.draft.timeZone)).lineLimit(2).multilineTextAlignment(.trailing)
                     }
                 }
@@ -268,14 +268,14 @@ struct CronRows: View {
             ClockRow(title: "时间", time: clock(hour, minute) { .daily(hour: $0, minute: $1) })
         case .hourly(let step, let minute):
             Stepper(value: Binding(get: { step }, set: { expression = Cron.expression(.hourly(step: $0, minute: minute)) }), in: 1...23) {
-                LabeledContent("重复间隔", value: String(localized: "每 \(step) 小时"))
+                CompatLabeledContent("重复间隔", value: String(localized: "每 \(step) 小时"))
             }
             Stepper(value: Binding(get: { minute }, set: { expression = Cron.expression(.hourly(step: step, minute: $0)) }), in: 0...59) {
-                LabeledContent("在第几分钟", value: "\(minute)")
+                CompatLabeledContent("在第几分钟", value: "\(minute)")
             }
         case .minutely(let step):
             Stepper(value: Binding(get: { step }, set: { expression = Cron.expression(.minutely(step: $0)) }), in: 1...59) {
-                LabeledContent("重复间隔", value: String(localized: "每 \(step) 分钟"))
+                CompatLabeledContent("重复间隔", value: String(localized: "每 \(step) 分钟"))
             }
         case nil:
             TextField("Cron 表达式", text: $expression)
@@ -375,7 +375,7 @@ struct TimeZonePicker: View {
         }
         .groupedList()
         .overlay {
-            if catalog.isEmpty { ProgressView() } else if matches.isEmpty { ContentUnavailableView("没有匹配的时区", systemImage: "globe") }
+            if catalog.isEmpty { ProgressView() } else if matches.isEmpty { CompatUnavailable("没有匹配的时区", systemImage: "globe") }
         }
         .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: "搜索 UTC 偏移、IANA 标识或城市")
         .navigationTitle("时区")

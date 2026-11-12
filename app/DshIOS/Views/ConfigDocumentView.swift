@@ -30,7 +30,7 @@ struct ConfigDocumentView: View {
     var body: some View {
         Group {
             if let failure {
-                ContentUnavailableView("无法打开配置文件", systemImage: "doc.badge.ellipsis", description: Text(failure))
+                CompatUnavailable("无法打开配置文件", systemImage: "doc.badge.ellipsis", description: Text(failure))
             } else {
                 TextEditor(text: $text)
                     .font(.footnote.monospaced())

@@ -72,7 +72,7 @@ struct RoomDetailView: View {
                         Text("群里的聊天记录和定时任务都会删掉，成员 Bot 不受影响。")
                     }
                 } else {
-                    ContentUnavailableView("这个群聊已经不在了", systemImage: "person.2.slash")
+                    CompatUnavailable("这个群聊已经不在了", systemImage: "person.2.slash")
                 }
             }
             .navigationTitle(team.room(roomId).map(team.name(of:)) ?? String(localized: "群聊"))

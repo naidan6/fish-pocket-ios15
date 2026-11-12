@@ -139,9 +139,9 @@ private struct StoreDiscoverPage: View {
                     .font(.footnote)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             case .unavailable:
-                ContentUnavailableView("无法管理插件", systemImage: "puzzlepiece.extension", description: Text("当前无法安装或启停插件。"))
+                CompatUnavailable("无法管理插件", systemImage: "puzzlepiece.extension", description: Text("当前无法安装或启停插件。"))
             case .off:
-                ContentUnavailableView {
+                CompatUnavailable {
                     Label("插件市场已关闭", systemImage: "storefront")
                 } description: {
                     Text("它的开关在「设置 → 插件 → 实验性插件」")
@@ -182,7 +182,7 @@ private struct StoreDiscoverPage: View {
     }
 
     private var noMarket: some View {
-        ContentUnavailableView {
+        CompatUnavailable {
             Label("还没有插件市场", systemImage: "storefront")
         } description: {
             Text("恢复预置市场，或添加其他索引。")
@@ -193,7 +193,7 @@ private struct StoreDiscoverPage: View {
     }
 
     private func failure(_ retry: @escaping () async -> Void) -> some View {
-        ContentUnavailableView {
+        CompatUnavailable {
             Text("无法读取插件市场").font(.title3.weight(.semibold))
         } description: {
             Text("检查网络后再试一次。已经安装的插件不受影响。")

@@ -348,10 +348,10 @@ private struct UpdateRow: View {
         case .available(let update):
             Button("更新到 \(update.version)") { openURL(update.url) }
         case .checking:
-            LabeledContent("检查更新") { ProgressView() }
+            CompatLabeledContent("检查更新") { ProgressView() }
         case .idle, .upToDate, .failed:
             Button { Task { await checker.check() } } label: {
-                LabeledContent("检查更新", value: note)
+                CompatLabeledContent("检查更新", value: note)
             }
         }
     }
@@ -376,28 +376,28 @@ private struct AboutPage: View {
         List {
             Section { EngineCard() }
             Section {
-                LabeledContent("引擎", value: "DeepSeek Harness")
-                if let engineVersion { LabeledContent("引擎版本", value: engineVersion) }
+                CompatLabeledContent("引擎", value: "DeepSeek Harness")
+                if let engineVersion { CompatLabeledContent("引擎版本", value: engineVersion) }
                 if let bot = app.botTeam.installedPackage {
                     Link(destination: BotModel.projectURL) {
-                        LabeledContent("Bot 插件", value: "DS Bot \(bot.version ?? "")")
+                        CompatLabeledContent("Bot 插件", value: "DS Bot \(bot.version ?? "")")
                     }
                     .foregroundStyle(Palette.ink)
                 }
-                LabeledContent("App 版本", value: Self.appVersion)
+                CompatLabeledContent("App 版本", value: Self.appVersion)
                 if let release = WhatsNew.current {
                     NavigationLink("新功能") { WhatsNewPage(release: release) }
                 }
                 UpdateRow()
-                LabeledContent("系统", value: ProcessInfo.processInfo.operatingSystemVersionString)
+                CompatLabeledContent("系统", value: ProcessInfo.processInfo.operatingSystemVersionString)
             } footer: {
                 if app.botTeam.installedPackage != nil {
                     Text("Bot 功能的后台是开源项目 DS Bot（Apache-2.0），感谢 Fei2411 和社区贡献者。")
                 }
             }
             Section {
-                LabeledContent("连接状态", value: app.connected ? String(localized: "已连接") : String(localized: "重新连接中"))
-                LabeledContent("存储", value: storage.map { ByteCountFormatter.string(fromByteCount: $0, countStyle: .file) } ?? "…")
+                CompatLabeledContent("连接状态", value: app.connected ? String(localized: "已连接") : String(localized: "重新连接中"))
+                CompatLabeledContent("存储", value: storage.map { ByteCountFormatter.string(fromByteCount: $0, countStyle: .file) } ?? "…")
             }
         }
         .navigationTitle("关于")

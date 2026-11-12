@@ -133,13 +133,13 @@ private struct WorkbenchTerminal: View {
                     .padding(.horizontal, 6)
                     .padding(.top, 6)
                 } else if connection != nil {
-                    ContentUnavailableView {
+                    CompatUnavailable {
                         Label("此终端已不存在，请新建终端。", systemImage: "apple.terminal")
                     } actions: {
                         Button("新建终端") { Task { await replace() } }
                     }
                 } else if let error {
-                    ContentUnavailableView {
+                    CompatUnavailable {
                         Label("终端不可用", systemImage: "apple.terminal")
                     } description: {
                         Text(error)
@@ -408,7 +408,7 @@ private struct WorkbenchChanges: View {
         NavigationStack {
             Group {
                 if changes.isEmpty {
-                    ContentUnavailableView("还没有改动", systemImage: "doc.text.magnifyingglass", description: Text("智能体改过的文件会显示在这里。"))
+                    CompatUnavailable("还没有改动", systemImage: "doc.text.magnifyingglass", description: Text("智能体改过的文件会显示在这里。"))
                 } else {
                     List {
                         Section {
@@ -487,7 +487,7 @@ private struct FileDiffPage: View {
                 // Each file starts at its top.
                 .id(path)
             } else {
-                ContentUnavailableView("这个文件不在改动里了", systemImage: "doc.text.magnifyingglass")
+                CompatUnavailable("这个文件不在改动里了", systemImage: "doc.text.magnifyingglass")
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

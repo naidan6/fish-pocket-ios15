@@ -150,7 +150,7 @@ struct JobsSheet: View {
             .stopJobDialog($stopping) { job in Task { await jobs.stop(job, sessionId: sessionId, app: app) } }
         }
         // A job or two does not need the whole screen.
-        .presentationDetents([.medium, .large])
+        .compatDetents([.medium, .large])
     }
 
     @ViewBuilder

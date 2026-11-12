@@ -315,7 +315,7 @@ struct BotAppearanceSheet: View {
                 .task { await loadLibrary() }
             }
         }
-        .presentationDetents([.medium, .large])
+        .compatDetents([.medium, .large])
     }
 
     private func loadLibrary() async {

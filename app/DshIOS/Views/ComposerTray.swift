@@ -88,7 +88,7 @@ struct ComposerTray: View {
         }
         .tint(Palette.ink)
         .permissionConfirmation($confirmingPermission, confirm: setPermission)
-        .presentationDetents([.medium, .large])
+        .compatDetents([.medium, .large])
         .presentationDragIndicator(.visible)
         .sheetNotices()
     }

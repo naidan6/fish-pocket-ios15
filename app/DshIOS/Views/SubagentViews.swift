@@ -89,7 +89,7 @@ struct SubagentCatalogSheet: View {
             .closeButton(dismiss)
             .task { await load() }
         }
-        .presentationDetents([.medium, .large])
+        .compatDetents([.medium, .large])
     }
 
     private func open(_ id: String) {
@@ -240,13 +240,13 @@ private struct SubagentDetail: View {
         List {
             Section {
                 if let title = facts.title { Text(title).font(.callout) }
-                LabeledContent("状态", value: facts.state)
-                if !facts.external { LabeledContent("模式", value: facts.mode) }
-                if let tokens = facts.tokens { LabeledContent("Tokens", value: SubagentFacts.formatTokens(tokens)) }
+                CompatLabeledContent("状态", value: facts.state)
+                if !facts.external { CompatLabeledContent("模式", value: facts.mode) }
+                if let tokens = facts.tokens { CompatLabeledContent("Tokens", value: SubagentFacts.formatTokens(tokens)) }
                 if facts.timed {
                     // It ticks while the child runs.
                     TimelineView(.periodic(from: .now, by: 1)) { context in
-                        LabeledContent("活跃时长", value: facts.duration(now: context.date).map(SubagentFacts.formatDuration) ?? "")
+                        CompatLabeledContent("活跃时长", value: facts.duration(now: context.date).map(SubagentFacts.formatDuration) ?? "")
                     }
                 }
             }

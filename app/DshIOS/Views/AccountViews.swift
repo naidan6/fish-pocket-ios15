@@ -56,7 +56,7 @@ struct SignInSheet: View {
         .padding(.bottom, 12)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(Palette.background)
-        .presentationDetents([.medium, .large])
+        .compatDetents([.medium, .large])
         .presentationDragIndicator(.visible)
         .interactiveDismissDisabled(phase == "committing")
         .task {
@@ -365,7 +365,7 @@ struct AccountPage: View {
 
     private var balances: some View {
         Section {
-            LabeledContent("充值余额") {
+            CompatLabeledContent("充值余额") {
                 if let wallets = account.wallets, !wallets.isEmpty {
                     amounts(wallets)
                 } else if account.balance == nil {
@@ -375,7 +375,7 @@ struct AccountPage: View {
                 }
             }
             if account.showsBonusRow {
-                LabeledContent("赠金余额") {
+                CompatLabeledContent("赠金余额") {
                     if !account.bonusWallets.isEmpty {
                         amounts(account.bonusWallets)
                     } else if account.balance == nil {

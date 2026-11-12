@@ -438,18 +438,18 @@ struct BotUsagePage: View {
                 .listRowBackground(Color.clear)
             }
             Section {
-                LabeledContent("输入", value: TimelineFormat.compact(totals.input))
-                LabeledContent("缓存命中", value: TimelineFormat.compact(totals.cached))
-                LabeledContent("输出", value: TimelineFormat.compact(totals.output))
-                LabeledContent("调用次数", value: "\(totals.calls)")
+                CompatLabeledContent("输入", value: TimelineFormat.compact(totals.input))
+                CompatLabeledContent("缓存命中", value: TimelineFormat.compact(totals.cached))
+                CompatLabeledContent("输出", value: TimelineFormat.compact(totals.output))
+                CompatLabeledContent("调用次数", value: "\(totals.calls)")
             }
             .groupedRow()
             Section("按 Bot") {
-                ForEach(totals.byOwner, id: \.name) { entry in LabeledContent(entry.name, value: TimelineFormat.compact(entry.tokens)) }
+                ForEach(totals.byOwner, id: \.name) { entry in CompatLabeledContent(entry.name, value: TimelineFormat.compact(entry.tokens)) }
             }
             .groupedRow()
             Section("按模型") {
-                ForEach(totals.byModel, id: \.name) { entry in LabeledContent(entry.name, value: TimelineFormat.compact(entry.tokens)) }
+                ForEach(totals.byModel, id: \.name) { entry in CompatLabeledContent(entry.name, value: TimelineFormat.compact(entry.tokens)) }
             }
             .groupedRow()
         }
@@ -516,7 +516,7 @@ struct BotWorkspacePage: View {
         let team = app.botTeam
         List {
             Section {
-                LabeledContent("现在", value: folders["team"].string.map(EnginePaths.display) ?? "")
+                CompatLabeledContent("现在", value: folders["team"].string.map(EnginePaths.display) ?? "")
             } footer: { Text("没有单独设文件夹的 Bot 和群聊都在这里工作。") }
             .groupedRow()
             if !folders["folders"].array.isEmpty {

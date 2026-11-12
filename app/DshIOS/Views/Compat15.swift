@@ -199,3 +199,44 @@ extension CompatLabeledContent where Content == Text {
         self.init(title) { Text(value) }
     }
 }
+
+// MARK: - 补充：调用点实际用到的重载
+
+extension CompatUnavailable where Actions == EmptyView {
+    init(@ViewBuilder label: () -> Label, @ViewBuilder description: () -> Description) {
+        self.init(label: label, description: description, actions: { EmptyView() })
+    }
+}
+
+extension CompatUnavailable where Description == EmptyView, Actions == EmptyView {
+    init(@ViewBuilder label: () -> Label) {
+        self.init(label: label, description: { EmptyView() }, actions: { EmptyView() })
+    }
+}
+
+extension CompatUnavailable where Description == Text, Actions == EmptyView {
+    init(_ titleKey: LocalizedStringKey, systemImage: String, description: Text) {
+        self.init(label: {
+            VStack(spacing: 8) {
+                Image(systemName: systemImage)
+                    .font(.system(size: 40, weight: .light))
+                    .foregroundStyle(.secondary)
+                Text(titleKey).font(.headline)
+            }
+        }, description: { description }, actions: { EmptyView() })
+    }
+}
+
+extension CompatLabeledContent where Content == Text {
+    init(_ titleKey: LocalizedStringKey, value: String?) {
+        self.init(titleKey) { Text(value ?? "—") }
+    }
+
+    init(_ title: String, value: String?) {
+        self.init(title) { Text(value ?? "—") }
+    }
+
+    init<V>(_ titleKey: LocalizedStringKey, value: V) where V: CustomStringConvertible {
+        self.init(titleKey) { Text(value.description) }
+    }
+}

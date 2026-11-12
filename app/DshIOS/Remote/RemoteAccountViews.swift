@@ -129,7 +129,7 @@ private struct RemoteScanSheet: View {
                 if let code {
                     waiting(code)
                 } else if cameraDenied {
-                    ContentUnavailableView {
+                    CompatUnavailable {
                         Label("需要相机权限", systemImage: "camera")
                     } description: {
                         Text("扫描电脑上的登录二维码要用到相机。")
@@ -322,7 +322,7 @@ private struct RemotePasswordSheet: View {
         }
         .tint(Palette.ink)
         // Over the remote control sheet on iPad a half-height sheet hangs off its lower edge: a full one there.
-        .presentationDetents(UIDevice.current.userInterfaceIdiom == .pad ? [.large] : [.medium, .large])
+        .compatDetents(UIDevice.current.userInterfaceIdiom == .pad ? [.large] : [.medium, .large])
         .interactiveDismissDisabled(busy)
     }
 

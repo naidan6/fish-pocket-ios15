@@ -136,7 +136,7 @@ private struct RenameWorkspaceSheet: View {
             .saveToolbar(canSave: canSave, saving: busy, cancel: { dismiss() }, save: { Task { await save() } })
         }
         .tint(Palette.ink)
-        .presentationDetents([.medium])
+        .compatDetents([.medium])
         .interactiveDismissDisabled(busy)
         .onAppear {
             text = request.initial

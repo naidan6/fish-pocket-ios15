@@ -65,7 +65,7 @@ struct RemoteOptionsSheet: View {
             .closeButton(dismiss)
         }
         .tint(Palette.ink)
-        .presentationDetents([.medium, .large])
+        .compatDetents([.medium, .large])
         .task { await model.loadCatalog(force: true) }
     }
 
@@ -114,17 +114,17 @@ struct RemoteInfoSheet: View {
             List {
                 if let meta = model.meta {
                     Section {
-                        LabeledContent("智能体", value: meta.agentLabel)
-                        LabeledContent("电脑") {
+                        CompatLabeledContent("智能体", value: meta.agentLabel)
+                        CompatLabeledContent("电脑") {
                             HStack(spacing: 6) {
                                 if meta.deviceOnline { StatusDot(state: .running) }
                                 Text(app.remote.deviceName(of: meta) + (meta.deviceOnline ? "" : String(localized: "（离线）")))
                             }
                         }
-                        LabeledContent("项目", value: app.remote.place(of: meta))
-                        if let label = model.modelLabel { LabeledContent("模型", value: label) }
-                        if let label = model.permissionLabel { LabeledContent("权限", value: label) }
-                        LabeledContent("模式", value: meta.takeover ? String(localized: "已接管") : String(localized: "只读"))
+                        CompatLabeledContent("项目", value: app.remote.place(of: meta))
+                        if let label = model.modelLabel { CompatLabeledContent("模型", value: label) }
+                        if let label = model.permissionLabel { CompatLabeledContent("权限", value: label) }
+                        CompatLabeledContent("模式", value: meta.takeover ? String(localized: "已接管") : String(localized: "只读"))
                     } footer: {
                         Text(meta.takeover ? "可以从这里发消息。" : "会话在电脑上进行，接管后才能从这里发消息。")
                     }
@@ -153,7 +153,7 @@ struct RemoteInfoSheet: View {
             .closeButton(dismiss)
         }
         .tint(Palette.ink)
-        .presentationDetents([.medium, .large])
+        .compatDetents([.medium, .large])
         .task { await model.loadCatalog() }
     }
 }
@@ -168,7 +168,7 @@ struct RemoteChangesSheet: View {
         NavigationStack {
             Group {
                 if changes.isEmpty {
-                    ContentUnavailableView("还没有改动", systemImage: "doc.text.magnifyingglass", description: Text("智能体改过的文件会显示在这里。"))
+                    CompatUnavailable("还没有改动", systemImage: "doc.text.magnifyingglass", description: Text("智能体改过的文件会显示在这里。"))
                 } else {
                     List {
                         Section {
@@ -281,12 +281,12 @@ private struct RemoteDirectoryPage: View {
         .overlay {
             if let entries {
                 if entries.isEmpty {
-                    ContentUnavailableView("空文件夹", systemImage: "folder")
+                    CompatUnavailable("空文件夹", systemImage: "folder")
                 } else if shown.isEmpty {
-                    ContentUnavailableView.search(text: query)
+                    CompatUnavailable.search(text: query)
                 }
             } else if let failure {
-                ContentUnavailableView {
+                CompatUnavailable {
                     Label("读不到这个文件夹", systemImage: "exclamationmark.triangle")
                 } description: {
                     Text(failure)
@@ -375,7 +375,7 @@ private struct RemoteFilePage: View {
                     .padding(16)
                 }
             } else if let failure {
-                ContentUnavailableView("打不开这个文件", systemImage: "doc.questionmark", description: Text(failure))
+                CompatUnavailable("打不开这个文件", systemImage: "doc.questionmark", description: Text(failure))
             } else {
                 ProgressView()
             }

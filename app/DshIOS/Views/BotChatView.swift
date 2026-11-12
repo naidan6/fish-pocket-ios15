@@ -52,7 +52,7 @@ struct BotChatView: View {
             // The app opened on this chat (the page it was last on) before the team answered.
             ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity).background(Palette.background)
         } else {
-            ContentUnavailableView("这个 Bot 已不在团队里", systemImage: "person.slash")
+            CompatUnavailable("这个 Bot 已不在团队里", systemImage: "person.slash")
         }
     }
 }

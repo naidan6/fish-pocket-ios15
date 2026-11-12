@@ -201,7 +201,7 @@ struct PluginsView: View {
     @ViewBuilder
     private var content: some View {
         if manager.status == .unavailable {
-            ContentUnavailableView("无法管理插件", systemImage: "puzzlepiece.extension", description: Text("当前无法安装或启停插件。"))
+            CompatUnavailable("无法管理插件", systemImage: "puzzlepiece.extension", description: Text("当前无法安装或启停插件。"))
                 .pageBackground()
         } else if manager.marketEnabled {
             VStack(spacing: 0) {
@@ -501,7 +501,7 @@ struct PluginDetailView: View {
             if let package = manager.package(name) {
                 detail(package).confirmUninstall(package, isPresented: $confirmingUninstall) { uninstalled = true }
             } else {
-                ContentUnavailableView("插件已移除", systemImage: "puzzlepiece.extension")
+                CompatUnavailable("插件已移除", systemImage: "puzzlepiece.extension")
             }
         }
         .navigationBarTitleDisplayMode(.inline)
@@ -543,7 +543,7 @@ struct PluginDetailView: View {
             }
             if package.updateAvailable {
                 Button { Task { await manager.update(package) } } label: {
-                    LabeledContent("更新", value: package.installTarget?["version"].string ?? "")
+                    CompatLabeledContent("更新", value: package.installTarget?["version"].string ?? "")
                         .foregroundStyle(Palette.ink)
                 }
                 .disabled(manager.isBusy(package))
@@ -660,7 +660,7 @@ struct PluginDetailView: View {
     }
 
     private func detailValue(_ title: LocalizedStringKey, _ value: String) -> some View {
-        LabeledContent(title) {
+        CompatLabeledContent(title) {
             Text(value).font(.footnote).multilineTextAlignment(.trailing).textSelection(.enabled)
         }
     }

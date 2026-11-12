@@ -44,7 +44,7 @@ struct BotDetailView: View {
                         Text("它的私聊、记忆和定时任务都会删掉，它也会退出所有群聊。")
                     }
                 } else {
-                    ContentUnavailableView("这个 Bot 已不在团队里", systemImage: "person.slash")
+                    CompatUnavailable("这个 Bot 已不在团队里", systemImage: "person.slash")
                 }
             }
             .navigationTitle(team.bot(botId)?.name ?? String(localized: "Bot"))

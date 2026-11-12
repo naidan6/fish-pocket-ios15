@@ -220,7 +220,7 @@ struct PluginMarketPage: View {
         Group {
             if let indexes = model.indexes {
                 if indexes.isEmpty {
-                    ContentUnavailableView {
+                    CompatUnavailable {
                         Label("还没有插件市场", systemImage: "storefront")
                     } description: {
                         Text("添加一个插件市场索引，即可在这里浏览和安装其中的插件")
@@ -231,7 +231,7 @@ struct PluginMarketPage: View {
                     browser(indexes)
                 }
             } else if model.indexesFailed {
-                ContentUnavailableView {
+                CompatUnavailable {
                     Label("无法读取索引源", systemImage: "exclamationmark.triangle")
                 } actions: {
                     Button("重试") { Task { await model.loadIndexes(app) } }
@@ -534,34 +534,34 @@ private struct MarketEntryDetail: View {
             }
             .groupedRow()
             Section {
-                if let author = entry["author"].string { LabeledContent("作者", value: author) }
+                if let author = entry["author"].string { CompatLabeledContent("作者", value: author) }
                 if let homepage = entry["homepage"].string, let url = URL(string: homepage) {
-                    LabeledContent("主页") { Link(url.host ?? homepage, destination: url).font(.footnote) }
+                    CompatLabeledContent("主页") { Link(url.host ?? homepage, destination: url).font(.footnote) }
                 }
                 if let repository = entry["repository"]["url"].string, let url = URL(string: repository) {
-                    LabeledContent("源代码") {
+                    CompatLabeledContent("源代码") {
                         Link(entry["repository"]["directory"].string.map { "\(url.host ?? repository) · \($0)" } ?? (url.host ?? repository), destination: url).font(.footnote)
                     }
                 }
                 if let version {
                     if version["source"]["type"].string == "npm" {
-                        LabeledContent("软件包") { Text("\(entry["name"].string ?? "")@\(version["version"].string ?? "")").font(.footnote.monospaced()).multilineTextAlignment(.trailing) }
-                        if let registry = version["source"]["registry"].string { LabeledContent("注册表", value: registry) }
+                        CompatLabeledContent("软件包") { Text("\(entry["name"].string ?? "")@\(version["version"].string ?? "")").font(.footnote.monospaced()).multilineTextAlignment(.trailing) }
+                        if let registry = version["source"]["registry"].string { CompatLabeledContent("注册表", value: registry) }
                     } else {
-                        LabeledContent("仓库") { Text(version["source"]["url"].string ?? "").font(.footnote.monospaced()).multilineTextAlignment(.trailing) }
-                        LabeledContent("提交") { Text(version["source"]["commit"].string ?? "").font(.footnote.monospaced()).multilineTextAlignment(.trailing) }
-                        if let path = version["source"]["path"].string { LabeledContent("目录", value: path) }
+                        CompatLabeledContent("仓库") { Text(version["source"]["url"].string ?? "").font(.footnote.monospaced()).multilineTextAlignment(.trailing) }
+                        CompatLabeledContent("提交") { Text(version["source"]["commit"].string ?? "").font(.footnote.monospaced()).multilineTextAlignment(.trailing) }
+                        if let path = version["source"]["path"].string { CompatLabeledContent("目录", value: path) }
                     }
-                    if let date = formatDate(version["publishTimestamp"]) { LabeledContent("发布时间", value: date) }
+                    if let date = formatDate(version["publishTimestamp"]) { CompatLabeledContent("发布时间", value: date) }
                 }
                 if let category = entry["metadata"]["category"].string {
-                    LabeledContent("分类", value: localized(market.result?["metadata"]["categories"][category]["title"] ?? .null) ?? category)
+                    CompatLabeledContent("分类", value: localized(market.result?["metadata"]["categories"][category]["title"] ?? .null) ?? category)
                 }
                 let labels = entry["metadata"]["labels"].array.compactMap(\.string)
                 if !labels.isEmpty {
-                    LabeledContent("标签", value: labels.map { localized(market.result?["metadata"]["labels"][$0]["title"] ?? .null) ?? $0 }.joined(separator: String(localized: "、")))
+                    CompatLabeledContent("标签", value: labels.map { localized(market.result?["metadata"]["labels"][$0]["title"] ?? .null) ?? $0 }.joined(separator: String(localized: "、")))
                 }
-                if let title = market.result?["title"], let name = localized(title) { LabeledContent("插件市场", value: name) }
+                if let title = market.result?["title"], let name = localized(title) { CompatLabeledContent("插件市场", value: name) }
             }
             .groupedRow()
             Section("版本") {
@@ -670,7 +670,7 @@ private struct MarketInstallConfirm: View {
         }
         .padding(20)
         .background(Palette.background)
-        .presentationDetents([.medium])
+        .compatDetents([.medium])
         .tint(Palette.ink)
     }
 }

@@ -199,7 +199,7 @@ struct ModelSearchSheet: View {
         NavigationStack {
             ModelSearchList(model: model, context: context).closeButton(dismiss)
         }
-        .presentationDetents([.medium, .large])
+        .compatDetents([.medium, .large])
     }
 }
 
@@ -778,7 +778,7 @@ private struct DraftEditor: View {
                 }
                 .onAppear { focused = true }
         }
-        .presentationDetents([.large])
+        .compatDetents([.large])
     }
 }
 
@@ -810,7 +810,7 @@ struct FittedSheet: ViewModifier {
             content.onGeometryChange(for: CGFloat.self) { $0.size.height } action: { height = $0 }
         }
         .scrollBounceBehavior(.basedOnSize)
-        .presentationDetents([.height(height)])
+        .compatDetents([.height(height)])
         .presentationCornerRadius(36)
         .presentationDragIndicator(.hidden)
         .presentationBackground(Palette.background)

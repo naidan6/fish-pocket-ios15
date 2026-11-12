@@ -24,7 +24,7 @@ struct PluginInventoryPage: View {
             if let snapshot {
                 list(snapshot)
             } else if failed {
-                ContentUnavailableView {
+                CompatUnavailable {
                     Label("暂时无法读取插件。", systemImage: "exclamationmark.triangle")
                 } actions: {
                     Button("重试") { Task { await load() } }

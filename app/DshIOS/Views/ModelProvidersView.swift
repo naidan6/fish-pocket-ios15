@@ -165,7 +165,7 @@ struct ModelProvidersPage: View {
                         NavigationLink {
                             NamespaceFormView(title: String(localized: "默认模型"), ns: "agent-default-model")
                         } label: {
-                            LabeledContent("默认模型", value: defaultModel ?? "")
+                            CompatLabeledContent("默认模型", value: defaultModel ?? "")
                         }
                     }
                     .groupedRow()
@@ -840,7 +840,7 @@ private struct ModelCatalogSection: View {
     var body: some View {
         Section {
             if let overridden {
-                LabeledContent("模型列表", value: overridden ? String(localized: "已自定义") : String(localized: "默认"))
+                CompatLabeledContent("模型列表", value: overridden ? String(localized: "已自定义") : String(localized: "默认"))
                     .resettable(overridden && !disabled, title: "恢复默认模型", reset: onReset)
             }
             if models.isEmpty {
@@ -1355,7 +1355,7 @@ private struct CustomProviderForm: View {
                 NavigationLink {
                     advancedPage
                 } label: {
-                    LabeledContent("高级", value: displayName.isEmpty ? route : displayName)
+                    CompatLabeledContent("高级", value: displayName.isEmpty ? route : displayName)
                 }
                 if routeTaken { Text("已有提供商使用了这个 ID。").font(.caption).foregroundStyle(Palette.removed) }
             }

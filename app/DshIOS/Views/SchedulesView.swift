@@ -151,13 +151,13 @@ struct SchedulesView: View {
         if !catalog.settled && catalog.status != .error {
             ProgressView()
         } else if catalog.status == .error && catalog.records.isEmpty {
-            ContentUnavailableView {
+            CompatUnavailable {
                 Label("无法加载任务", systemImage: "exclamationmark.triangle")
             } actions: {
                 Button("重试") { Task { await catalog.load(app.client) } }
             }
         } else if shown.isEmpty {
-            ContentUnavailableView {
+            CompatUnavailable {
                 Label(emptyTitle, systemImage: "clock")
             } description: {
                 if scoped.isEmpty { Text("在对话里让 DSH 安排，例如「每天早上 9 点总结提交」。") }
@@ -302,7 +302,7 @@ struct ScheduleDetailView: View {
                 }
                 .pageBackground()
             } else if catalog.settled {
-                ContentUnavailableView("任务已不可用，可能已被删除", systemImage: "clock")
+                CompatUnavailable("任务已不可用，可能已被删除", systemImage: "clock")
             } else {
                 ProgressView()
             }
@@ -373,10 +373,10 @@ struct ScheduleDetailView: View {
                 Group {
                     if active, let at = task["scheduledAt"].string {
                         TimelineView(.periodic(from: .now, by: 30)) { context in
-                            LabeledContent("下次运行", value: ScheduleFormat.nextRun(at, now: context.date))
+                            CompatLabeledContent("下次运行", value: ScheduleFormat.nextRun(at, now: context.date))
                         }
                     } else {
-                        LabeledContent("状态", value: String(localized: "已结束"))
+                        CompatLabeledContent("状态", value: String(localized: "已结束"))
                     }
                 }
                 .contextMenu {
@@ -675,13 +675,13 @@ private struct DeliveryHistoryView: View {
                 if loading {
                     ProgressView()
                 } else if let failure {
-                    ContentUnavailableView {
+                    CompatUnavailable {
                         Label(failure.text, systemImage: "exclamationmark.triangle")
                     } actions: {
                         Button(failure.cursor ? "刷新" : "重试") { Task { await load(failure.before) } }
                     }
                 } else {
-                    ContentUnavailableView("暂无任务运行记录", systemImage: "clock")
+                    CompatUnavailable("暂无任务运行记录", systemImage: "clock")
                 }
             }
         }

@@ -112,7 +112,7 @@ private struct IMConnectionPage: View {
         let status = team.live["imStatus"]?[id]
         List {
             Section {
-                LabeledContent("状态", value: Self.stateText(status, enabled: connection["enabled"].bool ?? true))
+                CompatLabeledContent("状态", value: Self.stateText(status, enabled: connection["enabled"].bool ?? true))
                 if let error = status?["error"].string { Text(BotErrorText.text(error)).font(.footnote).foregroundStyle(Palette.removed) }
                 Picker("交给", selection: Binding(get: { connection["botId"].string ?? "" }, set: { botId in
                     Task { await team.run("im-update", ["id": .string(id), "botId": .string(botId)]) }

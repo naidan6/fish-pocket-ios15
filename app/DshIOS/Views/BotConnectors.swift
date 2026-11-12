@@ -393,8 +393,8 @@ struct BotConnectorPage: View {
         let off = Set(row["offFor"].array.compactMap(\.string))
         if row["account"].string != nil || (row["tools"].int ?? 0) > 0 {
             Section {
-                if let account = row["account"].string { LabeledContent("账号", value: account) }
-                if let tools = row["tools"].int, tools > 0 { LabeledContent("可用工具", value: String(localized: "\(tools) 个")) }
+                if let account = row["account"].string { CompatLabeledContent("账号", value: account) }
+                if let tools = row["tools"].int, tools > 0 { CompatLabeledContent("可用工具", value: String(localized: "\(tools) 个")) }
             }
             .groupedRow()
         }
@@ -427,7 +427,7 @@ struct BotConnectorPage: View {
     private func signingIn(_ pending: JSON) -> some View {
         if pending["kind"].string == "device" {
             Section {
-                LabeledContent("验证码", value: pending["userCode"].string ?? "")
+                CompatLabeledContent("验证码", value: pending["userCode"].string ?? "")
                 Button("复制验证码并打开网页") {
                     copyToPasteboard(pending["userCode"].string ?? "")
                     if let url = pending["verificationUri"].string.flatMap(URL.init(string:)) { InAppSafari.open(url) }

@@ -21,7 +21,7 @@ struct PinnedActionsSheet<Content: View, Actions: View>: View {
         }
         // Sized to the sheet's real edge; the actions carry their own margin above the home indicator.
         .ignoresSafeArea(.container, edges: .bottom)
-        .presentationDetents([.height(contentHeight + actionsHeight)])
+        .compatDetents([.height(contentHeight + actionsHeight)])
         .presentationCornerRadius(36)
         .presentationDragIndicator(.visible)
         .presentationBackground(Palette.background)

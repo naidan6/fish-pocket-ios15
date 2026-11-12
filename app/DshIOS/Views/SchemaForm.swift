@@ -886,7 +886,7 @@ private struct CredentialRefField: View {
             .navigationBarTitleDisplayMode(.inline)
             .keyboardDoneButton()
         } label: {
-            LabeledContent("凭据名", value: ref)
+            CompatLabeledContent("凭据名", value: ref)
         }
     }
 

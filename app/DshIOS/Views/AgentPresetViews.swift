@@ -167,7 +167,7 @@ private struct AgentPresetSheet: View {
             .closeButton(dismiss)
         }
         .tint(Palette.ink)
-        .presentationDetents([.medium, .large])
+        .compatDetents([.medium, .large])
         .sheetNotices()
     }
 

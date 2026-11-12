@@ -167,7 +167,7 @@ struct BotRoomView: View {
         } else if team.status == .unknown {
             ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity).background(Palette.background)
         } else {
-            ContentUnavailableView("这个群聊已经不在了", systemImage: "person.2.slash")
+            CompatUnavailable("这个群聊已经不在了", systemImage: "person.2.slash")
         }
     }
 }

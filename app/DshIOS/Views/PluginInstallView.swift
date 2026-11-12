@@ -176,7 +176,7 @@ private struct InstallForm: View {
                 .disabled(checking || copying)
                 Button { task.registryOpen = true } label: {
                     HStack {
-                        LabeledContent("安装源", value: chosenName).foregroundStyle(Palette.ink)
+                        CompatLabeledContent("安装源", value: chosenName).foregroundStyle(Palette.ink)
                         Image(systemName: "chevron.right").font(.footnote.weight(.semibold)).foregroundStyle(Palette.faint)
                     }
                 }

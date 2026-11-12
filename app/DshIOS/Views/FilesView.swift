@@ -68,9 +68,9 @@ struct DirectoryView: View {
             if loading {
                 ProgressView()
             } else if entries.isEmpty && error == nil {
-                ContentUnavailableView("空文件夹", systemImage: "folder")
+                CompatUnavailable("空文件夹", systemImage: "folder")
             } else if shown.isEmpty && error == nil {
-                ContentUnavailableView.search(text: query)
+                CompatUnavailable.search(text: query)
             }
         }
         .navigationTitle(title)
@@ -300,7 +300,7 @@ struct FileContentView: View {
     }
 
     private func failed(_ failure: FileFailure) -> some View {
-        ContentUnavailableView {
+        CompatUnavailable {
             Label("无法打开文件", systemImage: "doc.questionmark")
         } description: {
             Text(failure.message)
@@ -670,7 +670,7 @@ struct ZoomableImage: View {
             if let image {
                 ZoomingImageView(image: image).ignoresSafeArea(edges: .bottom)
             } else if failed {
-                ContentUnavailableView("无法显示这张图片", systemImage: "photo")
+                CompatUnavailable("无法显示这张图片", systemImage: "photo")
             } else {
                 ProgressView()
             }
@@ -790,12 +790,12 @@ struct PDFPreview: View {
         Group {
             if let document {
                 if document.isLocked {
-                    ContentUnavailableView("此 PDF 需要密码，暂不支持预览", systemImage: "lock.doc")
+                    CompatUnavailable("此 PDF 需要密码，暂不支持预览", systemImage: "lock.doc")
                 } else {
                     PDFKitView(document: document).ignoresSafeArea(edges: .bottom)
                 }
             } else if failed {
-                ContentUnavailableView("无法显示 PDF", systemImage: "doc.richtext")
+                CompatUnavailable("无法显示 PDF", systemImage: "doc.richtext")
             } else {
                 ProgressView()
             }

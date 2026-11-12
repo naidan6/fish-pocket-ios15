@@ -314,7 +314,7 @@ struct CandidateSheet: View {
             CandidateList(model: model, context: context, trigger: hit.trigger, query: hit.query, quoted: hit.quoted, leading: hit.leading, pick: pick)
                 .closeButton(dismiss)
         }
-        .presentationDetents([.medium, .large])
+        .compatDetents([.medium, .large])
     }
 }
 

@@ -235,7 +235,7 @@ struct ComposerStatusSheet: View {
                 if !has { dismiss() }
             }
         }
-        .presentationDetents([.medium, .large])
+        .compatDetents([.medium, .large])
         .sheetNotices()
     }
 
@@ -391,7 +391,7 @@ private struct GoalSection: View {
                     }
                 }
         }
-        .presentationDetents([.medium, .large])
+        .compatDetents([.medium, .large])
     }
 }
 

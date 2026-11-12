@@ -253,9 +253,9 @@ private struct StoreReadmePage: View {
                     MarkdownView(text: markdown).padding(20).readableWidth()
                 }
             } else if missing {
-                ContentUnavailableView("没有说明文档", systemImage: "doc.text")
+                CompatUnavailable("没有说明文档", systemImage: "doc.text")
             } else if failed {
-                ContentUnavailableView {
+                CompatUnavailable {
                     Label("无法读取说明文档", systemImage: "exclamationmark.triangle")
                 } actions: {
                     Button("重试") { Task { await load() } }.buttonStyle(.capsule(.outline, height: 44, fill: false))
@@ -379,7 +379,7 @@ struct StoreInstallConfirm: View {
         .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { height = $0 }
         .frame(maxHeight: .infinity, alignment: .top)
         .background(Palette.background)
-        .presentationDetents([.height(height)])
+        .compatDetents([.height(height)])
         .tint(Palette.ink)
     }
 
