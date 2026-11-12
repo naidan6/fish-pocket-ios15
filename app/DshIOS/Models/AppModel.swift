@@ -207,7 +207,10 @@ final class AppModel {
             account.follow()
             botTeam.start()
             BackgroundKeeper.shared.attach { [weak self] in await self?.refreshSessions() }
+#if !DSH_IOS15_BACKPORT
             LiveActivityController.shared.attach(self)
+#endif  // !DSH_IOS15_BACKPORT
+
             WidgetSnapshotWriter.shared.attach(self)
             RemotePresence.shared.attach(self)
             WatchLink.shared.attach(self)

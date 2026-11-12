@@ -1,3 +1,4 @@
+#if !DSH_IOS15_BACKPORT
 import AppIntents
 
 /// What Siri and the Shortcuts app offer without any setup. The phrases are
@@ -16,3 +17,4 @@ struct DshShortcuts: AppShortcutsProvider {
         )
     }
 }
+#endif  // !DSH_IOS15_BACKPORT

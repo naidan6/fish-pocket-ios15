@@ -12,6 +12,7 @@ import WidgetKit
 /// `AlarmPresentation` the app supplied; what is left to us is the quieter
 /// states around it.
 @available(iOS 26.0, *)
+@available(iOS 16.1, *)
 struct AlarmActivity: Widget {
     /// Matches `AlarmProvider.tint`, and for the same reason it is a literal
     /// there: the two targets do not share an asset catalog.

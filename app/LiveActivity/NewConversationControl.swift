@@ -1,3 +1,4 @@
+#if !DSH_IOS15_BACKPORT
 import AppIntents
 import SwiftUI
 import WidgetKit
@@ -18,3 +19,4 @@ struct NewConversationControl: ControlWidget {
         .description("打开 Fish Pocket，开始一个新对话。")
     }
 }
+#endif  // !DSH_IOS15_BACKPORT

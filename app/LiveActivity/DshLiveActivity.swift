@@ -4,6 +4,7 @@ import SwiftUI
 import WidgetKit
 
 @main
+@available(iOS 16.1, *)
 struct DshWidgets: WidgetBundle {
     var body: some Widget {
         DshLiveActivity()
@@ -23,6 +24,7 @@ struct DshWidgets: WidgetBundle {
 /// Agent status on the lock screen and in the Dynamic Island: a status dot and
 /// the elapsed time when compact; the session, the step it waits on and the
 /// approval buttons when expanded.
+@available(iOS 16.1, *)
 struct DshLiveActivity: Widget {
     var body: some WidgetConfiguration {
         // From iOS 18 the activity also shows on a paired Apple Watch (in the Smart Stack):

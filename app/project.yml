@@ -23,6 +23,10 @@ packages:
 settings:
   base:
     SWIFT_VERSION: "5.0"
+    # yg/ios15-backport：关掉 iOS 16+ 才有的系统集成（App Intents / 灵动岛实时活动 /
+    # Control Center 控件）。15.6 设备本来也没有这些，宁可整块关掉，也不要为它们
+    # 把整套代码改成 @available 地狱。
+    SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) DSH_IOS15_BACKPORT"
     DEVELOPMENT_TEAM: ""
     CODE_SIGN_STYLE: Automatic
     # One version everywhere: the app, its extension, the App Store and the `v<version>` release tag.

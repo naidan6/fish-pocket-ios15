@@ -118,11 +118,17 @@ jobs:
       - name: Compile (iOS 15.6 device, no signing)
         working-directory: app
         run: |
+          set -o pipefail
           xcodebuild -project DshIOS.xcodeproj -scheme DshIOS \
             -destination 'generic/platform=iOS' \
             -derivedDataPath build/DerivedData -skipPackagePluginValidation \
             ARCHS=arm64 CODE_SIGNING_ALLOWED=NO \
             IPHONEOS_DEPLOYMENT_TARGET=15.6 \
-            build 2>&1 | tee /tmp/ios15-build.log | grep -E "error:|is only available" || true
-          echo "---- 错误统计 ----"
-          grep -cE "error:" /tmp/ios15-build.log || echo 0
+            build > /tmp/ios15-build.log 2>&1 || true
+          echo "==== 待办归并：is only available ===="
+          grep -hoE "'[^']+' is only available in iOS [0-9.]+ or newer" /tmp/ios15-build.log | sort | uniq -c | sort -rn | head -60 || true
+          echo "==== 错误文件清单 ===="
+          grep -hoE "/[^ ]+\.swift:[0-9]+:[0-9]+: error:" /tmp/ios15-build.log | sed 's|.*/app/|app/|' | cut -d: -f1 | sort | uniq -c | sort -rn | head -40 || true
+          errors=$(grep -cE ": error: " /tmp/ios15-build.log || true)
+          echo "==== error 行数: ${errors:-0} ===="
+          [ "${errors:-0}" -eq 0 ]

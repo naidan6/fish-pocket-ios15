@@ -5,6 +5,7 @@ import Foundation
 /// The Live Activity (lock screen and Dynamic Island) while agent work runs.
 /// Compiled into the app and the widget extension; the app starts and updates
 /// it (`LiveActivityController`), the extension draws it.
+@available(iOS 16.1, *)
 struct DshActivityAttributes: ActivityAttributes {
     struct ContentState: Codable, Hashable {
         enum Phase: String, Codable { case running, approval, question, done }
@@ -33,6 +34,7 @@ struct DshActivityAttributes: ActivityAttributes {
 
 /// 允许 / 拒绝 on the Live Activity. A `LiveActivityIntent` runs in the app's
 /// process, where the engine connection answers the approval.
+@available(iOS 16.1, *)
 struct AnswerApprovalIntent: LiveActivityIntent {
     static var title: LocalizedStringResource = "答复工具审批"
     static var isDiscoverable = false
@@ -56,6 +58,7 @@ struct AnswerApprovalIntent: LiveActivityIntent {
 }
 
 /// Set by the app once connected; nil in the extension (intents never run there).
+@available(iOS 16.1, *)
 enum DshActivityBridge {
     @MainActor static var handler: ((_ eventId: String, _ agentId: String, _ allow: Bool) async -> Void)?
 

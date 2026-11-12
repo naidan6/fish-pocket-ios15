@@ -1,3 +1,4 @@
+#if !DSH_IOS15_BACKPORT
 import ActivityKit
 import Foundation
 import Observation
@@ -215,3 +216,4 @@ final class LiveActivityController {
         return String(localized: "子智能体")
     }
 }
+#endif  // !DSH_IOS15_BACKPORT

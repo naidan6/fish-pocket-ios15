@@ -24,7 +24,10 @@ struct DshIOSApp: App {
         .commands { ShellCommands() }
         .onChange(of: scenePhase) { _, phase in
             BackgroundKeeper.shared.scenePhaseChanged(to: phase)
+#if !DSH_IOS15_BACKPORT
             LiveActivityController.shared.scenePhaseChanged(to: phase)
+#endif  // !DSH_IOS15_BACKPORT
+
             WatchLink.shared.scenePhaseChanged(to: phase)
         }
     }
