@@ -190,7 +190,7 @@ struct ImageViewer: View {
                 .scaleEffect(scale)
                 .offset(offset)
                 .gesture(
-                    MagnifyGesture()
+                    MagnificationGesture()
                         .onChanged { scale = max(1, min(6, lastScale * $0.magnification)) }
                         .onEnded { _ in
                             lastScale = scale

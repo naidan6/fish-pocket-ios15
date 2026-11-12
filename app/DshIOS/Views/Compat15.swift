@@ -114,6 +114,14 @@ extension CompatUnavailable where Label == CompatSearchLabel, Description == Tex
             description: { Text("没找到匹配的内容") },
             actions: { EmptyView() })
     }
+
+    /// `ContentUnavailableView.search(text:)`：搜的是哪一串也写出来。
+    static func search(text: String) -> CompatUnavailable<CompatSearchLabel, Text, EmptyView> {
+        CompatUnavailable<CompatSearchLabel, Text, EmptyView>(
+            label: { CompatSearchLabel() },
+            description: { Text("没有与“\(text)”匹配的内容") },
+            actions: { EmptyView() })
+    }
 }
 
 struct CompatSearchLabel: View {
@@ -201,6 +209,13 @@ extension CompatLabeledContent where Content == Text {
 }
 
 // MARK: - 补充：调用点实际用到的重载
+
+extension CompatUnavailable where Description == EmptyView {
+    /// `ContentUnavailableView { Label } actions: { … }`：有按钮、没有说明。
+    init(@ViewBuilder label: () -> Label, @ViewBuilder actions: () -> Actions) {
+        self.init(label: label, description: { EmptyView() }, actions: actions)
+    }
+}
 
 extension CompatUnavailable where Actions == EmptyView {
     init(@ViewBuilder label: () -> Label, @ViewBuilder description: () -> Description) {

@@ -18,7 +18,7 @@ struct OnboardingKeySheet: View {
     /// `apiKeyFailure`: a pasted `NAME=value`, quotes or anything outside printable ASCII.
     private var invalid: Bool {
         guard !trimmed.isEmpty else { return false }
-        if trimmed.wholeMatch(of: /[A-Z][A-Z0-9_]*=[^=].*/) != nil { return true }
+        if CompatRegex15.wholeMatches(#"[A-Z][A-Z0-9_]*=[^=].*"#, in: trimmed) { return true }
         if let first = trimmed.first, let last = trimmed.last, trimmed.count >= 2, first == last, "\"'`".contains(first) { return true }
         return !trimmed.unicodeScalars.allSatisfy { (0x21...0x7E).contains($0.value) }
     }

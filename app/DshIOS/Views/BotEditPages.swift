@@ -24,7 +24,7 @@ struct BotTextPage: View {
         Form {
             Section {
                 if multiline {
-                    TextField(placeholder, text: $text, axis: .vertical)
+                    CompatTextField(placeholder, text: $text)
                         .lineLimit(6...)
                         .focused($focused)
                 } else {

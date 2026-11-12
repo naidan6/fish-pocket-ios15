@@ -446,7 +446,7 @@ enum PlanText {
     }
 
     private static func plain(_ text: String) -> String {
-        let stripped = text.replacing(#/^\s*#{1,6}\s+/#, with: "").trimmingCharacters(in: .whitespaces)
+        let stripped = CompatRegex15.replacing(#"^\s*#{1,6}\s+"#, in: text, template: "").trimmingCharacters(in: .whitespaces)
         return String(MarkdownCache.inline(stripped).characters)
     }
 }

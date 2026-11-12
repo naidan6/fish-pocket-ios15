@@ -168,7 +168,7 @@ struct BotScheduleCreateSheet: View {
             Form {
                 Section {
                     TextField("名称，比如：每日简报", text: $title)
-                    TextField("到点要做什么", text: $prompt, axis: .vertical).lineLimit(3...)
+                    CompatTextField("到点要做什么", text: $prompt)
                 }
                 Section {
                     Picker("重复", selection: $repeatKind) {

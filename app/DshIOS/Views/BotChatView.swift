@@ -191,7 +191,7 @@ private struct BotQuestionCard: View {
                 }
             }
             if allowsCustom {
-                TextField("也可以自己写", text: $custom, axis: .vertical).lineLimit(1...4)
+                CompatTextField("也可以自己写", text: $custom)
                     .font(.subheadline)
                     .padding(.horizontal, 14).padding(.vertical, 10)
                     .background(Palette.background, in: RoundedRectangle(cornerRadius: 20, style: .continuous))

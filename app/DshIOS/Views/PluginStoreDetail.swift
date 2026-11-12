@@ -186,7 +186,7 @@ struct StoreEntryDetail: View {
             HStack(spacing: 16) {
                 Text(title).font(.callout).foregroundStyle(Palette.ink).fixedSize()
                 Spacer(minLength: 0)
-                Text(url.host().map { $0 + url.path() } ?? url.absoluteString).font(.footnote).foregroundStyle(Palette.secondary).lineLimit(1).truncationMode(.middle)
+                Text(url.compatHost.map { $0 + url.compatPath } ?? url.absoluteString).font(.footnote).foregroundStyle(Palette.secondary).lineLimit(1).truncationMode(.middle)
             }
             .padding(.horizontal, 18)
             .frame(minHeight: 44)

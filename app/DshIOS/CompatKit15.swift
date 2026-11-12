@@ -390,6 +390,26 @@ enum CompatRegex15 {
         }
     }
 
+    /// 是否有一处匹配。
+    static func contains(_ pattern: String, in text: String) -> Bool {
+        guard let regex = try? NSRegularExpression(pattern: pattern) else { return false }
+        return regex.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)) != nil
+    }
+
+    /// 整个字符串是否就是这一条（等价 `wholeMatch`）。
+    static func wholeMatches(_ pattern: String, in text: String) -> Bool {
+        guard let regex = try? NSRegularExpression(pattern: pattern) else { return false }
+        let range = NSRange(text.startIndex..., in: text)
+        guard let match = regex.firstMatch(in: text, range: range) else { return false }
+        return match.range == range
+    }
+
+    /// 正则替换，模板里用 `$1` 这种分组引用（等价 `replacing(_:with:)`）。
+    static func replacing(_ pattern: String, in text: String, template: String) -> String {
+        guard let regex = try? NSRegularExpression(pattern: pattern) else { return text }
+        return regex.stringByReplacingMatches(in: text, range: NSRange(text.startIndex..., in: text), withTemplate: template)
+    }
+
     /// 匹配到的整段之后的内容（没有匹配返回 nil）。
     static func afterHeader(_ pattern: String, in text: String, anchorsLines: Bool = false) -> String? {
         var options: NSRegularExpression.Options = []
@@ -408,6 +428,101 @@ enum CompatRegex15 {
         return regex.matches(in: text, range: NSRange(text.startIndex..., in: text)).compactMap { match in
             guard let range = Range(match.range(at: 1), in: text) else { return nil }
             return String(text[range])
+        }
+    }
+}
+
+// MARK: - onChange(of:initial:_:)（iOS 17）
+
+extension View {
+    /// 15.6 的 `onChange(of:perform:)` 只给新值、也不带「先跑一次」。
+    /// 这两个重载把 17 的调用点原样接住：`initial: true` 在出现时先跑一次。
+    func onChange<V: Equatable>(of value: V, initial: Bool = false,
+                                _ action: @escaping (V) -> Void) -> some View {
+        modifier(CompatOnChange(value: value, initial: initial, action: { new, _ in action(new) }))
+    }
+
+    func onChange<V: Equatable>(of value: V, initial: Bool = false,
+                                _ action: @escaping (V, V) -> Void) -> some View {
+        modifier(CompatOnChange(value: value, initial: initial, action: action))
+    }
+}
+
+struct CompatOnChange<V: Equatable>: ViewModifier {
+    let value: V
+    let initial: Bool
+    let action: (V, V) -> Void
+
+    func body(content: Content) -> some View {
+        content
+            .onAppear { if initial { action(value, value) } }
+            .onChange(of: value) { new in action(new, new) }
+    }
+}
+
+// MARK: - Path.union(_:eoFill:)（iOS 17）
+
+extension Path {
+    /// 15.6 没有路径布尔运算：直接叠加（对「合并」的用法等价）。
+    func union(_ other: Path, eoFill: Bool = false) -> Path {
+        var combined = self
+        combined.addPath(other)
+        return combined
+    }
+}
+
+// MARK: - ScrollBounceBehavior / scrollBounceBehavior（iOS 16.4）
+
+struct ScrollBounceBehavior {
+    private init() {}
+    static let automatic = ScrollBounceBehavior()
+    static let always = ScrollBounceBehavior()
+    static let basedOnSize = ScrollBounceBehavior()
+}
+
+extension View {
+    /// 15.6：默认弹性行为就是「总是可以」，这里不额外处理。
+    func scrollBounceBehavior(_ behavior: ScrollBounceBehavior, axes: Axis.Set = [.vertical]) -> some View { self }
+}
+
+// MARK: - presentationDragIndicator（iOS 16）
+
+extension View {
+    /// 15.6 的 sheet 没有可关的抓手，忽略。
+    func presentationDragIndicator(_ visibility: Visibility) -> some View { self }
+}
+
+// MARK: - TextField(_, text:, axis:)（iOS 16）
+
+/// 替 `TextField(_:text:axis: .vertical)`：15.6 的多行输入只有 `TextEditor`，
+/// 占位文字自己画。高度随内容长，外面仍可用 `.frame` 或容器约束。
+struct CompatTextField: View {
+    private let title: Text
+    @Binding private var text: String
+    private var minHeight: CGFloat = 34
+
+    init(_ titleKey: LocalizedStringKey, text: Binding<String>) {
+        self.title = Text(titleKey)
+        self._text = text
+    }
+
+    init(_ title: String, text: Binding<String>) {
+        self.title = Text(title)
+        self._text = text
+    }
+
+    var body: some View {
+        ZStack(alignment: .topLeading) {
+            TextEditor(text: $text)
+                .frame(minHeight: minHeight)
+                .scrollContentBackground(.hidden)
+            if text.isEmpty {
+                title
+                    .foregroundStyle(.tertiary)
+                    .padding(.top, 8)
+                    .padding(.leading, 5)
+                    .allowsHitTesting(false)
+            }
         }
     }
 }

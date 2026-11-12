@@ -100,7 +100,7 @@ private struct RemoteSignInPage: View {
         }
         .padding(.vertical, 2)
         // Every step's separator starts at its number, whatever the step holds.
-        .alignmentGuide(.listRowSeparatorLeading) { $0[.leading] }
+        .alignmentGuide(.leading) { $0[.leading] }
     }
 
     private func link(_ title: LocalizedStringKey, _ icon: String, _ url: URL) -> some View {

@@ -33,11 +33,17 @@ enum AppDistribution {
     /// cached answer stays.
     static func refresh() async {
         guard deliveredByApple else { return remember(.other) }
+#if DSH_IOS15_BACKPORT
+        // 15.6 没有 StoreKit 2（`AppTransaction`），也就分不出 App Store 与 TestFlight：
+        // 保留缓存值，不猜。
+        return
+#else
         guard let result = try? await AppTransaction.shared else { return }
         let environment = switch result {
         case .verified(let transaction), .unverified(let transaction, _): transaction.environment
         }
         remember(environment == .production ? .appStore : environment == .sandbox ? .testFlight : .other)
+#endif
     }
 
     private static func remember(_ value: Channel) {

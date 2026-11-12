@@ -110,7 +110,7 @@ struct RootView: View {
             .onOpenURL { url in
                 if let parsed = DshLink(url: url) { link = LinkRequest(link: parsed) }
             }
-            .compatChange(of: inbox.request?.token, initial: true) {
+            .compatChange(of: inbox.request?.token, initial: true) { _ in
                 guard let request = inbox.request else { return }
                 inbox.request = nil
                 link = request

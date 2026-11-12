@@ -442,7 +442,7 @@ struct BotConnectorPage: View {
             }
             .groupedRow()
             Section {
-                TextField("登录完成后地址栏里的网址", text: $pasted, axis: .vertical).textInputAutocapitalization(.never).autocorrectionDisabled()
+                CompatTextField("登录完成后地址栏里的网址", text: $pasted).textInputAutocapitalization(.never).autocorrectionDisabled()
                 Button("完成登录") { run("connector-sign-in-code", ["id": .string(id), "input": .string(pasted)]) }.disabled(pasted.isEmpty)
             } footer: { Text("登录后页面没有自动回来的话，把最后那个网址整段粘贴到这里。") }
             .groupedRow()
@@ -486,7 +486,7 @@ private struct CustomConnectorSheet: View {
                     TextField("https://…", text: $url).keyboardType(.URL).textInputAutocapitalization(.never).autocorrectionDisabled()
                 }
                 Section {
-                    TextField("Authorization: Bearer …", text: $headers, axis: .vertical).lineLimit(2...).textInputAutocapitalization(.never).autocorrectionDisabled()
+                    CompatTextField("Authorization: Bearer …", text: $headers).textInputAutocapitalization(.never).autocorrectionDisabled()
                 } header: { Text("请求头（可不填）") } footer: { Text("一行一个，写成「名字: 值」。值可以写 $DSH_SECRET_名字，引用保存的密钥。") }
             }
             .navigationTitle("自定义连接器")

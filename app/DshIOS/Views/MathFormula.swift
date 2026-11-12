@@ -40,7 +40,7 @@ enum MathTypesetter {
     private static func draw(_ formula: MathSyntax.Formula, size: CGFloat) -> TypesetMath? {
         // On iOS SwiftMath draws nothing for characters its math font lacks, in `\text{}` too:
         // a formula with Chinese in it would lose them, so it is left as written.
-        guard !formula.latex.contains(#/[\p{Han}\p{Hiragana}\p{Katakana}\p{Hangul}\u{3000}-\u{303F}\u{FF00}-\u{FFEF}]/#) else { return nil }
+        guard !CompatRegex15.contains(#"[\p{Han}\p{Hiragana}\p{Katakana}\p{Hangul}\u{3000}-\u{303F}\u{FF00}-\u{FFEF}]"#, in: formula.latex) else { return nil }
         var latex = adapted(formula.latex)
         let boxed = unboxed(latex)
         if let boxed { latex = boxed }
@@ -61,9 +61,10 @@ enum MathTypesetter {
 
     /// What models write that SwiftMath has under another name.
     private static func adapted(_ latex: String) -> String {
-        latex
-            .replacing(#/\\dots(?![A-Za-z])/#, with: #"\ldots"#)
-            .replacing(#/\\(begin|end)\{align\*?\}/#) { "\\\($0.1){aligned}" }
+        CompatRegex15.replacing(
+            #"\\dots(?![A-Za-z])"#,
+            in: CompatRegex15.replacing(#"\\(begin|end)\{align\*?\}"#, in: latex, template: #"\\$1{aligned}"#),
+            template: #"\ldots"#)
     }
 
     /// The inside of a formula that is one `\boxed{…}`: SwiftMath has no box, so it is drawn around the picture.

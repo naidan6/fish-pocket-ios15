@@ -111,7 +111,7 @@ private struct MailSendCard: View {
             field("收件人", text: $to)
             if !cc.isEmpty { field("抄送", text: $cc) }
             field("主题", text: $subject)
-            TextField("正文", text: $body_, axis: .vertical).lineLimit(3...10).font(.subheadline)
+            CompatTextField("正文", text: $body_).font(.subheadline)
                 .padding(10).background(Palette.background, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
             let files = request["attachmentDetails"].array.compactMap { $0["name"].string }
             if !files.isEmpty { Label(files.joined(separator: "、"), systemImage: "paperclip").font(.caption).foregroundStyle(Palette.secondary) }
@@ -247,7 +247,7 @@ struct BotSideChatSheet: View {
             }
             .safeAreaInset(edge: .bottom) {
                 HStack(spacing: 8) {
-                    TextField("旁支提问", text: $question, axis: .vertical).lineLimit(1...4)
+                    CompatTextField("旁支提问", text: $question)
                         .padding(.horizontal, 14).padding(.vertical, 10)
                         .background(Palette.field, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
                     let ready = !question.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !asking && !answering

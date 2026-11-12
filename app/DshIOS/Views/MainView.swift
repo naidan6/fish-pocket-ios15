@@ -638,8 +638,9 @@ struct MainView: View {
             if RemoteStore.sessionId(of: id) != nil, !app.remote.signedIn { return }
             selection = id
         case .new(let workspaceId, let preset, let draft):
-            let deadline = ContinuousClock.now + .seconds(10)
-            while app.workspaces.isEmpty || creating, ContinuousClock.now < deadline {
+            // 15.6：没有 `ContinuousClock`，用挂钟时间做同一个十秒等待。
+            let deadline = Date().addingTimeInterval(10)
+            while app.workspaces.isEmpty || creating, Date() < deadline {
                 try? await Task.sleep(nanoseconds: UInt64((100) * 1_000_000))
             }
             let target = workspaceId.flatMap { id in app.workspaces.first { $0.id == id } } ?? workspace

@@ -41,7 +41,7 @@ struct RemoteComposer: View {
                 }
                 HStack(alignment: .bottom, spacing: 6) {
                     plusMenu
-                    TextField(placeholder, text: $model.draft, axis: .vertical)
+                    CompatTextField(placeholder, text: $model.draft)
                         .font(.callout)
                         .lineLimit(1...5)
                         .focused($focused)

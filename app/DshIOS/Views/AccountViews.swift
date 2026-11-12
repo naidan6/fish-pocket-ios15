@@ -407,11 +407,13 @@ struct AccountPage: View {
 
     /// A wallet read that failed still leads to Platform, where the balance can be checked.
     private var platformLink: some View {
-        Button("前往开放平台查看") { open(account.usageURL) }
-            .font(.subheadline)
-            .foregroundStyle(Palette.secondary)
-            .underline()
-            .buttonStyle(.plain)
+        Button { open(account.usageURL) } label: {
+            // 15.6：`View.underline()` 在 16 才有，划线挂在 `Text` 上。
+            Text("前往开放平台查看").underline()
+        }
+        .font(.subheadline)
+        .foregroundStyle(Palette.secondary)
+        .buttonStyle(.plain)
             .disabled(account.usageURL == nil)
     }
 

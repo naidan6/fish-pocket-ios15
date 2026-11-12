@@ -252,7 +252,7 @@ extension AlarmProvider {
         // 闹钟标题是智能体写的运行时文本，不是界面文案，所以走
         // `LocalizedStringResource(stringLiteral:)`：查不到对应的键时它按字面显示，
         // 正好是我们要的结果。
-        let label = LocalizedStringResource(stringLiteral: title)
+        let label = Foundation.LocalizedStringResource(stringLiteral: title)
         if #available(iOS 26.1, *) {
             return AlarmPresentation.Alert(title: label)
         }
