@@ -4,12 +4,14 @@ import SwiftUI
 import WidgetKit
 
 @main
-@available(iOS 16.1, *)
 struct DshWidgets: WidgetBundle {
     var body: some Widget {
-        DshLiveActivity()
         SessionsWidget()
         NewConversationWidget()
+        // yg/ios15-backport：实时活动（16.1）、控制中心控件（18）、AlarmKit（26）
+        // 在 15.6 上一律不注册；widget 本体（会话列表、新对话）照旧可用。
+        #if !DSH_IOS15_BACKPORT
+        DshLiveActivity()
         if #available(iOS 18.0, *) {
             NewConversationControl()
         }
@@ -18,12 +20,14 @@ struct DshWidgets: WidgetBundle {
         if #available(iOS 26.0, *) {
             AlarmActivity()
         }
+        #endif
     }
 }
 
 /// Agent status on the lock screen and in the Dynamic Island: a status dot and
 /// the elapsed time when compact; the session, the step it waits on and the
 /// approval buttons when expanded.
+#if !DSH_IOS15_BACKPORT
 @available(iOS 16.1, *)
 struct DshLiveActivity: Widget {
     var body: some WidgetConfiguration {
@@ -279,3 +283,4 @@ private enum Label {
         return state.others > 0 ? base + String(localized: " · 另有 \(state.others) 个") : base
     }
 }
+#endif  // !DSH_IOS15_BACKPORT
