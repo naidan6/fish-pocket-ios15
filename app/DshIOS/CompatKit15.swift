@@ -329,3 +329,48 @@ struct CompatChart15: View {
         .padding(.vertical, 4)
     }
 }
+
+// MARK: - ScrollDismissesKeyboardMode / scrollDismissesKeyboard（iOS 16）
+
+/// 替 `ScrollDismissesKeyboardMode`：15.6 上没有这个开关，值只用来接住调用点。
+enum ScrollDismissesKeyboardMode {
+    case immediately, interactively, never, automatically
+}
+
+extension View {
+    /// 15.6：滚动收键盘的默认行为最接近 `.interactively`，这里不再额外处理。
+    func scrollDismissesKeyboard(_ mode: ScrollDismissesKeyboardMode) -> some View { self }
+}
+
+// MARK: - ToolbarPlacement / toolbar(_:for:)（iOS 16）
+
+/// 替 `ToolbarPlacement`：只区分导航栏，其余位置在 15.6 上无对应物。
+struct ToolbarPlacement: Hashable {
+    private let name: String
+    private init(_ name: String) { self.name = name }
+
+    static let automatic = ToolbarPlacement("automatic")
+    static let navigationBar = ToolbarPlacement("navigationBar")
+    static let bottomBar = ToolbarPlacement("bottomBar")
+    static let tabBar = ToolbarPlacement("tabBar")
+}
+
+extension View {
+    /// `.toolbar(.hidden, for: .navigationBar)`：15.6 上翻成 `navigationBarHidden`。
+    func toolbar(_ visibility: Visibility, for placements: ToolbarPlacement...) -> some View {
+        modifier(CompatToolbarVisibility(visibility: visibility, placements: placements))
+    }
+}
+
+struct CompatToolbarVisibility: ViewModifier {
+    let visibility: Visibility
+    let placements: [ToolbarPlacement]
+
+    func body(content: Content) -> some View {
+        if placements.contains(.navigationBar) {
+            content.navigationBarHidden(visibility == .hidden)
+        } else {
+            content
+        }
+    }
+}

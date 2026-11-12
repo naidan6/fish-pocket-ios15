@@ -687,8 +687,14 @@ private struct PastTheFold: ViewModifier {
             .padding(.leading, inset)
             .background(Palette.background)
             .onGeometryChange(for: CGFloat.self) { proxy in
+#if DSH_IOS15_BACKPORT
+                // 15.6 上没有折叠屏的分段几何（`proxy.fold`），留 0。
+                _ = proxy
+                return 0
+#else
                 guard let fold = proxy.fold, fold.height > fold.width, fold.midX < proxy.size.width / 2 else { return 0 }
                 return max(0, fold.maxX)
+#endif
             } action: { inset = $0 }
     }
 }
