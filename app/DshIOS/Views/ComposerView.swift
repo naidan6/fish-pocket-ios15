@@ -805,7 +805,6 @@ struct FittedSheet: ViewModifier {
         }
         .scrollBounceBehavior(.basedOnSize)
         .compatDetents([.height(height)])
-        .presentationCornerRadius(36)
         .presentationDragIndicator(.hidden)
         .presentationBackground(Palette.background)
     }

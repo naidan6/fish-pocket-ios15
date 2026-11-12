@@ -53,14 +53,14 @@ extension View {
 
 // MARK: - 空态视图（ContentUnavailableView 是 iOS 17）
 
-struct CompatUnavailable<Label: View, Description: View, Actions: View>: View {
-    private let label: Label
-    private let description: Description
-    private let actions: Actions
+struct CompatUnavailable<LView: View, DView: View, AView: View>: View {
+    private let label: LView
+    private let description: DView
+    private let actions: AView
 
-    init(@ViewBuilder label: () -> Label,
-         @ViewBuilder description: () -> Description,
-         @ViewBuilder actions: () -> Actions) {
+    init(@ViewBuilder label: () -> LView,
+         @ViewBuilder description: () -> DView,
+         @ViewBuilder actions: () -> AView) {
         self.label = label()
         self.description = description()
         self.actions = actions()
@@ -81,7 +81,7 @@ struct CompatUnavailable<Label: View, Description: View, Actions: View>: View {
     }
 }
 
-extension CompatUnavailable where Description == EmptyView, Actions == EmptyView {
+extension CompatUnavailable where DView == EmptyView, AView == EmptyView {
     /// `ContentUnavailableView("标题", systemImage: "icon")` 的等价物。
     init(_ titleKey: LocalizedStringKey, systemImage: String) {
         self.init(label: {
@@ -106,7 +106,7 @@ extension CompatUnavailable where Description == EmptyView, Actions == EmptyView
     }
 }
 
-extension CompatUnavailable where Label == CompatSearchLabel, Description == Text, Actions == EmptyView {
+extension CompatUnavailable where LView == CompatSearchLabel, DView == Text, AView == EmptyView {
     /// `ContentUnavailableView.search` 的等价物。
     static var search: CompatUnavailable<CompatSearchLabel, Text, EmptyView> {
         CompatUnavailable<CompatSearchLabel, Text, EmptyView>(

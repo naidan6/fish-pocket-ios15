@@ -345,8 +345,11 @@ private struct TerminalKeyBar<Menu: View>: View {
                         .accessibilityAddTraits(held ? [.isButton, .isSelected] : .isButton)
                     }
                     // The system control: a button of our own would raise the paste prompt on every press.
-                    PasteButton(payloadType: String.self) { items in
-                        if let text = items.first { paste(text) }
+                    // 15.6：没有 `PasteButton`，直接读剪贴板（同样不弹系统粘贴提示）。
+                    Button {
+                        if let text = UIPasteboard.general.string { paste(text) }
+                    } label: {
+                        Label("粘贴", systemImage: "doc.on.clipboard")
                     }
                     .labelStyle(.titleOnly)
                     .buttonBorderShape(.capsule)

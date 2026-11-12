@@ -98,7 +98,8 @@ final class UpdateChecker: ObservableObject {
     /// The App Store answers per region and without one means the US, where the app
     /// may not be sold: the device's region first, then that default.
     private func appStoreLatest() async -> Latest {
-        let region = Locale.current.region?.identifier
+        // 15.6：`Locale.region` 是 16 才有的，用等价的 `regionCode`。
+        let region = Locale.current.regionCode
         var result = Latest.failed
         for country in [region, nil] {
             var components = URLComponents(string: Self.base("https://itunes.apple.com") + "/lookup")

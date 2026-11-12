@@ -18,7 +18,8 @@ struct TurnMenu: ViewModifier {
 
     func body(content: Content) -> some View {
         if enabled {
-            content.contextMenu { items } preview: { preview }
+            // 15.6：`contextMenu(menuItems:preview:)` 是 16 才有的，带预览的菜单退成普通菜单。
+            content.contextMenu(menuItems: items)
         } else {
             content
         }
@@ -226,7 +227,7 @@ struct DeliverableCards: View {
 
     /// The description without its trailing `(…)`, else the extension.
     private static func caption(_ file: Deliverable) -> String {
-        let description = (file.description ?? "").replacing(#/\s*[（(][^（）()]*[）)]\s*$/#, with: "").trimmingCharacters(in: .whitespaces)
+        let description = CompatRegex15.replacing(#"\s*[（(][^（）()]*[）)]\s*$"#, in: file.description ?? "", template: "").trimmingCharacters(in: .whitespaces)
         if !description.isEmpty { return description }
         let ext = URL(fileURLWithPath: file.path).pathExtension.uppercased()
         return ext.isEmpty ? String(localized: "文件") : ext
@@ -354,7 +355,7 @@ enum ReasoningSummary {
     static func make(_ text: String, live: Bool) -> String {
         let line: String
         if live {
-            let paragraphs = text.split(separator: #/\r?\n(?:[\t ]*\r?\n)+/#, omittingEmptySubsequences: true)
+            let paragraphs = CompatRegex15.split(#"\r?\n(?:[\t ]*\r?\n)+"#, in: text)
             line = paragraphs.last { paragraph in
                 guard let end = paragraph.firstIndex(of: "\n") else { return false }
                 return !paragraph[..<end].trimmingCharacters(in: .whitespaces).isEmpty

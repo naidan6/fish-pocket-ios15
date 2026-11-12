@@ -65,10 +65,20 @@ final class WatchLink: NSObject {
     /// Re-derive on every change of what the snapshot reads (sessions, approvals, projections, balance).
     private func observe(_ token: Int) {
         guard let app, token == tracking else { return }
+        #if DSH_IOS15_BACKPORT
+        // 15.6：没有 `withObservationTracking`，用 1 秒轮询重算快照；
+        // token 判等会把过期的那次停掉，不会叠起来。
+        apply(Self.snapshot(of: app))
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
+            self?.observe(token)
+        }
+#else
         let next = withObservationTracking { Self.snapshot(of: app) } onChange: { [weak self] in
             Task { @MainActor in self?.observe(token) }
         }
         apply(next)
+#endif
     }
 
     /// Something outside the model changed (a completion, the scene phase, the link to the watch).

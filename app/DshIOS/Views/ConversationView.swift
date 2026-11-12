@@ -309,7 +309,6 @@ struct ConversationView: View {
         .sheet(isPresented: workbenchShown(sizeClass != .regular)) {
             workbenchPage(model)
                 .compatDetents([.large])
-                .presentationCornerRadius(36)
                 // A pull over the terminal is meant for its scrollback; ✕ closes the sheet.
                 .interactiveDismissDisabled(workbenchTab == .terminal)
         }

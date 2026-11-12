@@ -390,6 +390,21 @@ enum CompatRegex15 {
         }
     }
 
+    /// 按正则切开（等价 `split(separator: Regex)`），丢掉空段。
+    static func split(_ pattern: String, in text: String) -> [String] {
+        guard let regex = try? NSRegularExpression(pattern: pattern) else { return [text] }
+        let ns = text as NSString
+        var pieces: [String] = []
+        var cursor = 0
+        regex.enumerateMatches(in: text, range: NSRange(location: 0, length: ns.length)) { match, _, _ in
+            guard let match else { return }
+            pieces.append(ns.substring(with: NSRange(location: cursor, length: match.range.location - cursor)))
+            cursor = match.range.location + match.range.length
+        }
+        pieces.append(ns.substring(from: cursor))
+        return pieces.filter { !$0.isEmpty }
+    }
+
     /// 是否有一处匹配。
     static func contains(_ pattern: String, in text: String) -> Bool {
         guard let regex = try? NSRegularExpression(pattern: pattern) else { return false }

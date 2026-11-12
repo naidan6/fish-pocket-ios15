@@ -166,8 +166,8 @@ extension View {
     func detailSheet() -> some View {
         presentationDetents([.medium, .large])
             .presentationDragIndicator(.visible)
-            .presentationCornerRadius(36)
-            .presentationBackground(Palette.background)
+            // 15.6：`presentationCornerRadius`/`presentationBackground` 都是 16.4，
+            // 弹层用系统默认圆角与背景。
     }
 }
 

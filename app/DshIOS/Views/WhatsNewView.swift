@@ -113,7 +113,6 @@ private struct FeatureCard: View {
             Image(systemName: feature.symbol)
                 .font(.system(size: 19, weight: .semibold))
                 .foregroundStyle(Palette.onInk)
-                .symbolEffect(.bounce, value: nod)
                 .frame(width: 46, height: 46)
                 .background(Palette.ink, in: RoundedRectangle(cornerRadius: 13, style: .continuous))
                 .accessibilityHidden(true)
