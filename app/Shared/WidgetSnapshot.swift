@@ -57,7 +57,7 @@ enum WidgetSnapshotStore {
 
     static var fileURL: URL? {
         guard let groupId, let container = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: groupId) else { return nil }
-        return container.appending(path: "widget-snapshot.json")
+        return container.appendingPathComponent("widget-snapshot.json")
     }
 
     static func read() -> WidgetSnapshot {

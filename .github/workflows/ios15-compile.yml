@@ -129,6 +129,18 @@ jobs:
           grep -hoE "'[^']+' is only available in iOS [0-9.]+ or newer" /tmp/ios15-build.log | sort | uniq -c | sort -rn | head -60 || true
           echo "==== 错误文件清单 ===="
           grep -hoE "/[^ ]+\.swift:[0-9]+:[0-9]+: error:" /tmp/ios15-build.log | sed 's|.*/app/|app/|' | cut -d: -f1 | sort | uniq -c | sort -rn | head -40 || true
+          echo "==== error 明细（前 200 行，去掉 runner 的绝对路径）===="
+          grep -E ": error: " /tmp/ios15-build.log | sed 's|.*/app/|app/|' | sort -u | head -200 || true
+          echo "==== 日志尾部 40 行 ===="
+          tail -40 /tmp/ios15-build.log || true
           errors=$(grep -cE ": error: " /tmp/ios15-build.log || true)
           echo "==== error 行数: ${errors:-0} ===="
           [ "${errors:-0}" -eq 0 ]
+
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios15-build-log
+          path: /tmp/ios15-build.log
+          if-no-files-found: ignore

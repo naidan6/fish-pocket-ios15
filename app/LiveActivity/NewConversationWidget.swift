@@ -10,7 +10,7 @@ struct NewConversationWidget: Widget {
         }
         .configurationDisplayName("新对话")
         .description("点一下就开始新对话。")
-        .supportedFamilies([.systemSmall, .systemMedium, .accessoryCircular])
+        .supportedFamilies(newConversationWidgetFamilies())
     }
 }
 
@@ -21,19 +21,35 @@ private struct NewConversationView: View {
     private var workspace: String { entry.snapshot.workspace ?? String(localized: "上次的工作区") }
 
     var body: some View {
-        switch family {
-        case .accessoryCircular:
-            ZStack {
-                AccessoryWidgetBackground()
-                Image(systemName: "square.and.pencil").font(.system(size: 22, weight: .semibold))
+        Group {
+            if #available(iOS 16.0, *), isAccessory {
+                accessory
+            } else {
+                home
             }
-            .accessibilityLabel(Text("新对话"))
-            .widgetAccentable()
-            .containerBackground(for: .widget) { Color.clear }
+        }
+    }
+
+    @available(iOS 16.0, *)
+    private var isAccessory: Bool { family == .accessoryCircular }
+
+    @available(iOS 16.0, *)
+    @ViewBuilder private var accessory: some View {
+        ZStack {
+            AccessoryWidgetBackground()
+            Image(systemName: "square.and.pencil").font(.system(size: 22, weight: .semibold))
+        }
+        .accessibilityLabel(Text("新对话"))
+        .compatWidgetAccentable()
+        .compatWidgetBackground { Color.clear }
+    }
+
+    @ViewBuilder private var home: some View {
+        switch family {
         case .systemMedium:
-            medium.containerBackground(WidgetPalette.background, for: .widget)
+            medium.compatWidgetBackground(WidgetPalette.background)
         default:
-            small.containerBackground(WidgetPalette.background, for: .widget)
+            small.compatWidgetBackground(WidgetPalette.background)
         }
     }
 

@@ -191,7 +191,7 @@ struct SettingsView: View {
     }
 
     private static let repositoryURL = AppLinks.repository
-    private static let issuesURL = repositoryURL.appending(path: "issues")
+    private static let issuesURL = repositoryURL.appendingPathComponent("issues")
     private static let authorURL = URL(string: "https://imsai.cc")!
 
     /// Opens in the browser; the arrow says it leaves the app.

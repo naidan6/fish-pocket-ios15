@@ -11,7 +11,7 @@ struct SessionsWidget: Widget {
         }
         .configurationDisplayName("会话状态")
         .description("正在运行和等你处理的会话。")
-        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge, .accessoryCircular, .accessoryRectangular, .accessoryInline])
+        .supportedFamilies(sessionsWidgetFamilies())
     }
 }
 
@@ -20,22 +20,49 @@ private struct SessionsWidgetView: View {
     @Environment(\.widgetFamily) private var family
 
     var body: some View {
+        Group {
+            // 锁屏家族是 iOS 16 才有的符号，必须放在 #available 里才认。
+            if #available(iOS 16.0, *), isAccessory {
+                accessory
+            } else {
+                home
+            }
+        }
+    }
+
+    @available(iOS 16.0, *)
+    private var isAccessory: Bool {
+        switch family {
+        case .accessoryCircular, .accessoryRectangular, .accessoryInline: return true
+        default: return false
+        }
+    }
+
+    @available(iOS 16.0, *)
+    @ViewBuilder private var accessory: some View {
         switch family {
         case .accessoryCircular:
-            CircularSessions(entry: entry).containerBackground(for: .widget) { Color.clear }
+            CircularSessions(entry: entry).compatWidgetBackground { Color.clear }
         case .accessoryRectangular:
-            RectangularSessions(entry: entry).containerBackground(for: .widget) { Color.clear }
+            RectangularSessions(entry: entry).compatWidgetBackground { Color.clear }
         case .accessoryInline:
-            InlineSessions(entry: entry).containerBackground(for: .widget) { Color.clear }
+            InlineSessions(entry: entry).compatWidgetBackground { Color.clear }
+        default:
+            home
+        }
+    }
+
+    @ViewBuilder private var home: some View {
+        switch family {
         case .systemMedium:
             SessionList(entry: entry, rows: 3, details: false)
-                .containerBackground(WidgetPalette.background, for: .widget)
+                .compatWidgetBackground(WidgetPalette.background)
         case .systemLarge:
             SessionList(entry: entry, rows: 6, details: true)
-                .containerBackground(WidgetPalette.background, for: .widget)
+                .compatWidgetBackground(WidgetPalette.background)
         default:
             SmallSessions(entry: entry)
-                .containerBackground(WidgetPalette.background, for: .widget)
+                .compatWidgetBackground(WidgetPalette.background)
         }
     }
 }
@@ -230,6 +257,7 @@ private struct SessionList: View {
 // MARK: Lock screen
 
 /// The lock screen is drawn in one tint, so waiting is told by the symbol, not the colour.
+@available(iOS 16.0, *)
 private struct RectangularSessions: View {
     let entry: SnapshotEntry
 
@@ -274,6 +302,7 @@ private struct RectangularSessions: View {
     }
 }
 
+@available(iOS 16.0, *)
 private struct CircularSessions: View {
     let entry: SnapshotEntry
 
@@ -291,11 +320,12 @@ private struct CircularSessions: View {
                 }
             }
         }
-        .widgetAccentable()
+        .compatWidgetAccentable()
         .widgetURL(entry.snapshot.active.first.map { DshLink.session($0.id).url })
     }
 }
 
+@available(iOS 16.0, *)
 private struct InlineSessions: View {
     let entry: SnapshotEntry
 
