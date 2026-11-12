@@ -226,7 +226,8 @@ struct RoomPostView: View {
 
     /// A delivered message starts with a bracketed line saying who it is from.
     static func withoutHeader(_ text: String) -> String {
-        guard text.hasPrefix("["), let match = text.firstMatch(of: #/^\[(Message from|Reply from|Group chat|Group post from|Bot team setup|Handoff · part|Secret card)[^\r\n]*\]\r?\n/#) else { return text }
-        return String(text[match.range.upperBound...])
+        guard text.hasPrefix("["),
+              let body = CompatRegex15.afterHeader(#"^\[(Message from|Reply from|Group chat|Group post from|Bot team setup|Handoff · part|Secret card)[^\r\n]*\]\r?\n"#, in: text) else { return text }
+        return body
     }
 }

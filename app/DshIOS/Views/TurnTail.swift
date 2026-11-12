@@ -157,7 +157,7 @@ struct PlanCard: View {
 
     /// Title from the plan's `# H1`; a plan without one has no card.
     static func title(of plan: String) -> String? {
-        plan.trimmingCharacters(in: .whitespacesAndNewlines).firstMatch(of: #/^#\s+(\S[^\r\n]*)/#).map { String($0.output.1) }
+        CompatRegex15.groups(#"^#\s+(\S[^\r\n]*)"#, in: plan.trimmingCharacters(in: .whitespacesAndNewlines))?.dropFirst().first
     }
 
     var body: some View {

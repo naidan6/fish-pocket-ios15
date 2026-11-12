@@ -374,3 +374,40 @@ struct CompatToolbarVisibility: ViewModifier {
         }
     }
 }
+
+// MARK: - 正则（15.6 没有 `Regex` 字面量）
+
+enum CompatRegex15 {
+    /// 取第一个匹配的全部分组（下标 0 是整体）。不支持匹配返回 nil。
+    static func groups(_ pattern: String, in text: String, anchorsLines: Bool = false) -> [String]? {
+        var options: NSRegularExpression.Options = []
+        if anchorsLines { options.insert(.anchorsMatchLines) }
+        guard let regex = try? NSRegularExpression(pattern: pattern, options: options),
+              let match = regex.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)) else { return nil }
+        return (0..<match.numberOfRanges).map { index in
+            guard let range = Range(match.range(at: index), in: text) else { return "" }
+            return String(text[range])
+        }
+    }
+
+    /// 匹配到的整段之后的内容（没有匹配返回 nil）。
+    static func afterHeader(_ pattern: String, in text: String, anchorsLines: Bool = false) -> String? {
+        var options: NSRegularExpression.Options = []
+        if anchorsLines { options.insert(.anchorsMatchLines) }
+        guard let regex = try? NSRegularExpression(pattern: pattern, options: options),
+              let match = regex.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)),
+              let end = Range(match.range, in: text)?.upperBound else { return nil }
+        return String(text[end...])
+    }
+
+    /// 所有匹配的第一个分组。
+    static func firstGroups(_ pattern: String, in text: String, anchorsLines: Bool = false) -> [String] {
+        var options: NSRegularExpression.Options = []
+        if anchorsLines { options.insert(.anchorsMatchLines) }
+        guard let regex = try? NSRegularExpression(pattern: pattern, options: options) else { return [] }
+        return regex.matches(in: text, range: NSRange(text.startIndex..., in: text)).compactMap { match in
+            guard let range = Range(match.range(at: 1), in: text) else { return nil }
+            return String(text[range])
+        }
+    }
+}

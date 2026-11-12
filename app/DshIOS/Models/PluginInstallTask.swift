@@ -652,10 +652,8 @@ final class PluginInstallTask: ObservableObject {
 
     /// The packages pnpm reports as `node_modules/<name> postinstall: Failed`.
     static func failedBuilds(in output: String) -> [String] {
-        let line = /^\S*node_modules\/((?:@[^\/\s]+\/)?[^\/\s]+) (?:preinstall|install|postinstall|prepare): Failed\s*$/.anchorsMatchLineEndings()
-        var names: [String] = []
-        for match in output.matches(of: line) where !names.contains(String(match.1)) { names.append(String(match.1)) }
-        return names
+        // 15.6：逐行扫 `node_modules/<name> …: Failed`，等价于原来的多行正则。
+        ComapatFailedBuilds.scan(output)
     }
 
     /// 跳过脚本并继续: install again with these scripts off. The plugin manager can only allow
@@ -854,4 +852,17 @@ extension Array {
 
 extension Dictionary {
     var nilIfEmpty: Self? { isEmpty ? nil : self }
+}
+
+
+/// 15.6 的 `failedBuilds(in:)` 实现：`node_modules/<name>` 后面跟 `… : Failed` 的那些包名。
+enum ComapatFailedBuilds {
+    static func scan(_ output: String) -> [String] {
+        let pattern = #"^\S*node_modules\/((?:@[^\/\s]+\/)?[^\/\s]+) (?:preinstall|install|postinstall|prepare): Failed\s*$"#
+        var names: [String] = []
+        for name in CompatRegex15.firstGroups(pattern, in: output, anchorsLines: true) where !names.contains(name) {
+            names.append(name)
+        }
+        return names
+    }
 }

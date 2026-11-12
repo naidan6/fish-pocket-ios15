@@ -122,7 +122,7 @@ struct BotTurnEvents: View {
     private func groupEvent(_ call: ToolCall) -> some View {
         let team = app.botTeam
         let result = call.result ?? ""
-        let name = result.firstMatch(of: #/^(?:Created group|Updated|Nothing changed in|Deleted|Posted in) "([^"]+)"/#).map { String($0.1) }
+        let name = CompatRegex15.groups(#"^(?:Created group|Updated|Nothing changed in|Deleted|Posted in) "([^"]+)""#, in: result)?.dropFirst().first
         if call.isError || name == nil {
             let text = switch call.displayName {
             case "create_group": String(localized: "没能创建群聊")

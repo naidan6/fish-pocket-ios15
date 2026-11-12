@@ -22,8 +22,9 @@ enum PluginPins {
 
     /// The engine's refusal (`pinRefusal` in pins.mjs) as a sentence; nil for any other text.
     static func refusal(_ text: String?) -> String? {
-        guard let text, let match = text.firstMatch(of: /^(\S+) is pinned to (\S+) in Fish Pocket; (.+) cannot be installed\.$/) else { return nil }
-        let wanted = String(match.3) == "default branch" ? String(localized: "默认分支") : String(match.3)
-        return String(localized: "Fish Pocket 目前固定使用 \(String(match.1)) \(String(match.2))，不能安装 \(wanted)。")
+        guard let text,
+              let match = CompatRegex15.groups(#"^(\S+) is pinned to (\S+) in Fish Pocket; (.+) cannot be installed\.$"#, in: text) else { return nil }
+        let wanted = match[3] == "default branch" ? String(localized: "默认分支") : match[3]
+        return String(localized: "Fish Pocket 目前固定使用 \(match[1]) \(match[2])，不能安装 \(wanted)。")
     }
 }

@@ -18,13 +18,14 @@ struct TriggerHit: Equatable {
         let chars = Array(draft)
         let firstNonSpace = chars.firstIndex { !$0.isWhitespace }
         // `@`: `(^|\s)@"…` (quotes may hold spaces) or `(^|\s)@\S*`; an `@` inside a word (mail) is not one.
-        if let quote = draft.firstMatch(of: /(?:^|\s)(@"([^"]*))$/) {
-            let start = chars.count - quote.output.1.count
-            return TriggerHit(trigger: "@", query: String(quote.output.2), quoted: true, leading: firstNonSpace == start, start: start)
+        // 15.6：没有 `Regex` 字面量，改用 `NSRegularExpression` 取分组。
+        if let quote = CompatRegex15.groups(#"(?:^|\s)(@"([^"]*))$"#, in: draft) {
+            let start = chars.count - quote[1].count
+            return TriggerHit(trigger: "@", query: quote[2], quoted: true, leading: firstNonSpace == start, start: start)
         }
-        if let plain = draft.firstMatch(of: /(?:^|\s)(@(\S*))$/) {
-            let start = chars.count - plain.output.1.count
-            return TriggerHit(trigger: "@", query: String(plain.output.2), quoted: false, leading: firstNonSpace == start, start: start)
+        if let plain = CompatRegex15.groups(#"(?:^|\s)(@(\S*))$"#, in: draft) {
+            let start = chars.count - plain[1].count
+            return TriggerHit(trigger: "@", query: plain[2], quoted: false, leading: firstNonSpace == start, start: start)
         }
         // `/`: scan left to the first whitespace; a slash failing the word boundary (URLs) is an ordinary character.
         var index = chars.count - 1
