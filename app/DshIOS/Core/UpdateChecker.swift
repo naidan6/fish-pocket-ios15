@@ -1,5 +1,4 @@
 import Foundation
-import Observation
 
 /// Version numbers as `MARKETING_VERSION` and the release tags write them: `1.2.0`, `v1.2.0`.
 enum AppVersion {

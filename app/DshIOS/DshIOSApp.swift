@@ -1,3 +1,4 @@
+import Combine
 import SwiftUI
 
 @main
@@ -41,10 +42,9 @@ struct LinkRequest: Equatable {
 
 /// A link from an App Intent, which has no window of its own: the first window to see it takes it.
 @MainActor
-@Observable
-final class LinkInbox {
+final class LinkInbox: ObservableObject {
     static let shared = LinkInbox()
-    var request: LinkRequest?
+    @Published var request: LinkRequest?
 }
 
 /// A window opened on a session. It moves on to other sessions from there, so the token keeps
@@ -58,13 +58,12 @@ struct SessionWindow: Codable, Hashable {
 /// the same sessions, and the Live Activity and background work follow one model.
 /// Each engine generation (a new listening URL after a restart) gets a fresh one.
 @MainActor
-@Observable
-final class EngineConnection {
+final class EngineConnection: ObservableObject {
     static let shared = EngineConnection()
 
-    private(set) var app: AppModel?
+    @Published private(set) var app: AppModel?
     /// The generation being connected or connected; windows that arrive during it just wait.
-    private var generation: Int?
+    @Published private var generation: Int?
 
     func connect(to url: URL, generation current: Int) async {
         guard current != generation else { return }
@@ -118,7 +117,7 @@ struct RootView: View {
             Group {
                 if let app = connection.app {
                     MainView(session: session, link: $link)
-                        .environment(app)
+                        .environmentObject(app)
                 } else {
                     StartupView(message: String(localized: "正在连接…"))
                 }

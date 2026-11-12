@@ -1,5 +1,5 @@
+import Combine
 import Foundation
-import Observation
 import SwiftUI
 
 /// A bonus the Platform has credited but the user has not been shown yet.
@@ -23,8 +23,7 @@ struct BonusNotice: Identifiable, Hashable {
 /// Platform password or web cookies: sign-in happens on Platform's own page
 /// in a browser this app cannot read.
 @MainActor
-@Observable
-final class AccountModel {
+final class AccountModel: ObservableObject {
     /// The engine build this client speaks for; account methods require it in `client`.
     static let clientVersion = "0.2.2-rc.1"
 
@@ -32,20 +31,20 @@ final class AccountModel {
     private let mux: StreamMux
 
     /// The latest `AccountView`: `status`, `links`, `attempt`.
-    private(set) var view: JSON?
-    private(set) var streamFailed = false
+    @Published private(set) var view: JSON?
+    @Published private(set) var streamFailed = false
     /// `nil` while loading; then `{status:"ready", value}` or `{status:"failed"}`.
-    private(set) var profile: JSON?
-    private(set) var balance: JSON?
-    private(set) var bonuses: [BonusNotice] = []
+    @Published private(set) var profile: JSON?
+    @Published private(set) var balance: JSON?
+    @Published private(set) var bonuses: [BonusNotice] = []
     /// One-shot shell notices: a toast line, or the no-balance prompt.
-    var toast: String?
-    var quotaPrompt = false
+    @Published var toast: String?
+    @Published var quotaPrompt = false
 
-    private var watchTask: Task<Void, Never>?
-    private var detailsGeneration = 0
-    private var initializedAttempt: String?
-    private var acked: Set<String> = []
+    @Published private var watchTask: Task<Void, Never>?
+    @Published private var detailsGeneration = 0
+    @Published private var initializedAttempt: String?
+    @Published private var acked: Set<String> = []
 
     init(client: EngineClient, mux: StreamMux) {
         self.client = client

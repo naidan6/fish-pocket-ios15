@@ -1,3 +1,4 @@
+import Combine
 import SwiftUI
 
 /// 创造模式 (`cordis`) is held back on iOS: what it makes are plugins with their own
@@ -15,8 +16,7 @@ enum CreatorMode {
 /// The Agent preset roster (`agentPresets/list`) with the display copy the web keeps
 /// for shipped presets: a preset that publishes no name is one of these.
 @MainActor
-@Observable
-final class AgentPresetCatalog {
+final class AgentPresetCatalog: ObservableObject {
     struct Option: Identifiable, Hashable {
         let id: String
         let name: String
@@ -33,10 +33,10 @@ final class AgentPresetCatalog {
         }
     }
 
-    private(set) var options: [Option] = []
+    @Published private(set) var options: [Option] = []
     /// The new-task default the Host reports.
-    private(set) var fallback = ""
-    private(set) var codingTools = true
+    @Published private(set) var fallback = ""
+    @Published private(set) var codingTools = true
 
     var visible: [Option] { options.filter { (codingTools || !$0.needsCodingTools) && !CreatorMode.isHidden($0.id) } }
 
@@ -71,7 +71,7 @@ final class AgentPresetCatalog {
 struct AgentPresetChip: View {
     let sessionId: String
     let catalog: AgentPresetCatalog
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @State private var current: String?
     @State private var choosing = false
 

@@ -1,5 +1,5 @@
+import Combine
 import Foundation
-import Observation
 import SwiftUI
 
 /// The engine's settings as every settings page reads them (`settings/describe`),
@@ -11,29 +11,28 @@ import SwiftUI
 /// `llm/adapters-updated` and every reconnect; pages attach `.followSettings()`
 /// to drive that, and a burst of events coalesces into one read.
 @MainActor
-@Observable
-final class SettingsMirror {
+final class SettingsMirror: ObservableObject {
     /// The events that invalidate the describe answer (and the credential states derived from it).
     static let events = ["settings/document-updated", "credentials/reference-updated", "llm/adapters-updated"]
 
     private let client: EngineClient
 
     /// The latest `settings/describe` value: `{writable, hasDocument, namespaces:[…]}`.
-    private(set) var view: JSON?
+    @Published private(set) var view: JSON?
     /// The last read's failure; the held view stays usable.
-    private(set) var error: String?
+    @Published private(set) var error: String?
     /// Field order of every object node, per namespace and schema uid: the wire
     /// keeps the schema's declaration order, the `JSON` value type does not.
-    private(set) var keyOrder: [String: [String: [String]]] = [:]
+    @Published private(set) var keyOrder: [String: [String: [String]]] = [:]
     /// Bumped whenever a read or a write folds in, so derived caches can key on it.
-    private(set) var stamp = 0
+    @Published private(set) var stamp = 0
 
-    private var loadedRevision: Int?
-    private var inflight: Task<Void, Never>?
+    @Published private var loadedRevision: Int?
+    @Published private var inflight: Task<Void, Never>?
     /// An event landed during a read, which may predate it: read once more after.
-    private var rereadPending = false
+    @Published private var rereadPending = false
     /// Writes to one namespace go out one at a time, as `ConfigForm`'s write queue does.
-    private var writeChains: [String: Task<Void, Never>] = [:]
+    @Published private var writeChains: [String: Task<Void, Never>] = [:]
 
     init(client: EngineClient) {
         self.client = client
@@ -251,7 +250,7 @@ extension AppModel {
 }
 
 private struct FollowSettings: ViewModifier {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
 
     func body(content: Content) -> some View {
         content.task(id: app.settingsRevision) { await app.settings.refresh(revision: app.settingsRevision) }

@@ -10,7 +10,7 @@ import SwiftUI
 /// probed at once (`settings/describe` parses the file on each call) and put back
 /// unless the engine confirms it; the text stays here to be corrected.
 struct ConfigDocumentView: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.dismiss) private var dismiss
     @State private var text = ""
     @State private var original: String?

@@ -1,3 +1,4 @@
+import Combine
 import SwiftUI
 
 /// Whose tasks a schedule section lists: a Bot's own chat or a group chat.
@@ -24,13 +25,12 @@ enum BotScheduleTarget: Equatable {
 /// The scheduled tasks of a Bot or a group, read from ds-bot. Owned by the page that shows
 /// them, which also presents the new-task sheet: a section's modifiers would go to every row.
 @MainActor
-@Observable
-final class BotSchedules {
+final class BotSchedules: ObservableObject {
     let target: BotScheduleTarget
-    private(set) var tasks: [JSON] = []
-    private(set) var available = true
-    private(set) var loaded = false
-    var creating = false
+    @Published private(set) var tasks: [JSON] = []
+    @Published private(set) var available = true
+    @Published private(set) var loaded = false
+    @Published var creating = false
     let catalog = ScheduleCatalog()
 
     init(target: BotScheduleTarget) { self.target = target }
@@ -78,7 +78,7 @@ extension View {
 /// 设置 › 自动化 (edit, pause, run history, delete); ds-bot adds creating one for the Bot
 /// and follows it when the chat moves to a new part.
 struct BotScheduleSection: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let schedules: BotSchedules
 
     var body: some View {
@@ -147,7 +147,7 @@ struct BotScheduleCreateSheet: View {
         }
     }
 
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.dismiss) private var dismiss
     let target: BotScheduleTarget
     let created: (JSON) -> Void

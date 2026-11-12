@@ -11,7 +11,7 @@ enum BotRoute: Hashable {
 /// Bot is doing, and the large ones blink and fidget at rest; the rest stay still, so a long
 /// page does not run dozens of animations.
 struct BotAvatar: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let bot: BotInfo?
     /// Shown by its first character when the Bot is not on the team (any more).
     var name: String?
@@ -86,7 +86,7 @@ enum BotPicture {
 
 /// Two members overlapping, for a group chat.
 struct RoomAvatar: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let room: RoomInfo
     var size: CGFloat = 40
 
@@ -115,7 +115,7 @@ struct RoomAvatar: View {
 /// main Bot's face where they have an icon, and on the right the one thing that matters most
 /// right now — what waits on the user, then who is working, then news.
 struct BotDrawerEntry: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
 
     var body: some View {
         let team = app.botTeam
@@ -279,7 +279,7 @@ extension BotModel {
 
 /// The Bot page: the team's Bots and group chats, or the way to switch the feature on.
 struct BotHomeView: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let openDrawer: (() -> Void)?
     @State private var creating: CreateKind?
     @State private var settingsOpen = false
@@ -550,7 +550,7 @@ struct BotHomeView: View {
 
 /// Shown until the plugin answers: switch it on, or say why the pages cannot open.
 struct BotSetupView: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
 
     var body: some View {
         let team = app.botTeam
@@ -627,7 +627,7 @@ struct BotSetupView: View {
 
 /// A look for a Bot without a photo: one of the characters in one of the team's colours.
 struct BotLookPicker: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     /// A character's id; anything else (a photo, the app's mascot): none of these is picked.
     @Binding var shape: String?
     @Binding var color: String?
@@ -695,7 +695,7 @@ struct BotLookPreview: View {
 }
 
 struct BotCreateSheet: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.dismiss) private var dismiss
     @State private var name = ""
     @State private var role = ""
@@ -772,7 +772,7 @@ struct BotCreateSheet: View {
 
 /// A new group: who is in it, who takes plain messages first, and what to start with.
 struct RoomCreateSheet: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.dismiss) private var dismiss
     @State private var name = ""
     @State private var members: [String] = []

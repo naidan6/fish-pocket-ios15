@@ -1,5 +1,4 @@
 import Foundation
-import Observation
 import WidgetKit
 
 /// Keeps the widgets' snapshot (`WidgetSnapshot`) in step with the app: rewritten

@@ -8,7 +8,7 @@ struct ComposerDrop: ViewModifier {
     let composer: ComposerModel
     /// False where this conversation takes no messages.
     let enabled: Bool
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @State private var targeted = false
 
     func body(content: Content) -> some View {

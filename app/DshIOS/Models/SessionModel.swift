@@ -1,31 +1,30 @@
+import Combine
 import Foundation
-import Observation
 import UIKit
 
 /// One open conversation: follows the session's event stream and turns it
 /// into a timeline, tracks live assistant output, and sends the user's actions.
 @MainActor
-@Observable
-final class SessionModel {
+final class SessionModel: ObservableObject {
     let sessionId: String
     private let app: AppModel
 
-    private(set) var items: [TimelineItem] = []
-    private(set) var live: [AssistantBlock] = []
-    private(set) var running = false
-    private(set) var title: String?
-    private(set) var todos: [TodoItem] = []
+    @Published private(set) var items: [TimelineItem] = []
+    @Published private(set) var live: [AssistantBlock] = []
+    @Published private(set) var running = false
+    @Published private(set) var title: String?
+    @Published private(set) var todos: [TodoItem] = []
     /// Rows of the `userQuestions` projection that continued unanswered.
-    private var continuedQuestions: [PendingQuestion] = []
+    @Published private var continuedQuestions: [PendingQuestion] = []
     /// A timed-out question between its rejection and the projection saying it continued.
-    private var detachedQuestions: [PendingQuestion] = []
+    @Published private var detachedQuestions: [PendingQuestion] = []
     /// `userQuestions.settled`: answers by call id, for the tool row.
-    private(set) var settledAnswers: [String: JSON] = [:]
+    @Published private(set) var settledAnswers: [String: JSON] = [:]
     /// `state` of each call in `userQuestions.active`.
-    private(set) var activeQuestionStates: [String: String] = [:]
-    private(set) var questionWaits: [String: QuestionWait] = [:]
-    private(set) var turnOutline: [TurnOutline] = []
-    var questionDrafts: [String: QuestionDraft] = [:]
+    @Published private(set) var activeQuestionStates: [String: String] = [:]
+    @Published private(set) var questionWaits: [String: QuestionWait] = [:]
+    @Published private(set) var turnOutline: [TurnOutline] = []
+    @Published var questionDrafts: [String: QuestionDraft] = [:]
 
     /// What is waiting on the user: requests this client holds, then questions the agent moved on from.
     var questions: [PendingQuestion] {
@@ -35,44 +34,44 @@ final class SessionModel {
         }
         return result
     }
-    private(set) var queued: [(id: String, text: String)] = []
-    private(set) var modelSelection: (provider: String, model: String, effort: String?)?
-    private(set) var permission: String?
-    private(set) var tokens: (input: Int, output: Int, cacheRead: Int) = (0, 0, 0)
-    private(set) var contextWindow: Int?
-    private(set) var contextTokens: Int?
-    private(set) var workingDirectory: String?
-    private(set) var turnInfo: [Int: TurnInfo] = [:]
-    private(set) var runningSince: Date?
-    private(set) var hasMoreHistory = false
-    private(set) var loadingOlder = false
-    private(set) var loaded = false
+    @Published private(set) var queued: [(id: String, text: String)] = []
+    @Published private(set) var modelSelection: (provider: String, model: String, effort: String?)?
+    @Published private(set) var permission: String?
+    @Published private(set) var tokens: (input: Int, output: Int, cacheRead: Int) = (0, 0, 0)
+    @Published private(set) var contextWindow: Int?
+    @Published private(set) var contextTokens: Int?
+    @Published private(set) var workingDirectory: String?
+    @Published private(set) var turnInfo: [Int: TurnInfo] = [:]
+    @Published private(set) var runningSince: Date?
+    @Published private(set) var hasMoreHistory = false
+    @Published private(set) var loadingOlder = false
+    @Published private(set) var loaded = false
     /// Every projection value of the latest snapshot or refresh, for the composer docks.
-    private(set) var projectionValues: [String: JSON] = [:]
-    var error: String?
+    @Published private(set) var projectionValues: [String: JSON] = [:]
+    @Published var error: String?
     /// A subagent's parent-scoped address; the Host refuses a plain session address
     /// for a child, and its messages and stops go through the parent. Set before `start()`.
-    var subagentAddress: JSON?
+    @Published var subagentAddress: JSON?
     /// The child's own mode (`subagent` projection): tells an address opened as `unknown`.
-    private(set) var subagentMode: String?
+    @Published private(set) var subagentMode: String?
     /// The open conversation's model catalog; a prompt first moves off a model that no longer routes.
     weak var modelCatalog: ComposerContext?
     /// Composer state (draft, local echoes, attachments): one per open conversation.
     private(set) lazy var composer = ComposerModel(session: self, app: app)
 
     /// Durable events folded so far (the source of `items`).
-    private var timeline = TimelineBuilder()
+    @Published private var timeline = TimelineBuilder()
     /// The events themselves, oldest first: a page of older history refolds from the start.
-    private var events: [JSON] = []
-    private var cursor = -1
-    private var followTask: Task<Void, Never>?
-    private var projectionTask: Task<Void, Never>?
-    private var liveAttempt: String?
-    private var livePartials: [Int: (kind: String, text: String, toolId: String?, toolName: String?)] = [:]
+    @Published private var events: [JSON] = []
+    @Published private var cursor = -1
+    @Published private var followTask: Task<Void, Never>?
+    @Published private var projectionTask: Task<Void, Never>?
+    @Published private var liveAttempt: String?
+    @Published private var livePartials: [Int: (kind: String, text: String, toolId: String?, toolName: String?)] = [:]
     /// Pending publish of `live`: chunks arrive per token, the view redraws at most this often.
-    private var livePublish: Task<Void, Never>?
-    private var waitClaims: [String: Task<Void, Never>] = [:]
-    private var waitTimers: [String: Task<Void, Never>] = [:]
+    @Published private var livePublish: Task<Void, Never>?
+    @Published private var waitClaims: [String: Task<Void, Never>] = [:]
+    @Published private var waitTimers: [String: Task<Void, Never>] = [:]
     private let imageCache: NSCache<NSString, UIImage> = {
         let cache = NSCache<NSString, UIImage>()
         cache.countLimit = 60

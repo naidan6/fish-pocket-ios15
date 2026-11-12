@@ -3,7 +3,7 @@ import SwiftUI
 /// What the whole Bot team shares: connectors, capabilities, keys, the mailbox, and how much
 /// it has used. Each Bot's own page switches these on or off for it.
 struct BotTeamSettingsView: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @State private var releasing: JSON?
 
     var body: some View {
@@ -101,7 +101,7 @@ struct BotTeamSettingsView: View {
 
 /// The team's capability library: MCP servers, skills and packs a Bot can be given.
 struct BotCapabilitiesPage: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @State private var adding = false
 
     var body: some View {
@@ -160,7 +160,7 @@ struct BotCapabilityRow: View {
 struct BotCapabilityEditor: View {
     enum Kind: String, CaseIterable, Identifiable { case mcp, skill, pack; var id: String { rawValue } }
 
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.dismiss) private var dismiss
     let original: JSON?
     @State private var name = ""
@@ -272,7 +272,7 @@ struct BotCapabilityEditor: View {
 
 /// Keys the Bots use in their shell as `$DSH_SECRET_NAME`; the app never reads a value back.
 struct BotSecretsPage: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @State private var editing: JSON?
     @State private var adding = false
 
@@ -324,7 +324,7 @@ struct IdentifiedJSON: Identifiable {
 
 /// Add a key, or change who may use one (and replace its value).
 private struct BotSecretSheet: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.dismiss) private var dismiss
     let original: JSON?
     @State private var name = ""
@@ -385,7 +385,7 @@ private struct BotSecretSheet: View {
 
 /// Mailboxes the Bots can read and send from (IMAP and SMTP with an app password).
 struct BotMailPage: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @State private var adding = false
     @State private var recipient = ""
 
@@ -452,7 +452,7 @@ struct BotMailPage: View {
 }
 
 private struct MailAccountSheet: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.dismiss) private var dismiss
     @State private var address = ""
     @State private var password = ""

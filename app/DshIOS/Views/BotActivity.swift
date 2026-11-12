@@ -4,7 +4,7 @@ import SwiftUI
 /// mark, moving for what it does, a phrase for it, and how long the turn has run. While its
 /// answer streams the mark gives way to three dots.
 struct BotActivityLine: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let botId: String
     let model: SessionModel
     @State private var arrived = false
@@ -112,7 +112,7 @@ struct BotActivityLine: View {
 
 /// A member of a group speaking: its mark at work beside what it is doing.
 struct BotSpeakingLine: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let bot: BotInfo
 
     var body: some View {

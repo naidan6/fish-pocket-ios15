@@ -1,5 +1,5 @@
+import Combine
 import Foundation
-import Observation
 import SwiftUI
 
 struct Workspace: Identifiable, Hashable {
@@ -101,8 +101,7 @@ struct RenameRequest: Identifiable {
 /// Everything above one conversation: the engine connection, workspaces and
 /// their sessions. Views read it from the environment.
 @MainActor
-@Observable
-final class AppModel {
+final class AppModel: ObservableObject {
     let client: EngineClient
     let mux: StreamMux
     let account: AccountModel
@@ -110,82 +109,82 @@ final class AppModel {
     /// Agent sessions on the user's computers, through Agents Anywhere; idle until signed in.
     let remote = RemoteStore.shared
 
-    private(set) var workspaces: [Workspace] = []
-    private(set) var pinned: [String] = []
-    private(set) var archived: Set<String> = []
-    private(set) var sessions: [String: SessionSummary] = [:]
+    @Published private(set) var workspaces: [Workspace] = []
+    @Published private(set) var pinned: [String] = []
+    @Published private(set) var archived: Set<String> = []
+    @Published private(set) var sessions: [String: SessionSummary] = [:]
     /// Live per-session projections from `session/control` (title, todos, inbox…).
-    private(set) var control: [String: [String: JSON]] = [:]
+    @Published private(set) var control: [String: [String: JSON]] = [:]
     /// Tool calls waiting for permission, by session (agent) id.
-    private(set) var approvals: [String: [PendingApproval]] = [:]
+    @Published private(set) var approvals: [String: [PendingApproval]] = [:]
     /// `user-questions/request` waterfalls this client holds, by session id: while one
     /// is open the answer goes back through `$events` (`userQuestions/answer` only takes
     /// a question that has already continued; plan review only ever arrives here).
-    private(set) var questionRequests: [String: [QuestionRequest]] = [:]
-    var lastError: String?
+    @Published private(set) var questionRequests: [String: [QuestionRequest]] = [:]
+    @Published var lastError: String?
     /// The single shell toast (S-128): a newer one replaces the current one.
-    private(set) var toast: Toast?
+    @Published private(set) var toast: Toast?
     /// Raised each time an ask for a Star or a share is due.
-    private(set) var supportMoment = 0
+    @Published private(set) var supportMoment = 0
     /// Shell dialogs the root view presents.
-    var archiveRequest: ArchiveRequest?
-    var renameRequest: RenameRequest?
-    var newSessionRequest: NewSessionRequest?
+    @Published var archiveRequest: ArchiveRequest?
+    @Published var renameRequest: RenameRequest?
+    @Published var newSessionRequest: NewSessionRequest?
     /// Start a session on a computer (the root view presents the sheet).
-    var remoteSessionRequest: RemoteSessionTarget?
+    @Published var remoteSessionRequest: RemoteSessionTarget?
     /// Open the remote-control page: sign in, or the account's computers (the root view consumes it).
-    var remoteRequest: UUID?
+    @Published var remoteRequest: UUID?
     /// Height of the composer area on screen; the toast sits just above it.
-    var composerHeight: CGFloat = 0
+    @Published var composerHeight: CGFloat = 0
     /// Composer text waiting for a session to show it (appended to any draft there).
-    var pendingDrafts: [String: String] = [:]
+    @Published var pendingDrafts: [String: String] = [:]
     /// A written question waiting for a session's composer to show it (询问 AI).
-    var pendingPrompts: [String: String] = [:]
+    @Published var pendingPrompts: [String: String] = [:]
     /// Sessions whose composer takes the keyboard when it appears (`dsh://new`).
-    var pendingFocus: Set<String> = []
+    @Published var pendingFocus: Set<String> = []
     /// A session to open in the main view (set through `open(session:)`; the root view consumes it).
-    var openRequest: (id: String, token: UUID)?
+    @Published var openRequest: (id: String, token: UUID)?
     /// Open the plugin store (the root view consumes it).
-    var pluginStoreRequest: UUID?
+    @Published var pluginStoreRequest: UUID?
     /// Open the engine's web version, where plugin interfaces live (the root view consumes it).
-    var webRequest: UUID?
+    @Published var webRequest: UUID?
     /// Open the device-capability screen, where the user grants and reviews them
     /// (the root view consumes it).
-    var nativeCapabilitiesRequest: UUID?
+    @Published var nativeCapabilitiesRequest: UUID?
     /// Open the connectors (the root view consumes it).
-    var connectorsRequest: UUID?
+    @Published var connectorsRequest: UUID?
     /// A credential step to open (set through `requestCredentials`; the root view consumes it).
-    var credentialRequest: (step: CredentialStep, token: UUID)?
+    @Published var credentialRequest: (step: CredentialStep, token: UUID)?
     /// The session in the main view, kept by the root view (unread completions skip it).
     var currentSession: String? { didSet { if let currentSession { completionUnread.remove(currentSession) } } }
     /// Sessions whose turn finished while they were not open (the web's completion reminder).
-    private(set) var completionUnread: Set<String> = []
+    @Published private(set) var completionUnread: Set<String> = []
     /// Projections read on demand, for sessions `session/control` does not carry (nested subagents).
-    private(set) var projectionCache: [String: JSON] = [:]
+    @Published private(set) var projectionCache: [String: JSON] = [:]
     /// `schedule/catalog`: every Session's tasks, re-read on `schedule/changed` and each connection.
-    private(set) var scheduleCatalog: [JSON] = []
+    @Published private(set) var scheduleCatalog: [JSON] = []
     /// How many tasks the automation page lists, ended ones included; nil before the first read.
-    private(set) var scheduleCount: Int?
+    @Published private(set) var scheduleCount: Int?
     /// `$events` is up (a `ready` arrived and the stream has not ended).
-    private(set) var connected = false
+    @Published private(set) var connected = false
     /// Bumped on every `ready`: a new connection generation, after which every
     /// view re-reads its baseline (emits missed while offline are not replayed).
-    private(set) var generation = 0
+    @Published private(set) var generation = 0
     /// Count of `emit`s seen per event name; read through `revision(_:)`.
-    private(set) var eventCounts: [String: Int] = [:]
+    @Published private(set) var eventCounts: [String: Int] = [:]
 
-    private var workspaceTask: Task<Void, Never>?
-    private var refreshTask: Task<Void, Never>?
-    private var eventsTask: Task<Void, Never>?
-    private var controlTask: Task<Void, Never>?
-    private var scheduleTask: Task<Void, Never>?
-    private var eventsClientId: String?
+    @Published private var workspaceTask: Task<Void, Never>?
+    @Published private var refreshTask: Task<Void, Never>?
+    @Published private var eventsTask: Task<Void, Never>?
+    @Published private var controlTask: Task<Void, Never>?
+    @Published private var scheduleTask: Task<Void, Never>?
+    @Published private var eventsClientId: String?
     /// `api-session/status` from `$events`: the live running flag, which wins over
     /// `session/list` (that one can read idle while a tool call runs).
-    private var runningStatus: [String: Bool] = [:]
-    private var listeners: [UUID: (String, [JSON]) -> Void] = [:]
+    @Published private var runningStatus: [String: Bool] = [:]
+    @Published private var listeners: [UUID: (String, [JSON]) -> Void] = [:]
     /// Subagent children by parent, rebuilt with the list; rows ask per redraw.
-    private(set) var childSessions: [String: [String]] = [:]
+    @Published private(set) var childSessions: [String: [String]] = [:]
 
     init(launchURL: URL) {
         client = EngineClient(launchURL: launchURL)

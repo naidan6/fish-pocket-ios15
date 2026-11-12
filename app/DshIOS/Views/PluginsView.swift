@@ -173,7 +173,7 @@ struct OfficialPluginItem: Identifiable {
 /// 插件: built-in configuration, experimental and installed plugins, the 发现 tab
 /// while the market bundle is enabled, and the add menu.
 struct PluginsView: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.noticesHosted) private var noticesHosted
     @Environment(\.openSession) private var openSession
     @AppStorage("dsh.plugins.tab") private var tab = "installed"
@@ -378,7 +378,7 @@ struct PluginsView: View {
 
 /// 实验性插件 → 更多.
 private struct MoreExtensionsView: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
 
     var body: some View {
         List {
@@ -392,7 +392,7 @@ private struct MoreExtensionsView: View {
 
 /// P-04: artwork, name, tags, one-liner and the state; the switch is on the detail page it opens.
 private struct PluginCard: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.systemLists) private var systemLists
     let package: PluginPackage
     @State private var confirmingUninstall = false
@@ -465,7 +465,7 @@ private extension View {
 }
 
 private struct ConfirmUninstall: ViewModifier {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let package: PluginPackage
     @Binding var isPresented: Bool
     let then: (() -> Void)?
@@ -488,7 +488,7 @@ private struct ConfirmUninstall: ViewModifier {
 /// P-07: one package: the switch first, 更新 under it, its problem, configuration (the
 /// generic form) and components (P-08); names and sources under 高级, 卸载 last.
 struct PluginDetailView: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let name: String
     @State private var confirmingUninstall = false
     @State private var uninstalled = false
@@ -693,7 +693,7 @@ private struct FlowTags: View {
 /// P-08: one component: its state dot, name, description and switch. The switch
 /// shows only while the bundle is on; a locked row says why.
 private struct PluginRowView: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let row: PluginRow
     let showSwitch: Bool
 

@@ -1,3 +1,4 @@
+import Combine
 import SwiftUI
 import WebKit
 
@@ -5,24 +6,23 @@ import WebKit
 /// (closing the workbench keeps the page), its address, and the last page of the session. There is no proxy and no RPC;
 /// the engine runs in this app, so `localhost` reaches a dev server the agent started.
 @MainActor
-@Observable
-final class BrowserModel: NSObject {
-    var address = ""
+final class BrowserModel: NSObject, ObservableObject {
+    @Published var address = ""
     /// The refused address's reason, shown under the bar.
-    var addressError: String?
-    private(set) var started = false
-    private(set) var canGoBack = false
-    private(set) var canGoForward = false
-    private(set) var loading = false
-    private(set) var failure: String?
-    private(set) var lastURL: String?
+    @Published var addressError: String?
+    @Published private(set) var started = false
+    @Published private(set) var canGoBack = false
+    @Published private(set) var canGoForward = false
+    @Published private(set) var loading = false
+    @Published private(set) var failure: String?
+    @Published private(set) var lastURL: String?
     /// What is on screen now, for the bar's menu.
-    private(set) var page: URL?
+    @Published private(set) var page: URL?
 
     let webView: WKWebView
     private let storageKey: String
     private let origin: URL
-    private var observations: [NSKeyValueObservation] = []
+    @Published private var observations: [NSKeyValueObservation] = []
 
     init(sessionId: String, origin: URL) {
         storageKey = "dsh.browser.last.\(sessionId)"
@@ -141,7 +141,7 @@ extension BrowserModel: WKNavigationDelegate, WKUIDelegate {
 }
 
 struct WorkbenchBrowser: View {
-    @Bindable var model: BrowserModel
+    @ObservedObject var model: BrowserModel
     @FocusState private var editing: Bool
 
     /// Where dev servers usually listen; the agent's own port goes in the bar.

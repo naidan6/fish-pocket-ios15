@@ -240,3 +240,13 @@ extension CompatLabeledContent where Content == Text {
         self.init(titleKey) { Text(value.description) }
     }
 }
+
+// MARK: - StoreKit 的 requestReview（iOS 16）降级
+
+extension View {
+    /// 15 上没有 `\@Environment(\.requestReview)`；退成直接打开 App Store 的评价页。
+    func compatRequestReview(appID: String) {
+        guard let url = URL(string: "https://apps.apple.com/app/id\(appID)?action=write-review") else { return }
+        UIApplication.shared.open(url)
+    }
+}

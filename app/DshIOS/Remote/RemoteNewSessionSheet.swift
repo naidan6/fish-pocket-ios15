@@ -12,7 +12,7 @@ struct RemoteSessionTarget: Identifiable, Equatable {
 /// The agent's model and permission are its own defaults unless changed here.
 struct RemoteNewSessionSheet: View {
     let target: RemoteSessionTarget
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
     @State private var deviceId = ""

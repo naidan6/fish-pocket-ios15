@@ -1,3 +1,4 @@
+import Combine
 import SwiftUI
 
 /// One background job as `job/list` reports it (`JobView`).
@@ -55,11 +56,10 @@ struct JobRow: Identifiable, Hashable {
 /// The session's job roster: `job/list` frames carry the whole set; the stream stays
 /// open while the conversation is up, so the top bar knows when there is anything to show.
 @MainActor
-@Observable
-final class JobsModel {
-    private(set) var rows: [JobRow] = []
+final class JobsModel: ObservableObject {
+    @Published private(set) var rows: [JobRow] = []
     /// Settled rows cleared here; 清空 is client-side, as on the web.
-    private(set) var cleared: Set<String> = []
+    @Published private(set) var cleared: Set<String> = []
 
     /// Live rows first in start order, then settled rows newest-first.
     var live: [JobRow] { rows.filter(\.live).sorted { $0.startedAt < $1.startedAt } }
@@ -102,7 +102,7 @@ final class JobsModel {
 struct JobsSheet: View {
     let sessionId: String
     let jobs: JobsModel
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.dismiss) private var dismiss
     @State private var stopping: JobRow?
     @State private var settledOpen: Bool?
@@ -221,7 +221,7 @@ struct JobOutputView: View {
     let sessionId: String
     let jobs: JobsModel
     let job: JobRow
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @State private var text = ""
     @State private var gap = false
     @State private var failure: String?

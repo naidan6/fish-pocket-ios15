@@ -1,3 +1,4 @@
+import Combine
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -6,13 +7,12 @@ import UniformTypeIdentifiers
 /// A mark the reader leaves on a Bot's reply. It is the reader's own note: kept on this
 /// device, never sent to the Bot (ds-bot's window keeps its reactions the same way).
 @MainActor
-@Observable
-final class BotReactions {
+final class BotReactions: ObservableObject {
     static let shared = BotReactions()
     static let choices = ["👍", "❤️", "😂", "🎉", "🤔", "👀"]
     private static let storeKey = "bot.reactions"
 
-    private(set) var all: [String: String]
+    @Published private(set) var all: [String: String]
 
     private init() {
         all = UserDefaults.standard.dictionary(forKey: Self.storeKey) as? [String: String] ?? [:]
@@ -66,7 +66,7 @@ struct BotReactionChip: View {
 
 /// How long a reply's reasoning took, as ds-bot timed it: a line at the end of its steps.
 struct BotThinkingTime: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.botTimeline) private var bot
     let turn: Int
     @State private var seconds: Int?
@@ -158,12 +158,11 @@ extension SessionModel {
 /// A Bot's replies read aloud as they arrive, for a chat the user follows by ear. Speaking
 /// to the Bot is the keyboard's own dictation: the app itself never uses the microphone.
 @MainActor
-@Observable
-final class BotAutoRead {
+final class BotAutoRead: ObservableObject {
     static let shared = BotAutoRead()
     /// The sessions whose replies are read.
-    private(set) var sessions: Set<String> = []
-    private var listener: UUID?
+    @Published private(set) var sessions: Set<String> = []
+    @Published private var listener: UUID?
 
     func isOn(_ sessionId: String) -> Bool { sessions.contains(sessionId) }
 

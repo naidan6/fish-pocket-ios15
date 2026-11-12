@@ -3,7 +3,7 @@ import SwiftUI
 /// 设置 → Agent 预设 (AP-01 / AP-02 / AP-04 / AP-05): tapping a row makes it the default for
 /// new tasks (`agent-preset-registry.selectedDefault`), the ⓘ opens a read-only view of it.
 struct AgentPresetsPage: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.openSession) private var openSession
     @State private var presets: [JSON]?
     @State private var failed = false
@@ -154,7 +154,7 @@ struct AgentPresetsPage: View {
 
 /// AP-04: a preset's YAML, read-only.
 private struct AgentPresetReader: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let id: String
     let title: String
     @State private var content: String?

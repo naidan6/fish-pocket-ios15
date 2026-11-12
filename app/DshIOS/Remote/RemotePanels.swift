@@ -106,7 +106,7 @@ struct RemoteOptionsSheet: View {
 /// grouped list, as the pages of 设置 are.
 struct RemoteInfoSheet: View {
     let model: RemoteSessionModel
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -239,7 +239,7 @@ private struct RemoteDirectoryPage: View {
     let root: String
     let path: String
     let title: String
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @State private var entries: [RemoteFileEntry]?
     @State private var failure: String?
     @State private var query = ""
@@ -349,7 +349,7 @@ private struct RemoteFilePage: View {
     let deviceId: String
     let root: String
     let entry: RemoteFileEntry
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @State private var text: String?
     @State private var truncated = false
     @State private var failure: String?

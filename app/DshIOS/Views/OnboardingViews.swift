@@ -6,7 +6,7 @@ struct OnboardingKeySheet: View {
     /// The credential reference the official route's profile names.
     let ref: String
     let finish: () -> Void
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @State private var key = ""
     @State private var reveal = false
     @State private var busy = false

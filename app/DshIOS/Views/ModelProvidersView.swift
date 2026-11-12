@@ -1,3 +1,4 @@
+import Combine
 import SwiftUI
 
 // MARK: - Provider rows
@@ -57,13 +58,12 @@ func deriveKeyRef(_ provider: String) -> String {
 
 /// The joined provider rows, re-read whenever settings, credentials or adapters change.
 @MainActor
-@Observable
-final class ModelProvidersModel {
-    private(set) var rows: [ProviderRow] = []
-    private(set) var loading = false
-    private(set) var ready = false
-    private(set) var error: String?
-    private(set) var credentialError: String?
+final class ModelProvidersModel: ObservableObject {
+    @Published private(set) var rows: [ProviderRow] = []
+    @Published private(set) var loading = false
+    @Published private(set) var ready = false
+    @Published private(set) var error: String?
+    @Published private(set) var credentialError: String?
 
     func load(_ app: AppModel) async {
         loading = true
@@ -139,8 +139,8 @@ final class ModelProvidersModel {
 /// 设置 → 模型 (M-01…M-13): the default model, one row per configured provider with its
 /// key state, an editor page per provider, and the add flow in a sheet of its own.
 struct ModelProvidersPage: View {
-    @Environment(AppModel.self) private var app
-    @State private var model = ModelProvidersModel()
+    @EnvironmentObject private var app: AppModel
+    @StateObject private var model = ModelProvidersModel()
     @State private var deleteTarget: ProviderRow?
     @State private var deleting = false
     @State private var adding = false
@@ -420,7 +420,7 @@ private struct ProviderEditorPage: View {
 /// failure in the key step retries only that step. Adding splits the same card in two:
 /// the key here, then 下一步 to the models, which saves.
 private struct ProviderEditor: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let model: ModelProvidersModel
     let row: ProviderRow
     let namespace: JSON
@@ -812,7 +812,7 @@ private enum CatalogFamily { case deepseek, piAi }
 
 /// M-07: the model rows, their reset, add and fetch actions (M-13).
 private struct ModelCatalogSection: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let models: [JSON]
     /// nil: a new custom API, which has no inherited catalog to speak of.
     let overridden: Bool?
@@ -1219,7 +1219,7 @@ private struct ModelPickerSheet: View {
 /// comes first, then the models. The list is read once: saving moves a provider out of
 /// what can be added, and the page it pushed must survive a failed key step.
 private struct AddProviderSheet: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.dismiss) private var dismiss
     let model: ModelProvidersModel
     @State private var addable: [ProviderRow]?
@@ -1278,7 +1278,7 @@ private struct AddProviderSheet: View {
 /// and key, then the models it lists. The provider ID is derived from the name or the
 /// address; 高级 can name it.
 private struct CustomProviderForm: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let model: ModelProvidersModel
     let namespace: JSON
     let protocols: [String]

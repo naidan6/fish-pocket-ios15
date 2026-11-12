@@ -3,7 +3,7 @@ import SwiftUI
 /// A Bot's own chat: its session in the conversation view, with the Bot as the title
 /// and what waits on the user (a model to pick, a question, a form) above the composer.
 struct BotChatView: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let botId: String
     @State private var detailOpen = false
     @State private var detailTab = BotDetailView.Tab.profile
@@ -59,7 +59,7 @@ struct BotChatView: View {
 
 /// The bar's title: the Bot's mark, name and what it is doing.
 private struct BotTitle: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let bot: BotInfo
 
     var body: some View {
@@ -92,7 +92,7 @@ struct BotTitleCapsule: ViewModifier {
 
 /// What waits on the user in this chat. Tool approvals are the conversation view's own.
 private struct BotPending: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let bot: BotInfo
 
     var body: some View {
@@ -148,7 +148,7 @@ struct BotCard<Content: View>: View {
 
 /// A question the Bot asked (ds-bot's `ask_user`): its options as buttons.
 private struct BotQuestionCard: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let bot: BotInfo
     let question: JSON
     @State private var picked: Set<String> = []
@@ -221,7 +221,7 @@ private struct BotQuestionCard: View {
 
 /// A Bot holds its greeting until it has a model.
 private struct BotModelPicker: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let bot: BotInfo
     @State private var saving = false
 
@@ -265,7 +265,7 @@ private struct BotModelPicker: View {
 /// The memory of this Bot or group just changed (the Bot remembered something on its own):
 /// one line above the composer until it is read or closed.
 struct BotMemoryNotice: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     /// A Bot's id or a group's.
     let id: String
 
@@ -304,7 +304,7 @@ struct BotMemoryNotice: View {
 
 /// The chat's menu in the bar: what the chat can do beyond sending a message.
 struct BotChatMenu: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let target: BotComposer
     let model: SessionModel
 

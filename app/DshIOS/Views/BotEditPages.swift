@@ -62,7 +62,7 @@ struct BotTextPage: View {
 
 /// The model a Bot runs on: the ones this DSH serves; keys and providers are set in 设置 › 模型.
 struct BotModelPage: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let botId: String
     @State private var saving: String?
 
@@ -122,7 +122,7 @@ struct BotModelPage: View {
 
 /// How hard the Bot's model thinks: the levels that model offers.
 struct BotEffortPage: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let botId: String
     @State private var levels: [JSON] = []
     @State private var fallback: String?
@@ -178,7 +178,7 @@ struct BotEffortPage: View {
 
 /// What the Bot may do without asking: DSH's permission presets.
 struct BotPermissionPage: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let botId: String
     @State private var saving: String?
     @State private var confirmingFullAccess = false
@@ -232,7 +232,7 @@ struct BotPermissionPage: View {
 
 /// A Bot's look: a photo of its own, or its colour behind its initial.
 struct BotAppearanceSheet: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.dismiss) private var dismiss
     let botId: String
     @State private var photo: PhotosPickerItem?

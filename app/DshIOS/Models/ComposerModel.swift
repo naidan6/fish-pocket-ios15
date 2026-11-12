@@ -1,6 +1,6 @@
 import CoreTransferable
+import Combine
 import Foundation
-import Observation
 import UIKit
 import UniformTypeIdentifiers
 
@@ -136,40 +136,39 @@ struct GoalInfo: Equatable {
 /// attachments and their uploads, the optimistic send with local echoes and
 /// failure restore (C-20, C-91), commands, the queue and the goal actions.
 @MainActor
-@Observable
-final class ComposerModel {
+final class ComposerModel: ObservableObject {
     /// Weak: sends and uploads outlive the conversation that started them (the session owns this model).
     private weak var session: SessionModel?
     let sessionId: String
     let app: AppModel
 
     var text: String { didSet { if text != oldValue { persistDraft() } } }
-    private(set) var attachments: [DraftAttachment] = []
-    private(set) var pending: [PendingSubmission] = []
+    @Published private(set) var attachments: [DraftAttachment] = []
+    @Published private(set) var pending: [PendingSubmission] = []
     /// A command line being executed: sending waits for it (C-87).
-    private(set) var executing = false
+    @Published private(set) var executing = false
     /// The live goal activation (`goals/get`): whether the goal will continue on its own.
-    private(set) var goalActivation: (id: String, revision: Int, armed: Bool)?
+    @Published private(set) var goalActivation: (id: String, revision: Int, armed: Bool)?
     /// `/plan` or `/plan off` on its way.
-    private(set) var planSwitching = false
+    @Published private(set) var planSwitching = false
     /// `/compact` on its way.
-    private(set) var compacting = false
+    @Published private(set) var compacting = false
     /// A queued message loaded into the input to edit, and the draft it set aside.
-    private(set) var editingQueue: (id: String, setAside: String)?
-    private(set) var savingQueueEdit = false
+    @Published private(set) var editingQueue: (id: String, setAside: String)?
+    @Published private(set) var savingQueueEdit = false
     /// Bumped to ask the input for the keyboard (from outside it, or after a sheet).
-    private(set) var focusRequest = 0
+    @Published private(set) var focusRequest = 0
     /// Cleared here; hidden until the projection catches up.
-    private var clearedGoalId: String?
+    @Published private var clearedGoalId: String?
 
-    private var failedDrafts: [(seq: Int, text: String)] = []
-    private var restoredText: String?
-    private var sendSeq = 0
-    private var uploadTasks: [UUID: Task<Void, Never>] = [:]
-    private var uploadQueue: [UUID] = []
-    private var activeUploads = 0
+    @Published private var failedDrafts: [(seq: Int, text: String)] = []
+    @Published private var restoredText: String?
+    @Published private var sendSeq = 0
+    @Published private var uploadTasks: [UUID: Task<Void, Never>] = [:]
+    @Published private var uploadQueue: [UUID] = []
+    @Published private var activeUploads = 0
     /// The library's progress for each video still being read (`readMovie`); cancel stops the read.
-    private var reads: [UUID: Progress] = [:]
+    @Published private var reads: [UUID: Progress] = [:]
     /// `ui-conversation.maxConcurrentFileUploads` (C-150): the web's default, a client config the phone does not receive.
     static let maxConcurrentFileUploads = 2
 
@@ -285,7 +284,7 @@ final class ComposerModel {
     private static func storageKey(_ sessionId: String) -> String { "dsh.conversation.\(sessionId)" }
 
     /// What a reference shows in the field, against what the engine reads: `@标题`, not `@[标题](dsh-session:…)`.
-    private var mentions: [String: String] = [:]
+    @Published private var mentions: [String: String] = [:]
 
     func addMention(title: String, raw: String) -> String {
         let token = "@\(title)"

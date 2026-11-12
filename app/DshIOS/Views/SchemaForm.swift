@@ -190,7 +190,7 @@ struct SchemaFormContext {
 /// The page of one settings namespace (the generic form, used where no native page
 /// exists): every edit is written on its own as soon as it is committed.
 struct NamespaceFormView: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let title: String
     let ns: String
 
@@ -832,7 +832,7 @@ private struct SecretField: View {
 /// F-04: a credential reference. The field holds a reference name (`DEEPSEEK_API_KEY`),
 /// not a key; the key itself goes to `credentials/set` under that name.
 private struct CredentialRefField: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let context: SchemaFormContext
     let key: String
     let node: SchemaNode

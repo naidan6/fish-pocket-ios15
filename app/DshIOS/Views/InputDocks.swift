@@ -14,7 +14,7 @@ struct ComposerStatusBar: View {
     var interactionArrived = false
     /// On from opening the sheet until it is gone; the conversation's own sheets wait for it.
     @Binding var sheetUp: Bool
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @State private var showSheet = false
     /// The keyboard was up when the sheet opened: it comes back after.
     @State private var refocus = false

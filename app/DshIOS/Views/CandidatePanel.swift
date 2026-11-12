@@ -19,7 +19,7 @@ struct CandidatePanel: View {
     let hit: TriggerHit
     let pick: (Candidate) -> Void
     let showAll: () -> Void
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.botComposer) private var bot
     @State private var references: [Row] = []
     @State private var searched = false
@@ -228,7 +228,7 @@ struct CandidateList: View {
     @State private var quoted: Bool
     @State private var references: [CandidatePanel.Row] = []
     @State private var searched = false
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.botComposer) private var bot
 
     init(model: SessionModel, context: ComposerContext, trigger: Character, query: String = "", quoted: Bool = false, leading: Bool = true, pick: @escaping (Candidate) -> Void) {

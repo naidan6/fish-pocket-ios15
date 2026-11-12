@@ -6,9 +6,9 @@ import UniformTypeIdentifiers
 /// with what the agent on the computer offers behind ＋: pictures and files where it takes them,
 /// its model and permission, and its slash commands as the draft starts with `/`.
 struct RemoteComposer: View {
-    @Bindable var model: RemoteSessionModel
+    @ObservedObject var model: RemoteSessionModel
     let openOptions: () -> Void
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @FocusState private var focused: Bool
     @State private var showPhotos = false
     @State private var showFiles = false

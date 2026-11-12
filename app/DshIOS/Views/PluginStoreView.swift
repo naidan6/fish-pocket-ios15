@@ -3,11 +3,11 @@ import SwiftUI
 /// 插件: browse a market and manage what is installed. It reads the same market and plugin models
 /// as 设置 → 插件, which stays as it is until this page replaces it.
 struct PluginStoreView: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     /// The sidebar button, where this page is the split view's detail.
     var openSidebar: (() -> Void)?
     @AppStorage("dsh.store.tab") private var tab = "discover"
-    @State private var model = PluginStoreModel()
+    @StateObject private var model = PluginStoreModel()
     @State private var managing = false
     @State private var searching = false
 
@@ -113,7 +113,7 @@ struct PluginStoreView: View {
 // MARK: - 发现
 
 private struct StoreDiscoverPage: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let model: PluginStoreModel
     @Binding var searching: Bool
     let manage: () -> Void
@@ -452,7 +452,7 @@ struct StoreArt: View {
 }
 
 private struct StoreRow: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let entry: StoreEntry
     let model: PluginStoreModel
     let wide: Bool
@@ -543,7 +543,7 @@ private struct StoreRow: View {
 
 /// Everything 设置 → 插件 lists, this store's way round: what the user added comes first.
 private struct StoreInstalledPage: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let showDiscover: () -> Void
 
     private var manager: PluginManagerModel { app.plugins }
@@ -626,7 +626,7 @@ private struct StoreInstalledPage: View {
 
 /// 实验性插件 → 查看全部.
 private struct StoreAllExtensions: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
 
     var body: some View {
         List {
@@ -640,7 +640,7 @@ private struct StoreAllExtensions: View {
 
 /// An installed or official package; its switch and removal are on the detail page it opens.
 private struct StorePackageRow: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let package: PluginPackage
 
     var body: some View {
@@ -682,7 +682,7 @@ private struct StorePackageRow: View {
 /// The index list, written whole with `setIndexes`. The preset is an ordinary source the user may
 /// remove; a row brings it back.
 struct StoreSourcesSheet: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.dismiss) private var dismiss
     let model: PluginStoreModel
     @State private var draft = ""

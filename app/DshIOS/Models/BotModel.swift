@@ -1,5 +1,5 @@
+import Combine
 import Foundation
-import Observation
 import SwiftUI
 
 /// One Bot of the team, as ds-bot's `state` lists it.
@@ -68,8 +68,7 @@ struct RoomInfo: Identifiable, Hashable {
 /// to read `state` again and carries each new entry of a Bot's own chat as it lands.
 /// The app pins the plugin's version (`PluginPins`): these endpoints carry no version.
 @MainActor
-@Observable
-final class BotModel {
+final class BotModel: ObservableObject {
     static let package = "ds-bot"
     /// The open-source project behind the Bot feature, linked where it is credited.
     static let projectURL = URL(string: "https://github.com/Fei2411/DS-Bot")!
@@ -87,44 +86,44 @@ final class BotModel {
 
     private unowned let app: AppModel
     /// The `state` view (bots, rooms, questions…), replaced on each new revision.
-    private(set) var team: JSON = .null
+    @Published private(set) var team: JSON = .null
     /// What changes without a revision: `activity` (per Bot) and `work`.
-    private(set) var activity: [String: JSON] = [:]
-    private(set) var work: JSON = .null
+    @Published private(set) var activity: [String: JSON] = [:]
+    @Published private(set) var work: JSON = .null
     /// The other live fields: `connectors`, `capabilityStatuses`, `learning`, `memoryNews`, `imStatus`…
-    private(set) var live: [String: JSON] = [:]
+    @Published private(set) var live: [String: JSON] = [:]
     private static let liveKeys = ["connectors", "capabilityStatuses", "learning", "learningSettled", "memoryNews", "memoryReviews", "imStatus", "imVia"]
     /// The route answered: the plugin is loaded in this engine.
-    private(set) var reachable = false
+    @Published private(set) var reachable = false
     /// Replies being written, by Session: the text so far.
-    private(set) var writing: [String: String] = [:]
+    @Published private(set) var writing: [String: String] = [:]
     /// Bumped whenever the feed (re)connects: what it missed is read again.
-    private(set) var feedGeneration = 0
-    private(set) var installing = false
-    var installError: String?
+    @Published private(set) var feedGeneration = 0
+    @Published private(set) var installing = false
+    @Published var installError: String?
     /// The running rounds of the open group chat (`room-progress`): `{callId, replies, speaking}`.
     /// A round's call settles only once every member has spoken; these carry the replies so far.
-    private(set) var rounds: [JSON] = []
+    @Published private(set) var rounds: [JSON] = []
     /// Open the scheduled tasks of the Bot or group whose chat asked (its ＋ tray).
-    var scheduleRequest: BotComposer?
+    @Published var scheduleRequest: BotComposer?
     /// Open a side question on the Bot whose chat asked (its ＋ tray).
-    var sideChatRequest: String?
+    @Published var sideChatRequest: String?
     /// Open the memory of the Bot whose chat asked (a "memory updated" line).
-    var memoryRequest: String?
+    @Published var memoryRequest: String?
     /// Show the Bot pages (the root view consumes it).
-    var openRequest: BotOpenRequest?
+    @Published var openRequest: BotOpenRequest?
     /// Memory changes already shown and closed, by Bot or group: the time of the change.
-    private(set) var seenMemoryNews: [String: Double] = [:]
+    @Published private(set) var seenMemoryNews: [String: Double] = [:]
     /// Approvals already announced, so each rings once.
-    private var announcedApprovals: Set<String> = []
+    @Published private var announcedApprovals: Set<String> = []
     /// The chat on screen (a Bot's or a group's id): what waits there needs no announcement.
-    var visibleChat: String?
+    @Published var visibleChat: String?
 
-    private var revision: Double?
-    private var liveKey: String?
-    private var followTask: Task<Void, Never>?
-    private var refreshTask: Task<Void, Never>?
-    private var listeners: [UUID: (String, JSON) -> Void] = [:]
+    @Published private var revision: Double?
+    @Published private var liveKey: String?
+    @Published private var followTask: Task<Void, Never>?
+    @Published private var refreshTask: Task<Void, Never>?
+    @Published private var listeners: [UUID: (String, JSON) -> Void] = [:]
 
     init(app: AppModel) {
         self.app = app

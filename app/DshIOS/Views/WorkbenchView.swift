@@ -24,7 +24,7 @@ struct WorkbenchView: View {
     /// Kept by the conversation, so the page outlives this view.
     @Binding var browser: BrowserModel?
     let close: () -> Void
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.horizontalSizeClass) private var sizeClass
     /// A page is created on its first visit (the terminal only attaches then) and
     /// stays, so switching tabs leaves it where it was.
@@ -110,7 +110,7 @@ struct WorkbenchView: View {
 
 private struct WorkbenchTerminal: View {
     let sessionId: String
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @State private var connection: TerminalConnection?
     @State private var terminals: [(id: String, title: String, exited: Bool)] = []
     @State private var error: String?

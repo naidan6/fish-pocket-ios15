@@ -5,7 +5,7 @@ import SwiftUI
 /// Where a Bot or a group works: the team workspace, or another workspace of this app.
 /// A change moves the chat to a fresh part in the new folder at its next turn.
 struct BotFolderPage: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let target: BotScheduleTarget
     @State private var folders: JSON = .null
     @State private var browsing = false
@@ -90,7 +90,7 @@ struct BotFolderPage: View {
 
 /// Ask a Bot's (or a group's) memory a question, or tell it what to change, in plain words.
 struct MemoryAskSection: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     /// `["botId": …]` or `["roomId": …]`.
     let target: [String: JSON]
     let changed: (JSON) -> Void
@@ -146,7 +146,7 @@ struct MemoryAskSection: View {
 /// when the page asks and the entries changed since; while it is being written the page
 /// reads again every couple of seconds.
 struct MemorySummarySection: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     /// `["botId": …]` or `["roomId": …]`.
     let target: [String: JSON]
     @Binding var memory: JSON
@@ -190,7 +190,7 @@ struct MemorySummarySection: View {
 
 /// Every change to a memory, newest first; each can be undone.
 struct MemoryHistoryPage: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let target: [String: JSON]
     @State private var rows: [JSON] = []
     @State private var more: JSON = .null
@@ -262,7 +262,7 @@ struct MemoryHistoryPage: View {
 
 /// A group's own memory: what every member reads there.
 struct RoomMemoryPage: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let roomId: String
     @State private var memory: JSON = .null
 
@@ -303,7 +303,7 @@ struct RoomMemoryPage: View {
 
 /// A goal the whole group works toward, stage by stage, led by its admin.
 struct RoomGoalSection: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let room: RoomInfo
     /// The page presents these: a section's modifiers would reach every row.
     @Binding var drafting: Bool
@@ -387,7 +387,7 @@ struct RoomGoalSection: View {
 }
 
 struct GoalDraftSheet: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.dismiss) private var dismiss
     let roomId: String
     @State private var text = ""
@@ -421,7 +421,7 @@ struct GoalDraftSheet: View {
 struct BotUsagePage: View {
     enum Span: Int, CaseIterable, Identifiable { case day = 1, week = 7, month = 30; var id: Int { rawValue } }
 
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @State private var usage: JSON = .null
     @State private var span = Span.week
 
@@ -509,7 +509,7 @@ struct BotUsagePage: View {
 
 /// The folder the team works in unless a Bot or group has its own.
 struct BotWorkspacePage: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @State private var folders: JSON = .null
 
     var body: some View {
@@ -545,7 +545,7 @@ struct BotWorkspacePage: View {
 
 /// What went wrong in the Bot plugin lately, with a report to copy into an issue.
 struct BotDiagnosticsPage: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @State private var value: JSON = .null
     /// Every recorded failure with its stack (`diagnostics-log`), for a bug report.
     @State private var log: String?
@@ -591,7 +591,7 @@ struct BotDiagnosticsPage: View {
 
 /// Folders of the engine to work in, one level at a time (`folder-list`).
 struct BotFolderBrowser: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let path: String?
     /// Close the whole browser, whichever level this is.
     let close: () -> Void

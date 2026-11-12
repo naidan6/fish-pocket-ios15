@@ -5,7 +5,7 @@ import SwiftUI
 /// the Agent presets' rosters; global plugins are shared by the system and every
 /// session. Read once per visit, as on the web.
 struct PluginInventoryPage: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @State private var snapshot: JSON?
     @State private var failed = false
     @State private var query = ""

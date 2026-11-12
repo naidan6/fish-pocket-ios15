@@ -5,7 +5,7 @@ import SwiftUI
 /// and the account notices. At the bottom, in the thumb's reach just above the
 /// composer, the shell toast (S-128, one at a time, a newer one replaces it).
 struct ShellNotices: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.noticesHosted) private var hosted
     /// The banner waits a moment so a quick reconnect never flashes it.
     @State private var showOffline = false

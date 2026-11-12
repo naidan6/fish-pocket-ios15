@@ -3,7 +3,7 @@ import SwiftUI
 /// A group chat's page: its name and notice, who is in it and who speaks first,
 /// its scheduled tasks, and stopping or deleting it.
 struct RoomDetailView: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.dismiss) private var dismiss
     let roomId: String
     @State private var confirmingDelete = false
@@ -221,7 +221,7 @@ struct RoomDetailView: View {
 
 /// Bots to add to a group: the team's others.
 private struct RoomAddMembersSheet: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.dismiss) private var dismiss
     let roomId: String
     @State private var picked: Set<String> = []

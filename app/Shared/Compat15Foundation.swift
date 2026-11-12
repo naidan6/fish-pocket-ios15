@@ -32,13 +32,3 @@ extension String {
         self = resource.text
     }
 }
-
-extension View {
-    /// iOS 16 的 `requestReview`（StoreKit）在 15 上没有；这里退成「打开 App Store 评价页」。
-    func compatRequestReview() {
-        guard let scene = UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }).first,
-              let url = URL(string: "https://apps.apple.com/app/id\(Bundle.main.bundleIdentifier ?? "")?action=write-review")
-        else { return }
-        scene.open(url)
-    }
-}

@@ -1,7 +1,6 @@
 #if !DSH_IOS15_BACKPORT
 import ActivityKit
 import Foundation
-import Observation
 import SwiftUI
 
 /// Mirrors agent work onto one Live Activity while the user is away from it: the phone's own

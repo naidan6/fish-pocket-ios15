@@ -1,19 +1,18 @@
+import Combine
 import Foundation
-import Observation
 
 /// The store's own state, around the market reader 发现 under 设置 → 插件 also uses: readying the
 /// market on first use and restoring the preset index.
 @MainActor
-@Observable
-final class PluginStoreModel {
+final class PluginStoreModel: ObservableObject {
     enum Readiness { case checking, preparing, ready, off, unavailable }
 
     /// Set once a preset has been offered: after that, an index list without it is the user's choice.
     private static let seededKey = "dsh.store.seeded:\(PluginStoreCatalog.presetIndex)"
 
     let market = PluginMarketModel()
-    private(set) var readiness = Readiness.checking
-    private var preparing: Task<Void, Never>?
+    @Published private(set) var readiness = Readiness.checking
+    @Published private var preparing: Task<Void, Never>?
 
     private var seeded: Bool {
         get { UserDefaults.standard.bool(forKey: Self.seededKey) }

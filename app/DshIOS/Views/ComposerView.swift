@@ -8,7 +8,7 @@ import UniformTypeIdentifiers
 struct ModelPicker: View {
     let model: SessionModel
     let context: ComposerContext
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @State private var searching = false
 
     var body: some View {
@@ -225,7 +225,7 @@ struct ComposerView: View {
     var focusChanged: (Bool) -> Void = { _ in }
     /// On from opening one of the composer's sheets until it is gone; the conversation's own sheets wait for it.
     var sheetUp: Binding<Bool> = .constant(false)
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.horizontalSizeClass) private var sizeClass
     @State private var photos: [PhotosPickerItem] = []
     @State private var showPhotos = false
@@ -381,7 +381,7 @@ struct ComposerView: View {
     private var input: some View {
         // Between three lines and four, whatever the text size.
         let threeLines = UIFont.preferredFont(forTextStyle: .callout).lineHeight * 3.5
-        return TextField(placeholder, text: Bindable(composer).text, axis: .vertical)
+        return TextField(placeholder, text: $composer.text, axis: .vertical)
             .font(.callout)
             .lineLimit(1...5)
             .focused($focused)
@@ -753,7 +753,7 @@ struct CameraPicker: UIViewControllerRepresentable {
 
 /// The draft on a page of its own, for text too long for the input.
 private struct DraftEditor: View {
-    @Bindable var composer: ComposerModel
+    @ObservedObject var composer: ComposerModel
     let send: () -> Void
     @FocusState private var focused: Bool
     @Environment(\.dismiss) private var dismiss

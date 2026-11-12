@@ -5,7 +5,7 @@ import SwiftUI
 /// the sibling list; a child with no parent left in the list shows its title alone.
 struct SubagentSwitcher: View {
     let sessionId: String
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
 
     var body: some View {
         let chain = app.lineage(of: sessionId)
@@ -57,7 +57,7 @@ struct SubagentSwitcher: View {
 /// its usage and the next level; opening the child's session is there or a swipe away.
 struct SubagentCatalogSheet: View {
     let rootId: String
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.dismiss) private var dismiss
     @State private var loading = true
     @State private var failed = false
@@ -190,7 +190,7 @@ private struct SubagentFacts {
 private struct SubagentRow: View {
     let entry: JSON
     let open: (String) -> Void
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
 
     var body: some View {
         let facts = SubagentFacts(entry: entry, app: app)
@@ -232,7 +232,7 @@ private struct SubagentRow: View {
 private struct SubagentDetail: View {
     let entry: JSON
     let open: (String) -> Void
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
 
     var body: some View {
         let facts = SubagentFacts(entry: entry, app: app)

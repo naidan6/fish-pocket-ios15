@@ -4,7 +4,7 @@ import SwiftUI
 /// run / stop / remove / retry / roll back. Client parts cannot run here (`CordisModel`).
 struct CordisPanelView: View {
     let currentSession: String?
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.dismiss) private var dismiss
 
     private var cordis: CordisModel { app.cordis }
@@ -43,7 +43,7 @@ struct CordisPanelView: View {
 
 private struct CordisRow: View {
     let row: JSON
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @State private var selected: String?
     @State private var removing = false
 

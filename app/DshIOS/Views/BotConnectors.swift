@@ -113,7 +113,7 @@ struct ConnectorIcon: View {
 /// Services the Bots can use through MCP: signed in once, shared by the team. The ones in use
 /// come first; the rest are found by kind or by name.
 struct BotConnectorsPage: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @State private var adding = false
     @State private var query = ""
     /// nil: every kind.
@@ -277,7 +277,7 @@ struct ConnectorState: View {
 
 /// One connector: connect it the way it signs in, then which Bots may use it.
 struct BotConnectorPage: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.dismiss) private var dismiss
     let id: String
     @State private var key = ""
@@ -471,7 +471,7 @@ struct BotConnectorPage: View {
 
 /// A connector of the user's own: an MCP server at an HTTPS address.
 private struct CustomConnectorSheet: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.dismiss) private var dismiss
     @State private var name = ""
     @State private var url = ""

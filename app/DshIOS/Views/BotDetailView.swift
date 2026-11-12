@@ -8,7 +8,7 @@ struct BotDetailView: View {
         case profile, schedules, memory
     }
 
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.dismiss) private var dismiss
     let botId: String
     /// The pages pushed on the Bot's own.
@@ -286,7 +286,7 @@ struct BotSchedulesPage: View {
 /// What a Bot remembers: a summary, a way to ask or change it in plain words, the entries
 /// themselves, and every change made to them.
 struct BotMemoryPage: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let botId: String
     @State private var memory: JSON = .null
     @State private var memoryError: String?

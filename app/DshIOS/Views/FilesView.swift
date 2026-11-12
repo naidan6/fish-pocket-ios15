@@ -8,7 +8,7 @@ import WebKit
 /// push, files open their preview; files this session changed are marked. The
 /// listing follows `workspaceFiles/changes` while on screen (S-75).
 struct DirectoryView: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let sessionId: String
     let path: String
     let title: String
@@ -192,7 +192,7 @@ struct FilePreviewSheet: View {
 /// straight from disk; text goes through `workspaceFiles/read`, page by page.
 /// `lines` (from a `#L24-L30` link) is highlighted and scrolled to.
 struct FileContentView: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let sessionId: String
     let path: String
     let root: String?

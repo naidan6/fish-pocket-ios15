@@ -4,7 +4,7 @@ import SwiftUI
 /// text alert (the title only has to be non-empty) and archiving busy work the system
 /// action sheet; both close at once, so a failure shows as a toast.
 struct ShellDialogs: ViewModifier {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @State private var renaming = false
     @State private var title = ""
 
@@ -88,7 +88,7 @@ struct ShellDialogs: ViewModifier {
 /// While the request runs it stays open; a failure shows the engine's message.
 private struct RenameWorkspaceSheet: View {
     let request: RenameRequest
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.dismiss) private var dismiss
     @State private var text = ""
     @State private var busy = false

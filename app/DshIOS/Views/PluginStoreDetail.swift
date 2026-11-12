@@ -2,7 +2,7 @@ import SwiftUI
 
 /// One plugin of a market: what it does, whether this DSH accepts it, and where it comes from.
 struct StoreEntryDetail: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let listing: StoreEntry
     let model: PluginStoreModel
     let install: (MarketChoice) -> Void
@@ -239,7 +239,7 @@ private struct StoreCaption: View {
 
 /// The package's long description, as the Host reads it from the version's source.
 private struct StoreReadmePage: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let entry: StoreEntry
     let url: String
     @State private var markdown: String?
@@ -318,7 +318,7 @@ private struct StoreReadmePage: View {
 
 /// 安装「{name}」？ with where it comes from, then the install sheet.
 struct StoreInstallConfirm: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.dismiss) private var dismiss
     let choice: MarketChoice
     let marketTitle: String?
@@ -433,7 +433,7 @@ struct StoreWebUINote: View {
 
 /// 询问 AI: leaves for a new conversation that already holds the plugin and its install.
 struct PluginAskRow: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let caption: LocalizedStringKey
     let question: () -> String
 

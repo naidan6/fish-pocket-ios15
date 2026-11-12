@@ -1,5 +1,5 @@
+import Combine
 import Foundation
-import Observation
 
 /// The Host half of the official Cordis panel (`dsh-client-ui-cordis`): plugins an agent
 /// defines at runtime, listed by `dynamicCordisRunner/inventory`.
@@ -9,18 +9,17 @@ import Observation
 /// any of it runs: unanswered, the agent's turn would wait for a page that does not exist.
 /// Host-only versions need no such request and run normally.
 @MainActor
-@Observable
-final class CordisModel {
-    private(set) var rows: [JSON] = []
-    private(set) var loaded = false
-    private(set) var failure: String?
+final class CordisModel: ObservableObject {
+    @Published private(set) var rows: [JSON] = []
+    @Published private(set) var loaded = false
+    @Published private(set) var failure: String?
     /// Plugins with an action in flight.
-    private(set) var pending: Set<String> = []
+    @Published private(set) var pending: Set<String> = []
     /// The last failed action of each plugin.
-    private(set) var actionErrors: [String: String] = [:]
+    @Published private(set) var actionErrors: [String: String] = [:]
 
-    private var client: EngineClient?
-    private var answered: Set<String> = []
+    @Published private var client: EngineClient?
+    @Published private var answered: Set<String> = []
 
     /// Told to the model (not shown to the user): why the activation did not happen.
     private static let unsupported = "This iOS client cannot load a plugin's browser Client half, and nothing was activated. Define a version without Client code (Host only), or run this one from the web UI."

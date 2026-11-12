@@ -126,7 +126,7 @@ struct RoomRelay: Hashable {
 
 /// A group chat: the group's own session in the conversation view.
 struct BotRoomView: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let roomId: String
     /// See `BotChatView.selection`.
     @State private var selection: String?
@@ -174,7 +174,7 @@ struct BotRoomView: View {
 
 /// Above a group's composer: who speaks now, and a tap to @ a member.
 private struct RoomMentions: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.sessionModel) private var session
     let room: RoomInfo
 
@@ -225,7 +225,7 @@ private struct RoomMentions: View {
 
 /// A member waits for the user to allow a tool in the group (only answerable here).
 private struct RoomApprovalCard: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let approval: JSON
     @State private var sending = false
 
@@ -265,7 +265,7 @@ extension View {
 }
 
 private struct OpenOtherSession: ViewModifier {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Binding var selection: String?
     let sessionId: String
 

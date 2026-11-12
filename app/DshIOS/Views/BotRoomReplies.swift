@@ -3,7 +3,7 @@ import SwiftUI
 /// A group round: what each member said, under its name and mark, with the lines in
 /// between that say what else happened (someone stopped, did not answer, waits for the user).
 struct RoomRelayView: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.botTimeline) private var timeline
     let relay: RoomRelay
     let running: Bool
@@ -140,7 +140,7 @@ struct RoomEventLine: View {
 /// One member's message in a group: its mark opens its own chat; a long press has the same
 /// actions a reply has in a Bot's own chat.
 struct RoomMessage: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.conversationActions) private var actions
     let bot: BotInfo?
     let name: String
@@ -212,7 +212,7 @@ struct RoomMessage: View {
 
 /// A Bot's post into the group from outside a round (it was asked to post, or reports back).
 struct RoomPostView: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.botTimeline) private var timeline
     let trigger: TurnTrigger
 

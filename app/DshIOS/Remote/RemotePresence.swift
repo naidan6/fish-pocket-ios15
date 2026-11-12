@@ -1,6 +1,5 @@
 import ActivityKit
 import Foundation
-import Observation
 import UIKit
 
 /// The sessions on a computer that the phone answers for, outside their conversations. The

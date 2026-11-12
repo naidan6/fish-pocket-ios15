@@ -4,7 +4,7 @@ import SwiftUI
 /// 远程控制: before signing in, what it is and how to connect; after, the account and its computers.
 /// It is a page of 设置 and the sheet the sidebar opens.
 struct RemoteControlPage: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
 
     var body: some View {
         Group {
@@ -19,7 +19,7 @@ struct RemoteControlPage: View {
 
 /// What remote control does, what it needs on the computer, and the two ways to sign in.
 private struct RemoteSignInPage: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.openURL) private var openURL
     @State private var scanning = false
     @State private var typing = false
@@ -116,7 +116,7 @@ private struct RemoteSignInPage: View {
 
 /// Scan the code on the computer, then wait for the confirmation there.
 private struct RemoteScanSheet: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
     @State private var code: RemoteLoginCode?
@@ -274,7 +274,7 @@ private struct RemoteCodeScanner: UIViewRepresentable {
 
 /// A server of the user's own takes an email and a password (the cloud's accounts sign in by QR code).
 private struct RemotePasswordSheet: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.dismiss) private var dismiss
     @State private var server = RemoteStore.Links.cloud.absoluteString
     @State private var email = ""
@@ -348,7 +348,7 @@ private struct RemotePasswordSheet: View {
 
 /// The signed-in account, its computers and the agents on each.
 private struct RemoteDevicesList: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.openURL) private var openURL
     @State private var renaming: RemoteDevice?
     @State private var name = ""

@@ -5,7 +5,7 @@ import SwiftUI
 /// read: a system folder picker returns paths outside the sandbox it cannot reach, and
 /// the engine's own home is not somewhere users keep projects.
 struct NewWorkspaceView: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.dismiss) private var dismiss
     @State private var stack: [String] = []
     @State private var showHidden = false
@@ -129,7 +129,7 @@ private struct DirectoryLevelView: View {
     let showHidden: Bool
     let reload: Int
     let loaded: (DirectoryListing) -> Void
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @State private var listing: DirectoryListing?
     @State private var failure: String?
     @State private var slow = false

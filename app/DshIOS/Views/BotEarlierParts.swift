@@ -4,7 +4,7 @@ import SwiftUI
 /// conversation to a fresh session and keeps the old ones; `earlier` pages through them,
 /// newest page first, each page oldest to newest.
 struct BotEarlierParts: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let sessionId: String
     @State private var items: [JSON] = []
     @State private var cursor: JSON = .null

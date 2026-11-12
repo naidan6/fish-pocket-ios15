@@ -9,7 +9,7 @@ struct RemoteConversationView: View {
     @Binding var selection: String?
     /// Opens the drawer; nil where the sidebar is always shown (iPad).
     var openDrawer: (() -> Void)?
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.scenePhase) private var scenePhase
     @State private var model: RemoteSessionModel?
     @State private var atBottom = true
@@ -328,7 +328,7 @@ struct RemoteConversationView: View {
 /// connection stands while it is not live. A tap opens the session's menu.
 private struct RemoteTitleMenu: View {
     let model: RemoteSessionModel
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
 
     private var subtitle: String {
         guard let meta = model.meta else { return "" }
@@ -508,7 +508,7 @@ private struct RemoteUserBubble: View {
 /// A picture a message carries: fetched from the account's server, opened full screen on a tap.
 private struct RemoteImageThumb: View {
     let attachment: RemoteAttachment
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @State private var image: UIImage?
     @State private var failed = false
     @State private var viewing = false

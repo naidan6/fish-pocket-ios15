@@ -6,7 +6,7 @@ struct CredentialNotice: View {
     let id: String
     let problem: TurnFailure.CredentialProblem
     let model: SessionModel
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     /// Some provider can answer now; nil until asked.
     @State private var ready: Bool?
 

@@ -26,7 +26,7 @@ enum PluginInstallPresenter {
             ?? UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first
         guard var top = scene?.keyWindow?.rootViewController else { return }
         while let presented = top.presentedViewController, !presented.isBeingDismissed { top = presented }
-        let host = UIHostingController(rootView: PluginInstallSheet().environment(app))
+        let host = UIHostingController(rootView: PluginInstallSheet().environmentObject(app))
         host.modalPresentationStyle = .pageSheet
         host.sheetPresentationController?.prefersGrabberVisible = true
         delegate.app = app
@@ -44,7 +44,7 @@ enum PluginInstallPresenter {
 
 /// 添加插件: the form, then the install's progress, its result or its failure (P-10).
 struct PluginInstallSheet: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
 
     private var task: PluginInstallTask { app.pluginInstall }
     private var showsForm: Bool { (task.phase == .idle || task.phase == .checking) && task.confirmed == nil }
@@ -111,7 +111,7 @@ struct PluginInstallSheet: View {
 /// The first screen: the spec or a folder, and one line on the risk. 安装 is in the toolbar,
 /// where the keyboard never covers it; the registry is a page of its own.
 private struct InstallForm: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @State private var importing = false
     @State private var copying = false
     /// The picked folder, shown by name: its path means nothing to read.
@@ -123,7 +123,7 @@ private struct InstallForm: View {
     private var empty: Bool { task.spec.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
 
     var body: some View {
-        @Bindable var task = task
+        @ObservedObject var task = task
         Form {
             Section {
                 if let folder, folder.path == task.spec {
@@ -261,7 +261,7 @@ private struct InstallForm: View {
 /// 安装源: pushed from the form, and by 更换安装源 or a refused address. A choice goes back; a
 /// custom address stays for typing.
 private struct InstallRegistryPage: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.dismiss) private var dismiss
     @State private var customURL = ""
 
@@ -329,7 +329,7 @@ private struct InstallRegistryPage: View {
 
 /// What the install is about: the Host's name, one-liner and version.
 private struct InstallSubject: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
 
     private var task: PluginInstallTask { app.pluginInstall }
 
@@ -366,12 +366,12 @@ private struct InstallSubject: View {
 
 /// The pnpm commands of the run, folded behind 查看安装详情.
 private struct InstallDetails: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
 
     private var task: PluginInstallTask { app.pluginInstall }
 
     var body: some View {
-        @Bindable var task = task
+        @ObservedObject var task = task
         if !task.runs.isEmpty {
             DisclosureGroup(task.detailsOpen ? "收起安装详情" : "查看安装详情", isExpanded: $task.detailsOpen) {
                 VStack(alignment: .leading, spacing: 12) {
@@ -475,7 +475,7 @@ private struct InstallPage<Actions: View>: View {
 
 /// `checking` (market entry) / `starting` / `running` / `cancelling` / `applying` / `unconfirmed`.
 private struct InstallProgress: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
 
     private var task: PluginInstallTask { app.pluginInstall }
 
@@ -533,7 +533,7 @@ private struct InstallProgress: View {
 }
 
 private struct InstallDone: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
 
     private var task: PluginInstallTask { app.pluginInstall }
 
@@ -581,7 +581,7 @@ private struct InstallDone: View {
 }
 
 private struct InstallFailed: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
 
     private var task: PluginInstallTask { app.pluginInstall }
 
@@ -644,7 +644,7 @@ private struct InstallFailed: View {
 
 /// 询问 AI under an install that went wrong: the new conversation gets this screen's record.
 private struct InstallAsk: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
 
     var body: some View {
         if let record = app.pluginInstall.record {
@@ -655,7 +655,7 @@ private struct InstallAsk: View {
 
 /// The Host has no such request: the outcome cannot be told.
 private struct InstallUnknown: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
 
     var body: some View {
         InstallPage(content: AnyView(
@@ -673,7 +673,7 @@ private struct InstallUnknown: View {
 
 /// A market entry refused at the check: there is no form to go back to.
 private struct InstallConfirmedRefused: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
 
     private var task: PluginInstallTask { app.pluginInstall }
 

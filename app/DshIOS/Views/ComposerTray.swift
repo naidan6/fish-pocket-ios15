@@ -14,7 +14,7 @@ struct ComposerTray: View {
     let setPermission: (String) -> Void
     /// A Bot's chat or a group chat: the model and modes are not this session's to set.
     @Environment(\.botComposer) private var bot
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.dismiss) private var dismiss
     @State private var confirmingPermission: String?
 

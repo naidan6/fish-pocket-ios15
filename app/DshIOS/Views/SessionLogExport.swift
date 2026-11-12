@@ -4,7 +4,7 @@ import SwiftUI
 /// (`api/session.export`); here the ZIP lands in a temporary file to share.
 struct SessionLogExportSheet: View {
     let sessionId: String
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.dismiss) private var dismiss
     @State private var file: URL?
     @State private var failure: String?

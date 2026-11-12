@@ -16,7 +16,7 @@ struct ConversationView: View {
     /// A Bot's chat or a group chat: its own title in the bar and its cards above the composer.
     var bot: BotChrome?
     /// The global automation page (the reminders sheet leads there).
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.horizontalSizeClass) private var sizeClass
     @State private var model: SessionModel?
     @State private var context = ComposerContext()
@@ -27,7 +27,7 @@ struct ConversationView: View {
     /// Interactions swiped away; they stay answerable from the 「等你允许」 line.
     @State private var deferred: Set<String> = []
     @State private var showNewWorkspace = false
-    @State private var jobs = JobsModel()
+    @StateObject private var jobs = JobsModel()
     @State private var headerSheet: SessionHeaderSheet?
     @State private var presets = AgentPresetCatalog()
     /// The reader is at the end of the timeline, so it follows new output (C-12).

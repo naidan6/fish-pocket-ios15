@@ -25,7 +25,7 @@ struct DrawerView: View {
 
     private enum Route: Hashable { case archived }
 
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @EnvironmentObject private var engine: NodeEngine
     let selection: String?
     /// Where a new conversation from the top button goes: the current session's workspace.

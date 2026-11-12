@@ -1,5 +1,5 @@
+import Combine
 import Foundation
-import Observation
 import UIKit
 
 /// The login a QR code on Agents Anywhere's web or desktop app carries.
@@ -30,8 +30,7 @@ struct RemoteLoginCode: Hashable {
 /// One for the app: it does not depend on the phone's own engine, so an engine restart (which
 /// brings a new `AppModel`) leaves the account, its connection and the open sessions as they are.
 @MainActor
-@Observable
-final class RemoteStore {
+final class RemoteStore: ObservableObject {
     static let shared = RemoteStore()
 
     /// A remote session in the shell's one selection: `remote:<id>` beside the engine's own ids.
@@ -51,46 +50,46 @@ final class RemoteStore {
         static let app = URL(string: "https://apps.apple.com/app/agents-anywhere/id6787125178")!
     }
 
-    private(set) var account: RemoteCredentials?
-    private(set) var devices: [RemoteDevice] = []
-    private(set) var projects: [RemoteProject] = []
-    private(set) var agents: [RemoteAgent] = []
-    private(set) var sessions: [String: RemoteSession] = [:]
+    @Published private(set) var account: RemoteCredentials?
+    @Published private(set) var devices: [RemoteDevice] = []
+    @Published private(set) var projects: [RemoteProject] = []
+    @Published private(set) var agents: [RemoteAgent] = []
+    @Published private(set) var sessions: [String: RemoteSession] = [:]
     /// What the sidebar draws from, kept ready: sessions in list order (pinned, then most recent),
     /// the archived ones apart, and devices and projects by id. A redraw then sorts and searches nothing.
-    private(set) var active: [RemoteSession] = []
-    private(set) var archivedSessions: [RemoteSession] = []
-    private var deviceIndex: [String: RemoteDevice] = [:]
-    private var projectIndex: [String: RemoteProject] = [:]
+    @Published private(set) var active: [RemoteSession] = []
+    @Published private(set) var archivedSessions: [RemoteSession] = []
+    @Published private var deviceIndex: [String: RemoteDevice] = [:]
+    @Published private var projectIndex: [String: RemoteProject] = [:]
     /// What each followed session that waits is asking, read as it starts to wait: the lock
     /// screen and the widgets say it, and an approval can be answered from there.
-    private(set) var requests: [String: RemoteNotice] = [:]
+    @Published private(set) var requests: [String: RemoteNotice] = [:]
     /// Sessions whose computer was taken off the account while they were known here: a
     /// conversation open on one has nothing behind it any more, and closes.
-    private(set) var departed: Set<String> = []
+    @Published private(set) var departed: Set<String> = []
     /// The list has been read at least once since signing in.
-    private(set) var loaded = false
+    @Published private(set) var loaded = false
     /// The list is being followed live.
-    private(set) var connected = false
+    @Published private(set) var connected = false
     /// Why the list could not be read, while that lasts.
-    private(set) var problem: String?
+    @Published private(set) var problem: String?
     /// The server ended the sign-in; shown once, then cleared.
-    var expired = false
+    @Published var expired = false
 
-    private(set) var client: RemoteClient?
-    private var follow: Task<Void, Never>?
+    @Published private(set) var client: RemoteClient?
+    @Published private var follow: Task<Void, Never>?
     /// The sessions that have been opened, the most recently shown last. A model stays after its
     /// page closes, so that opening the session again shows at once what it held and only has to
     /// catch up. In memory, for this run of the app: nothing of a session is written to the phone.
-    private var kept: [RemoteSessionModel] = []
+    @Published private var kept: [RemoteSessionModel] = []
     /// How many pages show each session now (a session can be open in more than one window).
-    private var showing: [String: Int] = [:]
+    @Published private var showing: [String: Int] = [:]
     private static let keptLimit = 8
-    private var inFront = true
+    @Published private var inFront = true
     /// The state of the session each request was read at; a later one is read again.
-    private var requestSeq: [String: Int] = [:]
-    private var requestReads: Set<String> = []
-    private var observers: [NSObjectProtocol] = []
+    @Published private var requestSeq: [String: Int] = [:]
+    @Published private var requestReads: Set<String> = []
+    @Published private var observers: [NSObjectProtocol] = []
 
     var signedIn: Bool { account != nil }
 

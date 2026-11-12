@@ -1,5 +1,5 @@
+import Combine
 import Foundation
-import Observation
 
 /// One provider's models in the catalog.
 struct ModelGroup: Identifiable {
@@ -24,19 +24,18 @@ struct CommandRow: Identifiable, Hashable {
 /// conversation: the `/` catalog, the model catalog, permission presets and
 /// the busy-Enter preference. Each reloads on its engine event.
 @MainActor
-@Observable
-final class ComposerContext {
-    private(set) var commands: [CommandDescriptor] = []
+final class ComposerContext: ObservableObject {
+    @Published private(set) var commands: [CommandDescriptor] = []
     /// Providers in the web's order: DeepSeek account, DeepSeek official, then the rest.
-    private(set) var catalog: [ModelGroup] = []
+    @Published private(set) var catalog: [ModelGroup] = []
     /// Providers whose model list failed to load (`failures`), shown with a retry.
-    private(set) var catalogFailures: [(id: String, name: String, message: String)] = []
-    private(set) var catalogDefault: (provider: String, model: String, effort: String?)?
-    private(set) var catalogLoaded = false
-    private(set) var catalogLoading = false
-    private(set) var permissionOptions: [(value: String, name: String)] = []
+    @Published private(set) var catalogFailures: [(id: String, name: String, message: String)] = []
+    @Published private(set) var catalogDefault: (provider: String, model: String, effort: String?)?
+    @Published private(set) var catalogLoaded = false
+    @Published private(set) var catalogLoading = false
+    @Published private(set) var permissionOptions: [(value: String, name: String)] = []
     /// `ui-conversation.busyEnter` (C-141): what Send does while the agent runs.
-    private(set) var busyEnter = "queue"
+    @Published private(set) var busyEnter = "queue"
 
     func load(_ model: SessionModel) async {
         async let commands: Void = loadCommands(model)

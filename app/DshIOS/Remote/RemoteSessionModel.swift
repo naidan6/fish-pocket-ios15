@@ -1,5 +1,5 @@
+import Combine
 import Foundation
-import Observation
 
 /// A draft that starts with `/`: the command it names and what follows.
 struct RemoteSlash {
@@ -32,55 +32,54 @@ struct RemoteSlash {
 /// event log. The live part (status, capabilities, pending requests) is re-read whenever the
 /// channel is re-established, and counts as current only while the channel is up.
 @MainActor
-@Observable
-final class RemoteSessionModel: Identifiable {
+final class RemoteSessionModel: Identifiable, ObservableObject {
     enum Link: Equatable { case connecting, live, reconnecting, failed(String) }
 
     let id: String
-    private(set) var meta: RemoteSession?
-    private(set) var rows: [RemoteRow] = []
-    private(set) var hasOlder = false
-    private(set) var loadingOlder = false
-    private(set) var loaded = false
-    private(set) var link = Link.connecting
-    private(set) var state: RemoteRuntimeState?
-    private(set) var capabilities = RemoteCapabilities()
-    private(set) var notices: [RemoteNotice] = []
-    private(set) var plan: RemotePlan?
-    private(set) var catalog: RemoteCatalog?
-    private(set) var commands: [RemoteCommand] = []
-    private(set) var pending: [RemotePendingMessage] = []
+    @Published private(set) var meta: RemoteSession?
+    @Published private(set) var rows: [RemoteRow] = []
+    @Published private(set) var hasOlder = false
+    @Published private(set) var loadingOlder = false
+    @Published private(set) var loaded = false
+    @Published private(set) var link = Link.connecting
+    @Published private(set) var state: RemoteRuntimeState?
+    @Published private(set) var capabilities = RemoteCapabilities()
+    @Published private(set) var notices: [RemoteNotice] = []
+    @Published private(set) var plan: RemotePlan?
+    @Published private(set) var catalog: RemoteCatalog?
+    @Published private(set) var commands: [RemoteCommand] = []
+    @Published private(set) var pending: [RemotePendingMessage] = []
     /// A send, stop, takeover or answer is on its way.
-    private(set) var working = false
+    @Published private(set) var working = false
     /// Requests answered from here that the agent has not settled yet.
-    private(set) var answering: Set<String> = []
+    @Published private(set) var answering: Set<String> = []
     /// Bumped when a command asks for the model and permission menu.
-    private(set) var optionsRequest = 0
+    @Published private(set) var optionsRequest = 0
     /// Status, capabilities and requests were read since the channel last came up. Observed:
     /// what can be sent or answered follows it.
-    private var fresh = false
+    @Published private var fresh = false
     /// The channel has been down for longer than a moment. A short drop (the app back in
     /// front, a network change, the server closing an idle socket) reconnects without a word:
     /// only one that lasts is said, in the title and the composer.
-    private(set) var struggling = false
-    var error: String?
+    @Published private(set) var struggling = false
+    @Published var error: String?
     /// Something to mention in passing (a toast), not a failure to stop for.
-    var notice: String?
-    var draft = ""
-    var attachments: [RemoteUpload] = []
+    @Published var notice: String?
+    @Published var draft = ""
+    @Published var attachments: [RemoteUpload] = []
 
     private weak var store: RemoteStore?
-    private var items: [RemoteItem] = []
-    private var builder = RemoteTimelineBuilder()
-    private var cursor = "seq:0"
-    private var seen: Set<String> = []
-    private var seenOrder: [String] = []
-    private var run: Task<Void, Never>?
+    @Published private var items: [RemoteItem] = []
+    @Published private var builder = RemoteTimelineBuilder()
+    @Published private var cursor = "seq:0"
+    @Published private var seen: Set<String> = []
+    @Published private var seenOrder: [String] = []
+    @Published private var run: Task<Void, Never>?
     /// Live facts were read at this time; frames that arrived earlier are older than them.
-    private var barrier = 0.0
-    private var rebuildQueued = false
-    private var suspended = false
-    private var patience: Task<Void, Never>?
+    @Published private var barrier = 0.0
+    @Published private var rebuildQueued = false
+    @Published private var suspended = false
+    @Published private var patience: Task<Void, Never>?
 
     /// How long the channel may be down before the page says so.
     private static let quietReconnect = Duration.seconds(5)

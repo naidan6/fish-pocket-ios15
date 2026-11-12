@@ -8,7 +8,7 @@ import SwiftUI
 struct MainView: View {
     enum Sheet: String, Identifiable { case settings, plugins, store, schedules, signIn, cordis, share, capabilities, connectors, remote; var id: String { rawValue } }
 
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.horizontalSizeClass) private var sizeClass
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.openURL) private var openURL

@@ -1,3 +1,4 @@
+import Combine
 import SwiftUI
 
 /// The staged form every official plugin page shares (`SettingsFormModel`, F-50):
@@ -5,8 +6,7 @@ import SwiftUI
 /// revision read when the first edit was staged. A field shows the user's own value;
 /// an inherited one is its placeholder, so grey means default.
 @MainActor
-@Observable
-final class StagedForm {
+final class StagedForm: ObservableObject {
     enum Kind { case number((Double) -> Bool), text }
 
     struct Spec {
@@ -20,12 +20,12 @@ final class StagedForm {
 
     let ns: String
     private let specs: [Spec]
-    private var drafts: [String: Draft] = [:]
-    private var baseline: Int?
-    private(set) var saving = false
-    private(set) var failed = false
+    @Published private var drafts: [String: Draft] = [:]
+    @Published private var baseline: Int?
+    @Published private(set) var saving = false
+    @Published private(set) var failed = false
     /// The first field of a refused write, for the page to scroll to.
-    private(set) var failedField: String?
+    @Published private(set) var failedField: String?
 
     init(ns: String, specs: [Spec]) {
         self.ns = ns
@@ -156,7 +156,7 @@ final class StagedForm {
 /// A field of a staged form: a settings row with the value trailing, or, for an address too
 /// long for that, stacked. Swipe or long-press resets it; clearing it does the same (F-50).
 private struct StagedField: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let form: StagedForm
     let key: String
     let title: LocalizedStringKey
@@ -201,7 +201,7 @@ private struct StagedField: View {
 /// The frame of an official page: unavailable / read-only states, 保存 in the toolbar (it pops
 /// the page), and a refused save scrolling to what went wrong.
 private struct OfficialForm<Content: View>: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let title: LocalizedStringKey
     let available: Bool
     let dirty: Bool
@@ -282,7 +282,7 @@ private func integerAtLeast(_ minimum: Double) -> (Double) -> Bool {
 
 /// PC-03.
 private struct AgentLoopSettingsPage: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @State private var form = StagedForm(ns: "agent-loop", specs: [.init(key: "maxParallelToolCalls", kind: .number { _ in true })])
 
     var body: some View {
@@ -299,7 +299,7 @@ private struct AgentLoopSettingsPage: View {
 
 /// PC-04: `pwsh-sandbox` where the Host serves it, else `bash-sandbox`.
 private struct ShellSettingsPage: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @State private var bash = Self.form("bash-sandbox")
     @State private var pwsh = Self.form("pwsh-sandbox")
 
@@ -325,7 +325,7 @@ private struct ShellSettingsPage: View {
 /// PC-01: limits, and which models the Agent may pick for subagents. One 保存 writes
 /// both namespaces, each fenced by its own revision.
 private struct SubagentSettingsPage: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @State private var limits = StagedForm(ns: "subagent", specs: [
         .init(key: "maxDepth", kind: .number(integerAtLeast(0)), invalid: String(localized: "请输入不小于 0 的整数。")),
         .init(key: "maxActiveSubagents", kind: .number(integerAtLeast(1)), invalid: String(localized: "请输入不小于 1 的整数。")),
@@ -492,7 +492,7 @@ private struct SubagentSettingsPage: View {
 
 /// PC-02: the search provider selection, its two sections and the key.
 private struct WebSearchSettingsPage: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @State private var messages = StagedForm(ns: "web-search-deepseek", specs: [
         .init(key: "baseURL", kind: .text),
         .init(key: "maxUses", kind: .number { _ in true }),

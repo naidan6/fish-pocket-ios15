@@ -4,7 +4,7 @@ import SwiftUI
 /// Chat apps a Bot can be reached from (ds-bot's IM bridge). The bridge runs inside the
 /// engine, so messages arrive only while the app is running.
 struct BotIMPage: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @State private var adding: IMPlatform?
 
     var body: some View {
@@ -81,7 +81,7 @@ struct IMPlatform: Identifiable, Hashable {
 }
 
 private struct IMConnectionRow: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     let connection: JSON
 
     var body: some View {
@@ -102,7 +102,7 @@ private struct IMConnectionRow: View {
 
 /// One connection: which Bot answers, who may talk to it, and its chats.
 private struct IMConnectionPage: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.dismiss) private var dismiss
     let id: String
 
@@ -206,7 +206,7 @@ private struct IMConnectionPage: View {
 
 /// Add a connection: fill the platform's fields, or scan a code for WeChat.
 private struct IMAddSheet: View {
-    @Environment(AppModel.self) private var app
+    @EnvironmentObject private var app: AppModel
     @Environment(\.dismiss) private var dismiss
     let platform: IMPlatform
     @State private var botId = ""
