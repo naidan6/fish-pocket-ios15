@@ -12,7 +12,7 @@ enum DshLink: Hashable {
     static let scheme = "dsh"
 
     init?(url: URL) {
-        guard url.scheme == Self.scheme, let host = url.host() else { return nil }
+        guard url.scheme == Self.scheme, let host = url.compatHost else { return nil }
         let items = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems ?? []
         func item(_ name: String) -> String? {
             items.first { $0.name == name }?.value.flatMap { $0.isEmpty ? nil : $0 }

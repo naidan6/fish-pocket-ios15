@@ -262,9 +262,9 @@ enum LinkTarget: Identifiable {
         case "http", "https":
             self = .web(url)
         case nil, "file":
-            let path = url.path(percentEncoded: false)
+            let path = url.compatPath
             guard let scope, !path.isEmpty else { return nil }
-            self = .file(path: path, lines: Self.lines(url.fragment(percentEncoded: false)), scope: scope)
+            self = .file(path: path, lines: Self.lines(url.compatFragment()), scope: scope)
         default:
             return nil
         }
