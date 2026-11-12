@@ -85,7 +85,7 @@ final class BotModel {
         case ready
     }
 
-    @ObservationIgnored private unowned let app: AppModel
+    private unowned let app: AppModel
     /// The `state` view (bots, rooms, questions…), replaced on each new revision.
     private(set) var team: JSON = .null
     /// What changes without a revision: `activity` (per Bot) and `work`.
@@ -116,15 +116,15 @@ final class BotModel {
     /// Memory changes already shown and closed, by Bot or group: the time of the change.
     private(set) var seenMemoryNews: [String: Double] = [:]
     /// Approvals already announced, so each rings once.
-    @ObservationIgnored private var announcedApprovals: Set<String> = []
+    private var announcedApprovals: Set<String> = []
     /// The chat on screen (a Bot's or a group's id): what waits there needs no announcement.
     var visibleChat: String?
 
-    @ObservationIgnored private var revision: Double?
-    @ObservationIgnored private var liveKey: String?
-    @ObservationIgnored private var followTask: Task<Void, Never>?
-    @ObservationIgnored private var refreshTask: Task<Void, Never>?
-    @ObservationIgnored private var listeners: [UUID: (String, JSON) -> Void] = [:]
+    private var revision: Double?
+    private var liveKey: String?
+    private var followTask: Task<Void, Never>?
+    private var refreshTask: Task<Void, Never>?
+    private var listeners: [UUID: (String, JSON) -> Void] = [:]
 
     init(app: AppModel) {
         self.app = app

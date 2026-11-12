@@ -12,7 +12,7 @@ final class ScheduleCatalog {
     private(set) var status = Status.loading
     /// A read has succeeded at least once.
     private(set) var settled = false
-    @ObservationIgnored private var epoch = 0
+    private var epoch = 0
 
     func load(_ client: EngineClient) async {
         epoch += 1

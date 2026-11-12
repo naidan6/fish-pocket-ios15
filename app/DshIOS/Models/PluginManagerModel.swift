@@ -212,7 +212,7 @@ final class PluginManagerModel {
     ]
     static let marketBundle = "@deepseek-ai/dsh-experimental-plugin-market-bundle"
 
-    @ObservationIgnored unowned let app: AppModel
+    unowned let app: AppModel
 
     private(set) var status: Status = .idle
     private(set) var refreshing = false
@@ -222,9 +222,9 @@ final class PluginManagerModel {
     /// A package an install just enabled, marked in the list for a moment.
     var highlight: String?
 
-    @ObservationIgnored private var inflight: Task<Void, Never>?
-    @ObservationIgnored private var rerun = false
-    @ObservationIgnored private var loadedRevision: Int?
+    private var inflight: Task<Void, Never>?
+    private var rerun = false
+    private var loadedRevision: Int?
 
     init(app: AppModel) {
         self.app = app

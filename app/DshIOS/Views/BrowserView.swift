@@ -19,10 +19,10 @@ final class BrowserModel: NSObject {
     /// What is on screen now, for the bar's menu.
     private(set) var page: URL?
 
-    @ObservationIgnored let webView: WKWebView
-    @ObservationIgnored private let storageKey: String
-    @ObservationIgnored private let origin: URL
-    @ObservationIgnored private var observations: [NSKeyValueObservation] = []
+    let webView: WKWebView
+    private let storageKey: String
+    private let origin: URL
+    private var observations: [NSKeyValueObservation] = []
 
     init(sessionId: String, origin: URL) {
         storageKey = "dsh.browser.last.\(sessionId)"

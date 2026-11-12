@@ -13,7 +13,7 @@ final class PluginStoreModel {
 
     let market = PluginMarketModel()
     private(set) var readiness = Readiness.checking
-    @ObservationIgnored private var preparing: Task<Void, Never>?
+    private var preparing: Task<Void, Never>?
 
     private var seeded: Bool {
         get { UserDefaults.standard.bool(forKey: Self.seededKey) }

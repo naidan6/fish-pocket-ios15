@@ -87,22 +87,22 @@ final class TerminalConnection {
 
     var exited: Bool { info["state"].string == "exited" }
 
-    @ObservationIgnored private let mux: StreamMux
-    @ObservationIgnored private let client: EngineClient
-    @ObservationIgnored private let sessionId: String
-    @ObservationIgnored private weak var view: SwiftTerm.TerminalView?
+    private let mux: StreamMux
+    private let client: EngineClient
+    private let sessionId: String
+    private weak var view: SwiftTerm.TerminalView?
     /// Frames that arrived before the view did, oldest first (a snapshot replaces them).
-    @ObservationIgnored private var unrendered: [JSON] = []
-    @ObservationIgnored private var attachTask: Task<Void, Never>?
-    @ObservationIgnored private var retainTask: Task<Void, Never>?
-    @ObservationIgnored private var senderTask: Task<Void, Never>?
-    @ObservationIgnored private var attachment: Attachment?
-    @ObservationIgnored private var maxInputBytes = 65536
-    @ObservationIgnored private var maxBufferedBytes = 2_097_152
-    @ObservationIgnored private var maxCols = 500
-    @ObservationIgnored private var maxRows = 200
-    @ObservationIgnored private var size: (cols: Int, rows: Int)?
-    @ObservationIgnored private var controlReset: NSObjectProtocol?
+    private var unrendered: [JSON] = []
+    private var attachTask: Task<Void, Never>?
+    private var retainTask: Task<Void, Never>?
+    private var senderTask: Task<Void, Never>?
+    private var attachment: Attachment?
+    private var maxInputBytes = 65536
+    private var maxBufferedBytes = 2_097_152
+    private var maxCols = 500
+    private var maxRows = 200
+    private var size: (cols: Int, rows: Int)?
+    private var controlReset: NSObjectProtocol?
 
     /// Largest single `write`: long pastes go up in pieces, each waiting for window room.
     private static let chunkBytes = 8192

@@ -8,7 +8,7 @@ import UIKit
 @Observable
 final class SessionModel {
     let sessionId: String
-    @ObservationIgnored private let app: AppModel
+    private let app: AppModel
 
     private(set) var items: [TimelineItem] = []
     private(set) var live: [AssistantBlock] = []
@@ -56,24 +56,24 @@ final class SessionModel {
     /// The child's own mode (`subagent` projection): tells an address opened as `unknown`.
     private(set) var subagentMode: String?
     /// The open conversation's model catalog; a prompt first moves off a model that no longer routes.
-    @ObservationIgnored weak var modelCatalog: ComposerContext?
+    weak var modelCatalog: ComposerContext?
     /// Composer state (draft, local echoes, attachments): one per open conversation.
-    @ObservationIgnored private(set) lazy var composer = ComposerModel(session: self, app: app)
+    private(set) lazy var composer = ComposerModel(session: self, app: app)
 
     /// Durable events folded so far (the source of `items`).
-    @ObservationIgnored private var timeline = TimelineBuilder()
+    private var timeline = TimelineBuilder()
     /// The events themselves, oldest first: a page of older history refolds from the start.
-    @ObservationIgnored private var events: [JSON] = []
-    @ObservationIgnored private var cursor = -1
-    @ObservationIgnored private var followTask: Task<Void, Never>?
-    @ObservationIgnored private var projectionTask: Task<Void, Never>?
-    @ObservationIgnored private var liveAttempt: String?
-    @ObservationIgnored private var livePartials: [Int: (kind: String, text: String, toolId: String?, toolName: String?)] = [:]
+    private var events: [JSON] = []
+    private var cursor = -1
+    private var followTask: Task<Void, Never>?
+    private var projectionTask: Task<Void, Never>?
+    private var liveAttempt: String?
+    private var livePartials: [Int: (kind: String, text: String, toolId: String?, toolName: String?)] = [:]
     /// Pending publish of `live`: chunks arrive per token, the view redraws at most this often.
-    @ObservationIgnored private var livePublish: Task<Void, Never>?
-    @ObservationIgnored private var waitClaims: [String: Task<Void, Never>] = [:]
-    @ObservationIgnored private var waitTimers: [String: Task<Void, Never>] = [:]
-    @ObservationIgnored private let imageCache: NSCache<NSString, UIImage> = {
+    private var livePublish: Task<Void, Never>?
+    private var waitClaims: [String: Task<Void, Never>] = [:]
+    private var waitTimers: [String: Task<Void, Never>] = [:]
+    private let imageCache: NSCache<NSString, UIImage> = {
         let cache = NSCache<NSString, UIImage>()
         cache.countLimit = 60
         return cache

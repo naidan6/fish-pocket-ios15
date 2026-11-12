@@ -64,7 +64,7 @@ final class EngineConnection {
 
     private(set) var app: AppModel?
     /// The generation being connected or connected; windows that arrive during it just wait.
-    @ObservationIgnored private var generation: Int?
+    private var generation: Int?
 
     func connect(to url: URL, generation current: Int) async {
         guard current != generation else { return }

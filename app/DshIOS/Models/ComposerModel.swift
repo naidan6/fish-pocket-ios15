@@ -139,9 +139,9 @@ struct GoalInfo: Equatable {
 @Observable
 final class ComposerModel {
     /// Weak: sends and uploads outlive the conversation that started them (the session owns this model).
-    @ObservationIgnored private weak var session: SessionModel?
-    @ObservationIgnored let sessionId: String
-    @ObservationIgnored let app: AppModel
+    private weak var session: SessionModel?
+    let sessionId: String
+    let app: AppModel
 
     var text: String { didSet { if text != oldValue { persistDraft() } } }
     private(set) var attachments: [DraftAttachment] = []
@@ -162,14 +162,14 @@ final class ComposerModel {
     /// Cleared here; hidden until the projection catches up.
     private var clearedGoalId: String?
 
-    @ObservationIgnored private var failedDrafts: [(seq: Int, text: String)] = []
-    @ObservationIgnored private var restoredText: String?
-    @ObservationIgnored private var sendSeq = 0
-    @ObservationIgnored private var uploadTasks: [UUID: Task<Void, Never>] = [:]
-    @ObservationIgnored private var uploadQueue: [UUID] = []
-    @ObservationIgnored private var activeUploads = 0
+    private var failedDrafts: [(seq: Int, text: String)] = []
+    private var restoredText: String?
+    private var sendSeq = 0
+    private var uploadTasks: [UUID: Task<Void, Never>] = [:]
+    private var uploadQueue: [UUID] = []
+    private var activeUploads = 0
     /// The library's progress for each video still being read (`readMovie`); cancel stops the read.
-    @ObservationIgnored private var reads: [UUID: Progress] = [:]
+    private var reads: [UUID: Progress] = [:]
     /// `ui-conversation.maxConcurrentFileUploads` (C-150): the web's default, a client config the phone does not receive.
     static let maxConcurrentFileUploads = 2
 

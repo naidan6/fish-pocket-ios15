@@ -28,8 +28,8 @@ final class AccountModel {
     /// The engine build this client speaks for; account methods require it in `client`.
     static let clientVersion = "0.2.2-rc.1"
 
-    @ObservationIgnored private let client: EngineClient
-    @ObservationIgnored private let mux: StreamMux
+    private let client: EngineClient
+    private let mux: StreamMux
 
     /// The latest `AccountView`: `status`, `links`, `attempt`.
     private(set) var view: JSON?
@@ -42,10 +42,10 @@ final class AccountModel {
     var toast: String?
     var quotaPrompt = false
 
-    @ObservationIgnored private var watchTask: Task<Void, Never>?
-    @ObservationIgnored private var detailsGeneration = 0
-    @ObservationIgnored private var initializedAttempt: String?
-    @ObservationIgnored private var acked: Set<String> = []
+    private var watchTask: Task<Void, Never>?
+    private var detailsGeneration = 0
+    private var initializedAttempt: String?
+    private var acked: Set<String> = []
 
     init(client: EngineClient, mux: StreamMux) {
         self.client = client

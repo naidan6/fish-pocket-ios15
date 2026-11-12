@@ -16,7 +16,7 @@ final class SettingsMirror {
     /// The events that invalidate the describe answer (and the credential states derived from it).
     static let events = ["settings/document-updated", "credentials/reference-updated", "llm/adapters-updated"]
 
-    @ObservationIgnored private let client: EngineClient
+    private let client: EngineClient
 
     /// The latest `settings/describe` value: `{writable, hasDocument, namespaces:[…]}`.
     private(set) var view: JSON?
@@ -28,12 +28,12 @@ final class SettingsMirror {
     /// Bumped whenever a read or a write folds in, so derived caches can key on it.
     private(set) var stamp = 0
 
-    @ObservationIgnored private var loadedRevision: Int?
-    @ObservationIgnored private var inflight: Task<Void, Never>?
+    private var loadedRevision: Int?
+    private var inflight: Task<Void, Never>?
     /// An event landed during a read, which may predate it: read once more after.
-    @ObservationIgnored private var rereadPending = false
+    private var rereadPending = false
     /// Writes to one namespace go out one at a time, as `ConfigForm`'s write queue does.
-    @ObservationIgnored private var writeChains: [String: Task<Void, Never>] = [:]
+    private var writeChains: [String: Task<Void, Never>] = [:]
 
     init(client: EngineClient) {
         self.client = client

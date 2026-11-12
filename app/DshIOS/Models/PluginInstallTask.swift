@@ -70,7 +70,7 @@ final class PluginInstallTask {
     static let npmmirror = "https://registry.npmmirror.com/"
     static let npmjs = "https://registry.npmjs.org/"
 
-    @ObservationIgnored unowned let app: AppModel
+    unowned let app: AppModel
 
     /// The sheet is on screen.
     private(set) var open = false
@@ -104,16 +104,16 @@ final class PluginInstallTask {
     /// still ask about it (询问 AI).
     private(set) var records: [String: InstallRecord] = [:]
 
-    @ObservationIgnored private(set) var requestId: String?
-    @ObservationIgnored private var acknowledged = false
-    @ObservationIgnored private var replyLost = false
-    @ObservationIgnored private var recovering = false
-    @ObservationIgnored private var cancellation: (waitingForStart: Bool, active: Bool)?
-    @ObservationIgnored private var inspectTask: Task<Void, Never>?
-    @ObservationIgnored private var registryRead: Task<Void, Never>?
+    private(set) var requestId: String?
+    private var acknowledged = false
+    private var replyLost = false
+    private var recovering = false
+    private var cancellation: (waitingForStart: Bool, active: Bool)?
+    private var inspectTask: Task<Void, Never>?
+    private var registryRead: Task<Void, Never>?
     /// A market entry chose the registry: this dialog only, never remembered.
-    @ObservationIgnored private var transientRegistry = false
-    @ObservationIgnored private var listener: UUID?
+    private var transientRegistry = false
+    private var listener: UUID?
 
     init(app: AppModel) {
         self.app = app

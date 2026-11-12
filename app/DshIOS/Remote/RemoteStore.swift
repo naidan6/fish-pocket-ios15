@@ -77,20 +77,20 @@ final class RemoteStore {
     /// The server ended the sign-in; shown once, then cleared.
     var expired = false
 
-    @ObservationIgnored private(set) var client: RemoteClient?
-    @ObservationIgnored private var follow: Task<Void, Never>?
+    private(set) var client: RemoteClient?
+    private var follow: Task<Void, Never>?
     /// The sessions that have been opened, the most recently shown last. A model stays after its
     /// page closes, so that opening the session again shows at once what it held and only has to
     /// catch up. In memory, for this run of the app: nothing of a session is written to the phone.
-    @ObservationIgnored private var kept: [RemoteSessionModel] = []
+    private var kept: [RemoteSessionModel] = []
     /// How many pages show each session now (a session can be open in more than one window).
-    @ObservationIgnored private var showing: [String: Int] = [:]
+    private var showing: [String: Int] = [:]
     private static let keptLimit = 8
-    @ObservationIgnored private var inFront = true
+    private var inFront = true
     /// The state of the session each request was read at; a later one is read again.
-    @ObservationIgnored private var requestSeq: [String: Int] = [:]
-    @ObservationIgnored private var requestReads: Set<String> = []
-    @ObservationIgnored private var observers: [NSObjectProtocol] = []
+    private var requestSeq: [String: Int] = [:]
+    private var requestReads: Set<String> = []
+    private var observers: [NSObjectProtocol] = []
 
     var signedIn: Bool { account != nil }
 

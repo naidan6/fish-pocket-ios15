@@ -19,8 +19,8 @@ final class CordisModel {
     /// The last failed action of each plugin.
     private(set) var actionErrors: [String: String] = [:]
 
-    @ObservationIgnored private var client: EngineClient?
-    @ObservationIgnored private var answered: Set<String> = []
+    private var client: EngineClient?
+    private var answered: Set<String> = []
 
     /// Told to the model (not shown to the user): why the activation did not happen.
     private static let unsupported = "This iOS client cannot load a plugin's browser Client half, and nothing was activated. Define a version without Client code (Host only), or run this one from the web UI."

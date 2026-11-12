@@ -26,9 +26,9 @@ final class WatchModel: NSObject {
     private(set) var phoneAsleep = false
     var card: Card?
 
-    @ObservationIgnored private var started = false
+    private var started = false
     /// Completions already on a card: the phone may list them once more before it hears they were seen.
-    @ObservationIgnored private var shown: Set<String> = []
+    private var shown: Set<String> = []
 
     var mood: Mood {
         guard let snapshot, !phoneAsleep else { return .offline }

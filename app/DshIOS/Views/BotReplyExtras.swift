@@ -163,7 +163,7 @@ final class BotAutoRead {
     static let shared = BotAutoRead()
     /// The sessions whose replies are read.
     private(set) var sessions: Set<String> = []
-    @ObservationIgnored private var listener: UUID?
+    private var listener: UUID?
 
     func isOn(_ sessionId: String) -> Bool { sessions.contains(sessionId) }
 
