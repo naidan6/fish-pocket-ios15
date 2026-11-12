@@ -22,7 +22,8 @@ struct MainView: View {
     @State private var botOpen = false
     @State private var botPath: [BotRoute] = []
     /// The sidebar, in regular width.
-    @State private var sidebar = NavigationSplitViewVisibility.all
+    /// 15.6 没有 `NavigationSplitView`：宽屏并排显示侧栏，窄屏只显示详情（抽屉覆盖）。
+    @State private var sidebarOpen = true
     @State private var windowWidth: CGFloat = 0
     @State private var searchRequest = 0
     @State private var drawerOpen = false
@@ -412,27 +413,34 @@ struct MainView: View {
     // MARK: Layouts
 
     private var split: some View {
-        NavigationSplitView(columnVisibility: $sidebar) {
-            // A width that follows the fold hangs the split view, on the one layout pass where
-            // the window has turned and the width has not. These fit every pose.
-            drawer.navigationSplitViewColumnWidth(min: 280, ideal: 320, max: 360)
-                .toolbar(.hidden, for: .navigationBar)
-                .modifier(SidebarToggle(system: systemSidebarButton))
-        } detail: {
-            Group {
-                if storeOpen {
-                    NavigationStack { PluginStoreView(openSidebar: hideSidebar) }
-                } else if botOpen {
-                    botStack(openDrawer: hideSidebar)
-                } else {
-                    NavigationStack { conversation(openDrawer: hideSidebar) }
+        // 15.6 没有 `NavigationSplitView`：常规宽度下自己并排两栏（侧栏固定 320），
+        // 紧凑宽度下只留详情，侧栏由既有抽屉（`setDrawer`）覆盖式打开。
+        Group {
+            if sizeClass == .regular, sidebarOpen {
+                HStack(spacing: 0) {
+                    drawer
+                        .frame(width: 320)
+                        .overlay(alignment: .trailing) { Divider().opacity(0.5) }
+                        .modifier(SidebarToggle(system: systemSidebarButton))
+                    detailColumn
                 }
+            } else {
+                detailColumn
             }
-            .modifier(PastTheFold())
         }
-        // Side by side wherever both fit. Where they do not, the system keeps the sidebar
-        // away and its button slides it over the conversation.
-        .navigationSplitViewStyle(.balanced)
+    }
+
+    private var detailColumn: some View {
+        Group {
+            if storeOpen {
+                NavigationStack { PluginStoreView(openSidebar: hideSidebar) }
+            } else if botOpen {
+                botStack(openDrawer: hideSidebar)
+            } else {
+                NavigationStack { conversation(openDrawer: hideSidebar) }
+            }
+        }
+        .modifier(PastTheFold())
     }
 
     /// Whether the system's sidebar button stays. From iOS 27.1 it has to: removed, a split
@@ -448,7 +456,7 @@ struct MainView: View {
     /// comes back with it, in the same place in the bar: one of the two at a time. Elsewhere
     /// ours does both.
     private var hideSidebar: (() -> Void)? {
-        systemSidebarButton && sidebar == .detailOnly ? nil : toggleSidebar
+        systemSidebarButton && !sidebarOpen ? nil : toggleSidebar
     }
 
     private var windowCommands: WindowCommands {
@@ -462,7 +470,7 @@ struct MainView: View {
             newWindow: nil,  // 15.6：不能开新窗口
             search: {
                 sheet = nil
-                if sizeClass == .regular { withAnimation { sidebar = .all } } else { setDrawer(true) }
+                if sizeClass == .regular { withAnimation { sidebarOpen = true } } else { setDrawer(true) }
                 searchRequest += 1
             },
             toggleSidebar: toggleSidebar,
@@ -472,7 +480,7 @@ struct MainView: View {
 
     private func toggleSidebar() {
         if sizeClass == .regular {
-            withAnimation { sidebar = sidebar == .detailOnly ? .all : .detailOnly }
+            withAnimation { sidebarOpen.toggle() }
         } else {
             setDrawer(!drawerOpen)
         }
@@ -480,7 +488,7 @@ struct MainView: View {
 
     /// The workbench takes about 420 pt: under this much, the conversation would be left too little.
     private func makeRoomForWorkbench() {
-        if windowWidth < 1100 { withAnimation { sidebar = .detailOnly } }
+        if windowWidth < 1100 { withAnimation { sidebarOpen = false } }
     }
 
     private var drawerLayout: some View {
@@ -663,7 +671,8 @@ private struct SidebarToggle: ViewModifier {
     let system: Bool
 
     func body(content: Content) -> some View {
-        if system { content } else { content.toolbar(removing: .sidebarToggle) }
+        // 15.6：没有系统侧栏按钮可移除（也没有 NavigationSplitView）。
+        content
     }
 }
 

@@ -1,3 +1,4 @@
+#if !DSH_IOS15_BACKPORT
 import CoreLocation
 import Foundation
 import WeatherKit
@@ -223,3 +224,58 @@ extension WeatherProvider {
         value.converted(to: .kilometersPerHour).value
     }
 }
+
+#else
+
+import CoreLocation
+import Foundation
+
+/// 15.6 上没有 WeatherKit（iOS 16）。入口照旧存在、照旧登记给 `caps_weather.m`，
+/// 只在调用时一律回「不可用」——界面上就是没有天气，而不是崩溃或空白。
+@objc final class WeatherProvider: NSObject {
+    @objc static let shared = WeatherProvider()
+
+    private override init() { super.init() }
+
+    @objc static func install() {
+        DshWeatherSetProvider(shared)
+    }
+
+    static let unavailable = NSError(
+        domain: "DshWeather",
+        code: -1,
+        userInfo: [NSLocalizedDescriptionKey: "这台设备（iOS 15.6）没有 WeatherKit，天气不可用。"]
+    )
+}
+
+extension WeatherProvider: DshWeatherProviding {
+    @objc(currentWeatherAtLatitude:longitude:completion:)
+    func currentWeather(
+        atLatitude latitude: Double,
+        longitude: Double,
+        completion done: @escaping ([String: Any]?, Error?) -> Void
+    ) {
+        done(nil, WeatherProvider.unavailable)
+    }
+
+    @objc(hourlyWeatherAtLatitude:longitude:hours:completion:)
+    func hourlyWeather(
+        atLatitude latitude: Double,
+        longitude: Double,
+        hours: Int,
+        completion done: @escaping ([String: Any]?, Error?) -> Void
+    ) {
+        done(nil, WeatherProvider.unavailable)
+    }
+
+    @objc(dailyWeatherAtLatitude:longitude:completion:)
+    func dailyWeather(
+        atLatitude latitude: Double,
+        longitude: Double,
+        completion done: @escaping ([String: Any]?, Error?) -> Void
+    ) {
+        done(nil, WeatherProvider.unavailable)
+    }
+}
+
+#endif  // DSH_IOS15_BACKPORT

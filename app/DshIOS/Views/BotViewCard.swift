@@ -1,4 +1,6 @@
+#if !DSH_IOS15_BACKPORT
 import Charts
+#endif
 import SwiftUI
 
 /// A card a Bot sent with `show_view` and waits on: its content drawn natively, its inputs
@@ -188,6 +190,9 @@ struct BotViewBody: View {
         let points: [Point]
 
         var body: some View {
+#if DSH_IOS15_BACKPORT
+            CompatChart15(values: points.map { .init(category: $0.category, series: $0.series, value: $0.value) })
+#else
             Chart(points) { point in
                 switch kind {
                 case "line": LineMark(x: .value("", point.category), y: .value("", point.value)).foregroundStyle(by: .value("", point.series))
@@ -197,6 +202,7 @@ struct BotViewBody: View {
                 default: BarMark(x: .value("", point.category), y: .value("", point.value)).foregroundStyle(by: .value("", point.series))
                 }
             }
+#endif
         }
     }
 

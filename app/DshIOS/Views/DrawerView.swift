@@ -159,7 +159,7 @@ struct DrawerView: View {
             }
             .background(Palette.background)
             .navigationBarTitleDisplayMode(.inline)
-            .searchable(text: $search, isPresented: $searchActive, prompt: "搜索会话")
+            .searchable(text: $search, prompt: "搜索会话")
             .textInputAutocapitalization(.never)
             .autocorrectionDisabled()
             .searchFieldAtBottom()

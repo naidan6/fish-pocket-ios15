@@ -110,18 +110,10 @@ extension IMPlatform {
 // MARK: - Markdown
 
 /// A reply or a whole conversation as a `.md` file, for the share sheet.
-struct MarkdownFile: Transferable {
+struct MarkdownFile {
     let name: String
     let text: String
 
-    static var transferRepresentation: some TransferRepresentation {
-        FileRepresentation(exportedContentType: UTType(filenameExtension: "md") ?? .plainText) { file in
-            let safe = file.name.replacingOccurrences(of: "/", with: "-").replacingOccurrences(of: ":", with: "-")
-            let url = FileManager.default.temporaryDirectory.appendingPathComponent(safe.isEmpty ? "reply" : safe).appendingPathExtension("md")
-            try file.text.write(to: url, atomically: true, encoding: .utf8)
-            return SentTransferredFile(url)
-        }
-    }
 }
 
 extension SessionModel {

@@ -1,4 +1,3 @@
-import CoreTransferable
 import Combine
 import Foundation
 import UIKit
@@ -43,14 +42,9 @@ struct DraftAttachment: Identifiable {
 
 /// A video picked in the photo library, copied out as a file: the library hands over a
 /// temporary file that is gone once the import returns.
-struct PickedMovie: Transferable, Sendable {
+struct PickedMovie: Sendable {
     let url: URL
 
-    static var transferRepresentation: some TransferRepresentation {
-        FileRepresentation(importedContentType: .movie) { received in
-            PickedMovie(url: try stage(received.file))
-        }
-    }
 
     /// Copy a file into a folder of its own under `tmp/uploads`, keeping its name.
     static func stage(_ file: URL) throws -> URL {

@@ -704,21 +704,15 @@ struct ComposerView: View {
 }
 
 extension PhotosPickerItem {
-    /// A video from the library: it joins the draft as a file (`PickedMovie`), not an image.
-    var isMovie: Bool { supportedContentTypes.contains { $0.conforms(to: .movie) } }
-
-    /// Read a video out of the library into a file of its own (`PickedMovie.stage`).
-    /// `started` gets the library's progress at once: how far an iCloud download or the
-    /// copy is, and `cancel()` to stop it.
+    /// 15.6 替身：视频在选中时就已经读进临时目录（见 `CompatMedia15.swift`），
+    /// 这里直接把文件交出去；`started` 立刻拿到一个已完成的 progress，界面不会卡在读条上。
     @MainActor
     func loadMovie(started: (Progress) -> Void) async throws -> URL {
-        try await withCheckedThrowingContinuation { continuation in
-            started(loadTransferable(type: PickedMovie.self) { result in
-                continuation.resume(with: result.flatMap { movie in
-                    movie.map { .success($0.url) } ?? .failure(CocoaError(.fileReadUnknown))
-                })
-            })
-        }
+        let progress = Progress(totalUnitCount: 1)
+        progress.completedUnitCount = 1
+        started(progress)
+        guard let movieURL else { throw CocoaError(.fileReadUnknown) }
+        return movieURL
     }
 }
 

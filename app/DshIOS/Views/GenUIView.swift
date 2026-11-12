@@ -1,4 +1,6 @@
+#if !DSH_IOS15_BACKPORT
 import Charts
+#endif
 import SwiftUI
 
 /// Native rendering of the ```schemaJson blocks dsh-genui teaches the model
@@ -142,6 +144,10 @@ private struct ChartView: View {
         let upper = options["yAxis"]["max"].double
         VStack(alignment: .leading, spacing: 6) {
             if let title = options["title"]["text"].string { Text(title).font(.subheadline.bold()) }
+#if DSH_IOS15_BACKPORT
+            // 15.6 没有 Swift Charts：换成按值排序的条形列表（数值与系列都在）。
+            CompatChart15(values: points.map { .init(category: $0.category, series: $0.series, value: $0.value) })
+#else
             Chart(points) { point in
                 if kind.contains("Pie") || kind.contains("Ring") {
                     SectorMark(angle: .value(point.series, point.value), innerRadius: .ratio(kind.contains("Ring") ? 0.5 : 0))
@@ -160,6 +166,7 @@ private struct ChartView: View {
             .chartYScale(domain: (lower ?? 0)...(upper ?? (points.map(\.value).max() ?? 1) * 1.1))
             .chartPlotStyle { $0.clipped() }
             .frame(height: 220)
+#endif
         }
     }
 }
