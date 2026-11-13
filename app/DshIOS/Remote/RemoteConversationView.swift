@@ -67,6 +67,16 @@ struct RemoteConversationView: View {
     }
 
     @ViewBuilder
+    @ViewBuilder
+    private func panelView(_ panel: Panel, _ model: RemoteSessionModel) -> some View {
+        switch panel {
+        case .options: RemoteOptionsSheet(model: model)
+        case .info: RemoteInfoSheet(model: model)
+        case .changes: RemoteChangesSheet(model: model)
+        case .files: RemoteFilesSheet(deviceId: model.meta?.deviceId ?? "", root: model.cwd ?? "")
+        }
+    }
+
     private func bottomButton(_ proxy: ScrollViewProxy, _ model: RemoteSessionModel) -> some View {
         ZStack {
             if !atBottom, !model.rows.isEmpty {
@@ -157,22 +167,15 @@ struct RemoteConversationView: View {
         // Archived from here or from another device: the main view moves on, as with a local session.
         .compatOnChange(of: model.meta?.archived) { archived in if archived == true { selection = nil } }
         // Read once it is on screen, and again when a turn ends while it is.
-        .compatChange(of: "\(model.meta?.unread == true)-\(scenePhase == .active)", initial: true) {
+        .compatChange(of: "\(model.meta?.unread == true)-\(scenePhase == .active)", initial: true) { _ in
             if scenePhase == .active { app.remote.markRead(sessionId) }
         }
         .sheet(item: interactionBinding(model)) { sheet(for: $0, model) }
         .sheet(item: $panel) { panel in
-            Group {
-                switch panel {
-                case .options: RemoteOptionsSheet(model: model)
-                case .info: RemoteInfoSheet(model: model)
-                case .changes: RemoteChangesSheet(model: model)
-                case .files: RemoteFilesSheet(deviceId: model.meta?.deviceId ?? "", root: model.cwd ?? "")
-                }
-            }
-            // These are pages to read and choose from, like 设置: the system's own lists.
-            .environment(\.systemLists, true)
-            .sheetNotices()
+            panelView(panel, model)
+                // These are pages to read and choose from, like 设置: the system's own lists.
+                .environment(\.systemLists, true)
+                .sheetNotices()
         }
         .alert(takeoverTitle, isPresented: takeoverPresented, presenting: takeoverAsk) { enable in
             Button(enable ? "接管" : "交还") { Task { await model.setTakeover(enable) } }

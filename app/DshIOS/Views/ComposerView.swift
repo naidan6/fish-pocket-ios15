@@ -806,7 +806,7 @@ struct FittedSheet: ViewModifier {
             .scrollBounceBehavior(.basedOnSize)
             .compatDetents([.height(height)])
             .presentationDragIndicator(.hidden)
-            .presentationBackground(Palette.background)
+            .compatPresentationBackground(Palette.background)
     }
 
     private func sized(_ content: Content) -> some View {

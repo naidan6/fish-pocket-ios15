@@ -167,7 +167,7 @@ struct DrawerView: View {
         }
         .tint(Palette.ink)
         .opacity(searchShown ? 1 : 0)
-        .presentationBackground(.clear)
+        .compatPresentationBackground(.clear)
         .onAppear { withAnimation(.easeOut(duration: 0.2)) { searchShown = true } }
         // The field's own ✕ (取消 before iOS 26) is the way out.
         .compatOnChange(of: searchActive) { if !searchActive { closeSearch() } }

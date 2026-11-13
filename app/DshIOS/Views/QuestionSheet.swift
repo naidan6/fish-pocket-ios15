@@ -26,7 +26,7 @@ struct PinnedActionsSheet<Content: View, Actions: View>: View {
         .ignoresSafeArea(.container, edges: .bottom)
         .compatDetents([.height(contentHeight + actionsHeight)])
         .presentationDragIndicator(.visible)
-        .presentationBackground(Palette.background)
+        .compatPresentationBackground(Palette.background)
         .presentationBackgroundInteraction(.enabled)
     }
 }

@@ -272,9 +272,9 @@ extension Path {
 // MARK: - 少量 iOS 16 修饰符的降级
 
 extension View {
-    /// `.presentationBackground(_:)`（iOS 16.4）。
-    func presentationBackground<S: ShapeStyle>(_ style: S) -> some View { self }
-    func presentationBackground<V: View>(_ view: V) -> some View { self }
+    /// `.presentationBackground(_:)`（iOS 16.4）：改名避开 SDK 同名重载。
+    func compatPresentationBackground<S: ShapeStyle>(_ style: S) -> some View { self }
+    func compatPresentationBackground<V: View>(_ view: V) -> some View { self }
 
     /// `.defaultScrollAnchor(_:)`（iOS 17）。
     func defaultScrollAnchor(_ anchor: UnitPoint?) -> some View { self }

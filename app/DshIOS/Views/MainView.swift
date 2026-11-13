@@ -203,7 +203,7 @@ struct MainView: View {
         }
         .fullScreenCover(isPresented: $webOpen) { WebFallbackView() }
         // The Live Activity and the widgets; a cold launch keeps the link until this view is up.
-        .compatChange(of: link?.token, initial: true) {
+        .compatChange(of: link?.token, initial: true) { _ in
             guard let request = link else { return }
             link = nil
             Task { await follow(request.link) }
