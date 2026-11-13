@@ -67,7 +67,6 @@ struct RemoteConversationView: View {
     }
 
     @ViewBuilder
-    @ViewBuilder
     private func panelView(_ panel: Panel, _ model: RemoteSessionModel) -> some View {
         switch panel {
         case .options: RemoteOptionsSheet(model: model)

@@ -274,7 +274,6 @@ extension Path {
 extension View {
     /// `.presentationBackground(_:)`（iOS 16.4）：改名避开 SDK 同名重载。
     func compatPresentationBackground<S: ShapeStyle>(_ style: S) -> some View { self }
-    func compatPresentationBackground<V: View>(_ view: V) -> some View { self }
 
     /// `.defaultScrollAnchor(_:)`（iOS 17）。
     func defaultScrollAnchor(_ anchor: UnitPoint?) -> some View { self }
