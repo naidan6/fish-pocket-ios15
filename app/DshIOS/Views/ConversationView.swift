@@ -119,6 +119,15 @@ struct ConversationView: View {
         let started = !blank && model.subagentAddress == nil && !(!model.loaded && app.sessions[sessionId]?.blank == true)
         ScrollViewReader { proxy in
             ScrollView {
+                #if DSH_IOS15_BACKPORT
+                // 临时诊断条：定位「会话空白」用，看到数字后可以删。
+                Text("DIAG " + model.diagLine)
+                    .font(.caption2.monospaced())
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 20)
+                    .padding(.top, 4)
+                #endif
                 TimelineList(model: model)
                     .modifier(LinkOpening())
                 Color.clear.frame(height: 1).id(Self.bottomId)
