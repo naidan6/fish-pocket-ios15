@@ -342,7 +342,7 @@ struct ScheduleDetailView: View {
             Button("继续编辑", role: .cancel) {}
         }
         .onAppear(perform: sync)
-        .onChange(of: catalog.entry(taskId)) { _, _ in sync() }
+        .compatOnChange(of: catalog.entry(taskId)) { _, _ in sync() }
         // The save button is at the top; the reason may be under the fold.
         .onChange(of: failure) { failure in
             if failure != nil, let failureText { app.showToast(failureText, tone: .warning) }
@@ -786,7 +786,7 @@ struct EngineWebView: UIViewRepresentable {
         let configuration = WKWebViewConfiguration()
         configuration.userContentController.addUserScript(Self.keepShellSurface)
         let view = WKWebView(frame: .zero, configuration: configuration)
-        view.isInspectable = true
+        if #available(iOS 16.4, *) { view.isInspectable = true }
         view.load(URLRequest(url: url))
         return view
     }

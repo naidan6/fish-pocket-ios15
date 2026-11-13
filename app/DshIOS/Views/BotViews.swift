@@ -680,7 +680,7 @@ struct BotLookPreview: View {
         Button { Haptics.tap(); poke += 1 } label: {
             BotMark(character: BotCharacter.named(shape) ?? BotCharacter.all[0], color: BotInk.color(color) ?? Palette.secondary, size: 104,
                     mood: mood, lively: true, seed: shape ?? "", poke: poke)
-                .phaseAnimator([false, true], trigger: [shape, color]) { mark, popped in
+                .compatPhaseAnimator([false, true], trigger: [shape, color]) { mark, popped in
                     mark.scaleEffect(popped ? 1.14 : 1).rotationEffect(.degrees(popped ? -9 : 0))
                 } animation: { popped in
                     popped ? .spring(response: 0.16, dampingFraction: 0.7) : .spring(response: 0.42, dampingFraction: 0.42)

@@ -362,7 +362,7 @@ struct BotMark: View {
         .frame(width: size, height: size)
         .allowsHitTesting(false)
         .onAppear { if mood == .alert { act = Act(kind: .hops) } }
-        .onChange(of: mood) { old, new in turned(from: old, to: new) }
+        .compatOnChange(of: mood) { old, new in turned(from: old, to: new) }
         .onChange(of: poke) { act = Act(kind: .poke) }
         .task(id: act) { await finishAct() }
     }

@@ -316,9 +316,9 @@ struct ConversationView: View {
         .focusedSceneValue(\.workbenchCommands, WorkbenchCommands(available: !blank && bot == nil, toggle: toggleWorkbench, open: openWorkbench))
         // The sheet leaves the background live, so the composer keeps its focus and the
         // keyboard would stay over the sheet; an answer comes first.
-        .onChange(of: presentedInteractionId(model)) { _, id in if id != nil { dismissKeyboard() } }
+        .compatOnChange(of: presentedInteractionId(model)) { _, id in if id != nil { dismissKeyboard() } }
         // An approval or question arriving: the one alert-like tap (as the web's warning tone).
-        .onChange(of: waitingInteraction(model)?.id) { old, new in
+        .compatOnChange(of: waitingInteraction(model)?.id) { old, new in
             if let new, new != old { Haptics.warning() }
         }
         .compatChange(of: pendingApprovalIds, initial: true) { ids in

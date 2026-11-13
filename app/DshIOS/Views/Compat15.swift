@@ -210,26 +210,26 @@ extension CompatLabeledContent where Content == Text {
 
 // MARK: - 补充：调用点实际用到的重载
 
-extension CompatUnavailable where Description == EmptyView {
-    /// `ContentUnavailableView { Label } actions: { … }`：有按钮、没有说明。
-    init(@ViewBuilder label: () -> Label, @ViewBuilder actions: () -> Actions) {
+extension CompatUnavailable where DView == EmptyView {
+    /// `ContentUnavailableView { LView } actions: { … }`：有按钮、没有说明。
+    init(@ViewBuilder label: () -> LView, @ViewBuilder actions: () -> AView) {
         self.init(label: label, description: { EmptyView() }, actions: actions)
     }
 }
 
-extension CompatUnavailable where Actions == EmptyView {
-    init(@ViewBuilder label: () -> Label, @ViewBuilder description: () -> Description) {
+extension CompatUnavailable where AView == EmptyView {
+    init(@ViewBuilder label: () -> LView, @ViewBuilder description: () -> DView) {
         self.init(label: label, description: description, actions: { EmptyView() })
     }
 }
 
-extension CompatUnavailable where Description == EmptyView, Actions == EmptyView {
-    init(@ViewBuilder label: () -> Label) {
+extension CompatUnavailable where DView == EmptyView, AView == EmptyView {
+    init(@ViewBuilder label: () -> LView) {
         self.init(label: label, description: { EmptyView() }, actions: { EmptyView() })
     }
 }
 
-extension CompatUnavailable where Description == Text, Actions == EmptyView {
+extension CompatUnavailable where DView == Text, AView == EmptyView {
     init(_ titleKey: LocalizedStringKey, systemImage: String, description: Text) {
         self.init(label: {
             VStack(spacing: 8) {

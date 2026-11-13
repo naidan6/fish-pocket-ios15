@@ -137,8 +137,8 @@ struct RemoteConversationView: View {
                 detail = item
             }
         ))
-        .onChange(of: presented(model)?.id) { _, id in if id != nil { dismissKeyboard() } }
-        .onChange(of: waiting(model)?.id) { old, new in if let new, new != old { Haptics.warning() } }
+        .compatOnChange(of: presented(model)?.id) { _, id in if id != nil { dismissKeyboard() } }
+        .compatOnChange(of: waiting(model)?.id) { old, new in if let new, new != old { Haptics.warning() } }
         .onChange(of: model.optionsRequest) { panel = .options }
         // Archived from here or from another device: the main view moves on, as with a local session.
         .onChange(of: model.meta?.archived) { archived in if archived == true { selection = nil } }

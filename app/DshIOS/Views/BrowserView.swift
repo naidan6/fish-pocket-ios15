@@ -34,7 +34,7 @@ final class BrowserModel: NSObject, ObservableObject {
         webView = WKWebView(frame: .zero, configuration: configuration)
         lastURL = UserDefaults.standard.string(forKey: storageKey)
         super.init()
-        webView.isInspectable = true
+        if #available(iOS 16.4, *) { webView.isInspectable = true }
         webView.allowsBackForwardNavigationGestures = true
         webView.navigationDelegate = self
         webView.uiDelegate = self
@@ -202,7 +202,7 @@ struct WorkbenchBrowser: View {
                 Label("在系统浏览器中打开", systemImage: "safari")
             }
             .disabled(model.page == nil)
-            if let url = model.page { ShareLink("分享", item: url) }
+            if let url = model.page { ShareLink(item: url) { Text("分享") } }
         } label: {
             Image(systemName: "ellipsis")
                 .font(.body)

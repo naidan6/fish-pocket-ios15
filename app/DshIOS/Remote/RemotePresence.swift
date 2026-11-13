@@ -23,11 +23,14 @@ final class RemotePresence {
 
     private func observe() {
         guard let app else { return }
-        let (attention, requests) = withObservationTracking { (app.remote.attention, app.remote.requests) } onChange: { [weak self] in
-            Task { @MainActor in self?.observe() }
-        }
+        // 16.1 没有 withObservationTracking：1 秒重取一次，值没变也不会重复播报。
+        let (attention, requests) = (app.remote.attention, app.remote.requests)
         app.remoteWorkChanged()
         announce(attention, requests: requests, in: app)
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .seconds(1))
+            self?.observe()
+        }
     }
 
     /// A request waits where the user is not looking: in the app a toast with the way there;

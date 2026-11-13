@@ -272,9 +272,6 @@ extension Path {
 // MARK: - 少量 iOS 16 修饰符的降级
 
 extension View {
-    /// `.scrollContentBackground(.hidden)`（iOS 16）：15.6 上原本就没有底色，忽略即可。
-    func scrollContentBackground(_ visibility: Visibility) -> some View { self }
-
     /// `.toolbarBackground(_:for:)`（iOS 16）。
     func toolbarBackground<S: ShapeStyle>(_ style: S, for bars: ToolbarPlacement...) -> some View { self }
 
@@ -328,18 +325,6 @@ struct CompatChart15: View {
         }
         .padding(.vertical, 4)
     }
-}
-
-// MARK: - ScrollDismissesKeyboardMode / scrollDismissesKeyboard（iOS 16）
-
-/// 替 `ScrollDismissesKeyboardMode`：15.6 上没有这个开关，值只用来接住调用点。
-enum ScrollDismissesKeyboardMode {
-    case immediately, interactively, never, automatically
-}
-
-extension View {
-    /// 15.6：滚动收键盘的默认行为最接近 `.interactively`，这里不再额外处理。
-    func scrollDismissesKeyboard(_ mode: ScrollDismissesKeyboardMode) -> some View { self }
 }
 
 // MARK: - ToolbarPlacement / toolbar(_:for:)（iOS 16）
@@ -452,12 +437,12 @@ enum CompatRegex15 {
 extension View {
     /// 15.6 的 `onChange(of:perform:)` 只给新值、也不带「先跑一次」。
     /// 这两个重载把 17 的调用点原样接住：`initial: true` 在出现时先跑一次。
-    func onChange<V: Equatable>(of value: V, initial: Bool = false,
+    func compatOnChange<V: Equatable>(of value: V, initial: Bool = false,
                                 _ action: @escaping (V) -> Void) -> some View {
         modifier(CompatOnChange(value: value, initial: initial, action: { new, _ in action(new) }))
     }
 
-    func onChange<V: Equatable>(of value: V, initial: Bool = false,
+    func compatOnChange<V: Equatable>(of value: V, initial: Bool = false,
                                 _ action: @escaping (V, V) -> Void) -> some View {
         modifier(CompatOnChange(value: value, initial: initial, action: action))
     }
@@ -498,13 +483,6 @@ struct ScrollBounceBehavior {
 extension View {
     /// 15.6：默认弹性行为就是「总是可以」，这里不额外处理。
     func scrollBounceBehavior(_ behavior: ScrollBounceBehavior, axes: Axis.Set = [.vertical]) -> some View { self }
-}
-
-// MARK: - presentationDragIndicator（iOS 16）
-
-extension View {
-    /// 15.6 的 sheet 没有可关的抓手，忽略。
-    func presentationDragIndicator(_ visibility: Visibility) -> some View { self }
 }
 
 // MARK: - TextField(_, text:, axis:)（iOS 16）
