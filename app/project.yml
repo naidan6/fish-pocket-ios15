@@ -3,7 +3,7 @@ options:
   bundleIdPrefix: com.wsw
   deploymentTarget:
     # yg: 回退到 iOS 15.6（原 17.0）。见 docs/backport/ios15-plan.md
-    iOS: "15.6"
+    iOS: "16.1"
     # The watch app (DshWatch): what an iPhone on iOS 17 pairs with.
     # iOS 15.6 设备不配对 watchOS 10 应用，watch target 仍保留以不破坏上游工程结构。
     watchOS: "10.0"
@@ -130,7 +130,6 @@ targets:
       - package: SwiftMath
       - target: DshLiveActivity
       # The watch app rides inside the iPhone app and is installed with it.
-      - target: DshWatch
     postBuildScripts:
       # CPython's standard library into the bundle (python/lib), and each extension
       # module turned into a framework under Frameworks, as App Store binaries must be:
@@ -288,29 +287,3 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.wsw.dsh-ios.LiveActivity
   # The watch app: draws the snapshot the phone sends over WatchConnectivity (DshIOS/WatchLink.swift)
   # and sends back approvals and 「继续」. No engine, no network of its own.
-  DshWatch:
-    type: application
-    platform: watchOS
-    # Its own shared scheme, to build and run it alone on a watch simulator.
-    scheme: {}
-    sources:
-      - path: Watch
-      - path: WatchShared
-    info:
-      path: Watch/Info.plist
-      properties:
-        CFBundleDisplayName: Fish Pocket
-        CFBundleDevelopmentRegion: en
-        CFBundleLocalizations: [zh-Hans, en, es, ja, ko]
-        CFBundleShortVersionString: $(MARKETING_VERSION)
-        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
-        WKApplication: true
-        WKCompanionAppBundleIdentifier: com.wsw.dsh-ios
-    settings:
-      base:
-        # Must start with the iPhone app's bundle ID.
-        PRODUCT_BUNDLE_IDENTIFIER: com.wsw.dsh-ios.watchkitapp
-        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
-        # Archived inside the iPhone app, not as a product of its own.
-        SKIP_INSTALL: YES

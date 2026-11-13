@@ -1,0 +1,179 @@
+# 放到你 fork 的仓库里：.github/workflows/ios161-ipa.yml
+#
+# 用途：没有 Mac 也行。GitHub 的 macOS runner 替你编出 iOS 16.1 的 IPA，
+# 编完在 Actions 页面的 artifact 里下载，丢进 TrollStore 安装。
+#
+# 前提：
+#   1. fork 是 public（公开仓库的 macOS runner 不扣分钟数）
+#   2. 补丁层已提交进仓库：app/DshIOS/Views/Compat16.swift
+#      （把本地 patches/Compat16.swift 拷过去，git add 提交）
+# 触发：手动 Run workflow，或往 yg/ios15-backport 推提交。
+
+name: iOS 16.1 IPA
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [yg/ios15-backport]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios161-ipa-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ipa:
+    # 工程用了 SwiftUI 26/27 SDK 的 API，旧 Xcode 编不过。
+    # 这个 label 是 GitHub 的 macOS 27 预览镜像（带 Xcode 27.2）。
+    # 如果它不可用，改成 macos-15，并接受一部分 API 缺失导致的编译失败。
+    runs-on: xcode-27
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: engine/package-lock.json
+
+      - name: Xcode
+        run: |
+          sudo xcode-select -s /Applications/Xcode_27.2.app
+          xcodebuild -version
+
+      - name: Cache nodejs-mobile
+        id: nodejs-mobile
+        uses: actions/cache@v5
+        with:
+          path: |
+            vendor/nodejs-mobile/ios
+            vendor/nodejs-mobile/rooted
+          key: nodejs-mobile-${{ hashFiles('scripts/fetch-nodejs-mobile.sh') }}
+
+      - name: Fetch nodejs-mobile
+        if: steps.nodejs-mobile.outputs.cache-hit != 'true'
+        run: scripts/fetch-nodejs-mobile.sh
+
+      - name: Cache Python
+        id: python
+        uses: actions/cache@v5
+        with:
+          path: |
+            vendor/python/ios
+            vendor/python/rooted
+          key: python-${{ hashFiles('scripts/fetch-python.sh') }}
+
+      - name: Fetch Python
+        if: steps.python.outputs.cache-hit != 'true'
+        run: scripts/fetch-python.sh
+
+      - name: Check NodeMobile imports
+        run: scripts/check-root-imports.sh
+
+      - name: Cache libgit2
+        id: libgit2
+        uses: actions/cache@v5
+        with:
+          path: |
+            vendor/libgit2/Libgit2.xcframework
+            vendor/libgit2/ios-arm64
+            vendor/libgit2/ios-arm64-simulator
+            vendor/libgit2/macos
+          key: libgit2-${{ runner.os }}-${{ hashFiles('scripts/build-libgit2.sh') }}
+
+      - name: Build libgit2
+        if: steps.libgit2.outputs.cache-hit != 'true'
+        run: scripts/build-libgit2.sh
+
+      - name: Cache FFmpeg
+        id: ffmpeg
+        uses: actions/cache@v5
+        with:
+          path: vendor/ffmpeg/FFmpeg.xcframework
+          key: ffmpeg-${{ runner.os }}-${{ hashFiles('scripts/fetch-ffmpeg.sh', 'scripts/build-ffmpeg.sh', 'native/ffmpeg/**') }}
+
+      - name: Fetch FFmpeg
+        if: steps.ffmpeg.outputs.cache-hit != 'true'
+        run: scripts/fetch-ffmpeg.sh
+
+      - name: Assemble engine
+        run: scripts/build-engine.sh
+
+      - name: 检查补丁层
+        run: |
+          if [ ! -f app/DshIOS/Views/Compat16.swift ]; then
+            echo "::error::app/DshIOS/Views/Compat16.swift 不存在。把 patches/Compat16.swift 拷进来并提交。"
+            exit 1
+          fi
+
+      - name: 部署目标改 16.1 + 去掉 watch target
+        run: |
+          python3 - <<'PY'
+          import re, pathlib
+          p = pathlib.Path("app/project.yml")
+          t = p.read_text()
+          t, n = re.subn(r'(?m)^(\s*)iOS:\s*"15\.6"\s*$', r'\1iOS: "16.1"', t)
+          if n != 1:
+              raise SystemExit(f"iOS 15.6 匹配 {n} 处，检查 app/project.yml")
+          lines = [l for l in t.splitlines(keepends=True)
+                   if not re.match(r'^\s*- target: DshWatch\s*$', l)]
+          start = next((i for i, l in enumerate(lines)
+                        if re.match(r'^  DshWatch:\s*$', l)), None)
+          if start is not None:
+              end = len(lines)
+              for j in range(start + 1, len(lines)):
+                  if re.match(r'^  \S', lines[j]) or re.match(r'^[A-Za-z]', lines[j]):
+                      end = j
+                      break
+              lines = lines[:start] + lines[end:]
+          p.write_text("".join(lines))
+          print("project.yml -> iOS 16.1, watch target removed")
+          PY
+
+      - name: Generate project
+        run: |
+          command -v xcodegen >/dev/null || brew install xcodegen
+          cd app && xcodegen generate --quiet
+
+      - name: Build Release
+        working-directory: app
+        run: |
+          set -o pipefail
+          xcodebuild -project DshIOS.xcodeproj -scheme DshIOS \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build/DerivedData -skipPackagePluginValidation \
+            ARCHS=arm64 ONLY_ACTIVE_ARCH=NO \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            IPHONEOS_DEPLOYMENT_TARGET=16.1 \
+            build 2>&1 | tee /tmp/build.log | tail -30
+
+      - name: 编译失败时打印可用性错误
+        if: failure()
+        run: |
+          echo "==== is only available ===="
+          grep -hoE "'[^']+' is only available in iOS [0-9.]+ or newer" /tmp/build.log \
+            | sort | uniq -c | sort -rn | head -60 || true
+          echo "==== error 明细 ===="
+          grep -E ": error: " /tmp/build.log | sort -u | head -60 || true
+
+      - name: 打包 IPA
+        run: |
+          APP="app/build/DerivedData/Build/Products/Release-iphoneos/DshIOS.app"
+          test -d "$APP" || { echo "::error::没有产物，看上面的 error"; exit 1; }
+          /usr/libexec/PlistBuddy -c "Print :MinimumOSVersion" "$APP/Info.plist"
+          codesign --force --deep --sign - --timestamp=none "$APP" || true
+          rm -rf build-artifact && mkdir -p build-artifact/Payload
+          cp -a "$APP" build-artifact/Payload/
+          (cd build-artifact && zip -qry DshIOS-16.1.ipa Payload)
+          ls -lh build-artifact/DshIOS-16.1.ipa
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DshIOS-16.1-ipa
+          path: build-artifact/DshIOS-16.1.ipa
+          retention-days: 14
