@@ -10,7 +10,7 @@ struct PinnedActionsSheet<Content: View, Actions: View>: View {
     @State private var actionsHeight: CGFloat = 80
 
     var body: some View {
-        ScrollView {
+        ScrollView(.vertical) {
             content().onGeometryChange(for: CGFloat.self) { $0.size.height } action: { contentHeight = $0 }
         }
         .scrollBounceBehavior(.basedOnSize)

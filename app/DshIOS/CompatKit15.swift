@@ -396,30 +396,28 @@ enum CompatRegex15 {
     }
 }
 
-// MARK: - onChange(of:initial:_:)（iOS 17）
+// MARK: - onChange（iOS 17 的签名在 16.1 上的替身）
 
 extension View {
-    /// 15.6 的 `onChange(of:perform:)` 只给新值、也不带「先跑一次」。
-    /// 这两个重载把 17 的调用点原样接住：`initial: true` 在出现时先跑一次。
-    func compatOnChange<V: Equatable>(of value: V, initial: Bool = false,
-                                _ action: @escaping () -> Void) -> some View {
-        modifier(CompatOnChange(value: value, initial: initial, action: { _, _ in action() }))
+    /// 0 参：`.onChange(of: x) { doSomething() }`
+    func compatOnChange<V: Equatable>(of value: V, _ action: @escaping () -> Void) -> some View {
+        modifier(CompatOnChange(value: value, action: { _, _ in action() }))
     }
 
-    func compatOnChange<V: Equatable>(of value: V, initial: Bool = false,
-                                _ action: @escaping (V) -> Void) -> some View {
-        modifier(CompatOnChange(value: value, initial: initial, action: { new, _ in action(new) }))
+    /// 1 参：`.onChange(of: x) { new in … }`
+    func compatOnChange<V: Equatable>(of value: V, _ action: @escaping (V) -> Void) -> some View {
+        modifier(CompatOnChange(value: value, action: { new, _ in action(new) }))
     }
 
-    func compatOnChange<V: Equatable>(of value: V, initial: Bool = false,
-                                _ action: @escaping (V, V) -> Void) -> some View {
-        modifier(CompatOnChange(value: value, initial: initial, action: action))
+    /// 2 参：`.onChange(of: x) { old, new in … }`
+    func compatOnChange<V: Equatable>(of value: V, _ action: @escaping (V, V) -> Void) -> some View {
+        modifier(CompatOnChange(value: value, action: action))
     }
 }
 
 struct CompatOnChange<V: Equatable>: ViewModifier {
     let value: V
-    let initial: Bool
+    var initial: Bool = false
     let action: (V, V) -> Void
 
     func body(content: Content) -> some View {

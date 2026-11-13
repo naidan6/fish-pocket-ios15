@@ -19,7 +19,7 @@ struct TurnMenu: ViewModifier {
     func body(content: Content) -> some View {
         if enabled {
             // 15.6：`contextMenu(menuItems:preview:)` 是 16 才有的，带预览的菜单退成普通菜单。
-            content.contextMenu(menuItems: items)
+            content.contextMenu(menuItems: { items })
         } else {
             content
         }

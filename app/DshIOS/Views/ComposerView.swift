@@ -801,7 +801,7 @@ struct FittedSheet: ViewModifier {
     @State private var height: CGFloat = 320
 
     func body(content: Content) -> some View {
-        ScrollView {
+        ScrollView(.vertical) {
             content.onGeometryChange(for: CGFloat.self) { $0.size.height } action: { height = $0 }
         }
         .scrollBounceBehavior(.basedOnSize)

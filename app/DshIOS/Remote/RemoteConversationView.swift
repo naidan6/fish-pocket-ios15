@@ -69,7 +69,7 @@ struct RemoteConversationView: View {
     @ViewBuilder
     private func content(_ model: RemoteSessionModel) -> some View {
         ScrollViewReader { proxy in
-            ScrollView {
+            ScrollView(.vertical) {
                 RemoteTimelineList(model: model)
                     .modifier(LinkOpening())
                 Color.clear.frame(height: 1).id(Self.bottomId)
