@@ -129,6 +129,15 @@ struct ConversationView: View {
                     .padding(.horizontal, 20)
                     .padding(.top, 4)
                 #endif
+                #if DSH_IOS15_BACKPORT
+                // 对照：直接把 items 逐条画成文本。这里能显示而列表不显示，就是 TimelineRow 的问题。
+                VStack(alignment: .leading, spacing: 2) {
+                    ForEach(Array(model.items.enumerated()), id: \.offset) { i, item in
+                        Text("ROW\(i) " + item.diag).font(.caption2)
+                    }
+                }
+                .padding(.horizontal, 20)
+                #endif
                 TimelineList(model: model)
                     .modifier(LinkOpening())
                 Color.clear.frame(height: 1).id(Self.bottomId)
@@ -808,6 +817,7 @@ private struct TimelineRow: View, Equatable {
             && lhs.prompt == rhs.prompt && lhs.info == rhs.info && lhs.arrives == rhs.arrives
     }
 
+    @ViewBuilder
     var body: some View {
         switch item {
         case .user(_, let text, let attachments, let requestId):
