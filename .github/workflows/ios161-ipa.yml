@@ -139,7 +139,7 @@ jobs:
           grep -hoE "'[^']+' is only available in iOS [0-9.]+ or newer" /tmp/build.log \
             | sort | uniq -c | sort -rn | head -60 || true
           echo "==== error 明细 ===="
-          grep -E ": error: " /tmp/build.log | sort -u | head -60 || true
+          grep -E "^error: |: error: |BUILD FAILED|Undefined symbol" /tmp/build.log | sort -u | head -60 || true
 
       - name: 打包 IPA
         run: |
