@@ -237,6 +237,7 @@ final class SessionModel: ObservableObject {
     /// 16.1 诊断用：会话到底收到了什么、折叠成了什么。仅 DSH_IOS15_BACKPORT 构建显示。
     var diagLine: String {
         "loaded=\(loaded ? 1 : 0) items=\(items.count) events=\(events.count) running=\(running ? 1 : 0) live=\(live.count) err=\(error == nil ? "no" : (error ?? "?"))"
+            + "\n" + items.map(\.diag).joined(separator: " · ")
     }
 
     private func publishTimeline() {

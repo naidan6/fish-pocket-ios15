@@ -35,6 +35,22 @@ enum AssistantBlock: Identifiable, Hashable {
     case tool(ToolCall)
     case image(id: String, attachment: Attachment)
 
+    /// 16.1 诊断：这一项是什么、里面有多少内容。
+    var diag: String {
+        switch self {
+        case .user(_, let text, let attachments, _): return "u(\(text.count)字/\(attachments.count)附)"
+        case .assistant(_, let blocks, _, _): return "a(\(blocks.count)块)"
+        case .notice(_, let text, _): return "n(\(text.prefix(8)))"
+        case .maxTokens: return "maxTokens"
+        case .credential: return "credential"
+        case .questionReply: return "qReply"
+        case .trigger: return "trigger"
+        case .command: return "command"
+        case .compaction: return "compact"
+        case .retry: return "retry"
+        }
+    }
+
     var id: String {
         switch self {
         case .reasoning(let id, _), .text(let id, _), .image(let id, _): return id

@@ -123,6 +123,7 @@ struct ConversationView: View {
                 // 临时诊断条：定位「会话空白」用，看到数字后可以删。
                 Text("DIAG " + model.diagLine)
                     .font(.caption2.monospaced())
+                    .fixedSize(horizontal: false, vertical: true)
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 20)
