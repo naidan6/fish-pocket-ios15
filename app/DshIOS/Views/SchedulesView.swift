@@ -344,10 +344,10 @@ struct ScheduleDetailView: View {
         .onAppear(perform: sync)
         .compatOnChange(of: catalog.entry(taskId)) { _, _ in sync() }
         // The save button is at the top; the reason may be under the fold.
-        .onChange(of: failure) { failure in
+        .compatOnChange(of: failure) { failure in
             if failure != nil, let failureText { app.showToast(failureText, tone: .warning) }
         }
-        .onChange(of: shown?.kind) { kind in
+        .compatOnChange(of: shown?.kind) { kind in
             // A switch into the interval picks the unit that states it, unless one was chosen.
             guard kind == .every else { explicitUnit = false; return }
             if !explicitUnit, let seconds = shown?.draft.seconds { unit = .preferred(seconds) }

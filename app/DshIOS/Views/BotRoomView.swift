@@ -157,7 +157,7 @@ struct BotRoomView: View {
             .task(id: room.id) { await team.followRounds(of: room.id) }
             .openingOtherSessions($selection, from: room.sessionId)
             .sheet(isPresented: $detailOpen) { RoomDetailView(roomId: roomId) }
-            .onChange(of: team.scheduleRequest) { request in
+            .compatOnChange(of: team.scheduleRequest) { request in
                 guard request == .room(roomId) else { return }
                 team.scheduleRequest = nil
                 Task { try? await Task.sleep(nanoseconds: UInt64((350) * 1_000_000)); detailOpen = true }
@@ -270,7 +270,7 @@ private struct OpenOtherSession: ViewModifier {
     let sessionId: String
 
     func body(content: Content) -> some View {
-        content.onChange(of: selection) { id in
+        content.compatOnChange(of: selection) { id in
             guard let id, id != sessionId else { return }
             selection = nil
             app.open(session: id)

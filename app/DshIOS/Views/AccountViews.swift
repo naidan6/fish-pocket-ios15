@@ -63,7 +63,7 @@ struct SignInSheet: View {
             if autoStart && !account.attemptActive && !account.signedIn { await start() }
             else { openBrowserIfNeeded() }
         }
-        .onChange(of: account.view) { _ in update() }
+        .compatOnChange(of: account.view) { _ in update() }
         .onDisappear {
             // Closing the dialog gives the attempt up, as on the web; Safari covering it does not.
             guard safari?.presentingViewController == nil else { return }

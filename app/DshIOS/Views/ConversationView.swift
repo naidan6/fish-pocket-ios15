@@ -139,10 +139,10 @@ struct ConversationView: View {
             .scrollBounceBehavior(.always)
             .simultaneousGesture(TapGesture().onEnded { dismissKeyboard() })
             // The bottom anchor only holds for the first layout; follow the user's own message and the start of a turn.
-            .onChange(of: model.items.last?.id) { _ in
+            .compatOnChange(of: model.items.last?.id) { _ in
                 if case .user? = model.items.last { atBottom = true; scrollToBottom(proxy) }
             }
-            .onChange(of: model.running) { running in if running, atBottom { scrollToBottom(proxy) } }
+            .compatOnChange(of: model.running) { running in if running, atBottom { scrollToBottom(proxy) } }
             .overlay(alignment: .bottomTrailing) {
                 // Animated here, not on the scroll view: its rows must not animate with the buttons.
                 ZStack {
@@ -312,7 +312,7 @@ struct ConversationView: View {
                 // A pull over the terminal is meant for its scrollback; ✕ closes the sheet.
                 .interactiveDismissDisabled(workbenchTab == .terminal)
         }
-        .onChange(of: workbenchOpen) { open in if open, sizeClass == .regular { makeRoomForWorkbench() } }
+        .compatOnChange(of: workbenchOpen) { open in if open, sizeClass == .regular { makeRoomForWorkbench() } }
         .focusedSceneValue(\.workbenchCommands, WorkbenchCommands(available: !blank && bot == nil, toggle: toggleWorkbench, open: openWorkbench))
         // The sheet leaves the background live, so the composer keeps its focus and the
         // keyboard would stay over the sheet; an answer comes first.

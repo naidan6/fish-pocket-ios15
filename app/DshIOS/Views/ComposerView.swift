@@ -53,7 +53,7 @@ struct ModelPicker: View {
         .accessibilityLabel(context.effortName(model).map { Text("模型：\(context.modelName(model))，推理档位 \($0)") } ?? Text("模型：\(context.modelName(model))"))
         .sheet(isPresented: $searching) { ModelSearchSheet(model: model, context: context) }
         // MS-03: a provider's key or adapter changed; the catalog the menu shows follows.
-        .onChange(of: app.revision("llm/adapters-updated", "settings/document-updated", "credentials/record-updated", "credentials/reference-updated")) {
+        .compatOnChange(of: app.revision("llm/adapters-updated", "settings/document-updated", "credentials/record-updated", "credentials/reference-updated")) {
             Task { await context.loadCatalog(model) }
         }
     }
@@ -278,7 +278,7 @@ struct ComposerView: View {
             consumeFocus()
         }
         .photosPicker(isPresented: $showPhotos, selection: $photos, maxSelectionCount: max(1, composer.remainingImageSlots), matching: .any(of: [.images, .videos]), preferredItemEncoding: .current)
-        .onChange(of: photos) { items in
+        .compatOnChange(of: photos) { items in
             Task { await loadPhotos(items) }
         }
         .fullScreenCover(isPresented: $showCamera) {
@@ -314,21 +314,21 @@ struct ComposerView: View {
         }
         .permissionConfirmation($confirmingPermission, confirm: applyPermission)
         // A popover has no `onDismiss`. A picker presented before its dismissal ends never shows.
-        .onChange(of: showTray) { open in
+        .compatOnChange(of: showTray) { open in
             guard !open, sizeClass == .regular else { return }
             Task {
                 try? await Task.sleep(nanoseconds: UInt64((450) * 1_000_000))
                 sheetClosed()
             }
         }
-        .onChange(of: showTray || showEditor || browsing != nil) { open in
+        .compatOnChange(of: showTray || showEditor || browsing != nil) { open in
             if open { sheetUp.wrappedValue = true }
         }
-        .onChange(of: composer.focusRequest) { focused = true }
-        .onChange(of: focused) { now in focusChanged(now) }
+        .compatOnChange(of: composer.focusRequest) { focused = true }
+        .compatOnChange(of: focused) { now in focusChanged(now) }
         // A picker closing gives the keyboard back when it was up before: typed into
         // (`/model`, `/file`) or reached from the tray while it was up.
-        .onChange(of: pickerUp) { open in
+        .compatOnChange(of: pickerUp) { open in
             if open {
                 refocus = refocus || focused
             } else {
@@ -337,9 +337,9 @@ struct ComposerView: View {
             }
         }
         // C-99 / C-110 / C-141: catalogs and the preference follow their engine events.
-        .onChange(of: app.revision("commands/change", "agent-preset/selected")) { Task { await context.loadCommands(model) } }
-        .onChange(of: app.revision("permission-presets/catalog-changed")) { Task { await context.loadPermissions(model) } }
-        .onChange(of: app.revision("settings/document-updated")) { Task { await context.loadSettings(model) } }
+        .compatOnChange(of: app.revision("commands/change", "agent-preset/selected")) { Task { await context.loadCommands(model) } }
+        .compatOnChange(of: app.revision("permission-presets/catalog-changed")) { Task { await context.loadPermissions(model) } }
+        .compatOnChange(of: app.revision("settings/document-updated")) { Task { await context.loadSettings(model) } }
     }
 
     /// The `/` or `@` token being typed. It needs the keyboard: hiding it folds the panel.
@@ -381,7 +381,8 @@ struct ComposerView: View {
     private var input: some View {
         // Between three lines and four, whatever the text size.
         let threeLines = UIFont.preferredFont(forTextStyle: .callout).lineHeight * 3.5
-        return CompatTextField(placeholder, text: $composer.text)
+        return CompatTextField(placeholder, text: Binding(get: { composer.text },
+                                                         set: { composer.text = $0 }))
             .font(.callout)
             .lineLimit(1...5)
             .focused($focused)

@@ -191,7 +191,7 @@ struct ImageViewer: View {
                 .offset(offset)
                 .gesture(
                     MagnificationGesture()
-                        .onChanged { scale = max(1, min(6, lastScale * $0.magnification)) }
+                        .onChanged { scale = max(1, min(6, lastScale * $0)) }
                         .onEnded { _ in
                             lastScale = scale
                             if scale == 1 { withAnimation(.snappy) { offset = .zero }; lastOffset = .zero }

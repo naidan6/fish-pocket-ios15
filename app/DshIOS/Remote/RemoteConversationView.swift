@@ -78,10 +78,10 @@ struct RemoteConversationView: View {
             .scrollDismissesKeyboard(.immediately)
             .scrollBounceBehavior(.always)
             .simultaneousGesture(TapGesture().onEnded { dismissKeyboard() })
-            .onChange(of: model.rows.last?.id) { _ in
+            .compatOnChange(of: model.rows.last?.id) { _ in
                 if case .user? = model.rows.last { atBottom = true; scrollToBottom(proxy) }
             }
-            .onChange(of: model.busy) { busy in if busy, atBottom { scrollToBottom(proxy) } }
+            .compatOnChange(of: model.busy) { busy in if busy, atBottom { scrollToBottom(proxy) } }
             .overlay(alignment: .bottomTrailing) {
                 ZStack {
                     if !atBottom, !model.rows.isEmpty {
@@ -139,9 +139,9 @@ struct RemoteConversationView: View {
         ))
         .compatOnChange(of: presented(model)?.id) { _, id in if id != nil { dismissKeyboard() } }
         .compatOnChange(of: waiting(model)?.id) { old, new in if let new, new != old { Haptics.warning() } }
-        .onChange(of: model.optionsRequest) { panel = .options }
+        .compatOnChange(of: model.optionsRequest) { panel = .options }
         // Archived from here or from another device: the main view moves on, as with a local session.
-        .onChange(of: model.meta?.archived) { archived in if archived == true { selection = nil } }
+        .compatOnChange(of: model.meta?.archived) { archived in if archived == true { selection = nil } }
         // Read once it is on screen, and again when a turn ends while it is.
         .compatChange(of: "\(model.meta?.unread == true)-\(scenePhase == .active)", initial: true) {
             if scenePhase == .active { app.remote.markRead(sessionId) }
@@ -166,7 +166,7 @@ struct RemoteConversationView: View {
         } message: { enable in
             Text(takeoverMessage(enable, model))
         }
-        .onChange(of: model.notice) { text in
+        .compatOnChange(of: model.notice) { text in
             guard let text else { return }
             model.notice = nil
             app.showToast(text, tone: .warning)

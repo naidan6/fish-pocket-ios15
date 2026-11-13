@@ -53,17 +53,69 @@ extension View {
 
 // MARK: - 空态视图（ContentUnavailableView 是 iOS 17）
 
-struct CompatUnavailable<LView: View, DView: View, AView: View>: View {
-    private let label: LView
-    private let description: DView
-    private let actions: AView
+struct CompatUnavailable: View {
+    private let label: AnyView
+    private let description: AnyView
+    private let actions: AnyView
 
-    init(@ViewBuilder label: () -> LView,
-         @ViewBuilder description: () -> DView,
-         @ViewBuilder actions: () -> AView) {
-        self.label = label()
-        self.description = description()
-        self.actions = actions()
+    init<L: View, D: View, A: View>(@ViewBuilder label: () -> L,
+                                    @ViewBuilder description: () -> D,
+                                    @ViewBuilder actions: () -> A) {
+        self.label = AnyView(label())
+        self.description = AnyView(description())
+        self.actions = AnyView(actions())
+    }
+
+    init<L: View, A: View>(@ViewBuilder label: () -> L, @ViewBuilder actions: () -> A) {
+        self.init(label: label, description: { EmptyView() }, actions: actions)
+    }
+
+    init<L: View, D: View>(@ViewBuilder label: () -> L, @ViewBuilder description: () -> D) {
+        self.init(label: label, description: description, actions: { EmptyView() })
+    }
+
+    init<L: View>(@ViewBuilder label: () -> L) {
+        self.init(label: label, description: { EmptyView() }, actions: { EmptyView() })
+    }
+
+    /// `ContentUnavailableView("标题", systemImage: "icon")` 的等价物。
+    init(_ titleKey: LocalizedStringKey, systemImage: String) {
+        self.init(label: { Self.icon(titleKey, systemImage: systemImage) })
+    }
+
+    init(_ title: String, systemImage: String) {
+        self.init(label: { Self.icon(Text(title), systemImage: systemImage) })
+    }
+
+    init(_ titleKey: LocalizedStringKey, systemImage: String, description: Text) {
+        self.init(label: { Self.icon(titleKey, systemImage: systemImage) },
+                  description: { description })
+    }
+
+    init(_ title: String, systemImage: String, description: Text) {
+        self.init(label: { Self.icon(Text(title), systemImage: systemImage) },
+                  description: { description })
+    }
+
+    private static func icon<T: View>(_ title: T, systemImage: String) -> some View {
+        VStack(spacing: 8) {
+            Image(systemName: systemImage)
+                .font(.system(size: 40, weight: .light))
+                .foregroundStyle(.secondary)
+            title.font(.headline)
+        }
+    }
+
+    /// `ContentUnavailableView.search` 的等价物。
+    static var search: CompatUnavailable {
+        CompatUnavailable(label: { CompatSearchLabel() },
+                          description: { Text("没找到匹配的内容") })
+    }
+
+    /// `ContentUnavailableView.search(text:)`：搜的是哪一串也写出来。
+    static func search(text: String) -> CompatUnavailable {
+        CompatUnavailable(label: { CompatSearchLabel() },
+                          description: { Text("没有与“\(text)”匹配的内容") })
     }
 
     var body: some View {
@@ -78,49 +130,6 @@ struct CompatUnavailable<LView: View, DView: View, AView: View>: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(.vertical, 40)
-    }
-}
-
-extension CompatUnavailable where DView == EmptyView, AView == EmptyView {
-    /// `ContentUnavailableView("标题", systemImage: "icon")` 的等价物。
-    init(_ titleKey: LocalizedStringKey, systemImage: String) {
-        self.init(label: {
-            VStack(spacing: 8) {
-                Image(systemName: systemImage)
-                    .font(.system(size: 40, weight: .light))
-                    .foregroundStyle(.secondary)
-                Text(titleKey).font(.headline)
-            }
-        }, description: { EmptyView() }, actions: { EmptyView() })
-    }
-
-    init(_ title: String, systemImage: String) {
-        self.init(label: {
-            VStack(spacing: 8) {
-                Image(systemName: systemImage)
-                    .font(.system(size: 40, weight: .light))
-                    .foregroundStyle(.secondary)
-                Text(title).font(.headline)
-            }
-        }, description: { EmptyView() }, actions: { EmptyView() })
-    }
-}
-
-extension CompatUnavailable where LView == CompatSearchLabel, DView == Text, AView == EmptyView {
-    /// `ContentUnavailableView.search` 的等价物。
-    static var search: CompatUnavailable<CompatSearchLabel, Text, EmptyView> {
-        CompatUnavailable<CompatSearchLabel, Text, EmptyView>(
-            label: { CompatSearchLabel() },
-            description: { Text("没找到匹配的内容") },
-            actions: { EmptyView() })
-    }
-
-    /// `ContentUnavailableView.search(text:)`：搜的是哪一串也写出来。
-    static func search(text: String) -> CompatUnavailable<CompatSearchLabel, Text, EmptyView> {
-        CompatUnavailable<CompatSearchLabel, Text, EmptyView>(
-            label: { CompatSearchLabel() },
-            description: { Text("没有与“\(text)”匹配的内容") },
-            actions: { EmptyView() })
     }
 }
 

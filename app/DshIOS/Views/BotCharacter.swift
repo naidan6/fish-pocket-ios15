@@ -363,7 +363,7 @@ struct BotMark: View {
         .allowsHitTesting(false)
         .onAppear { if mood == .alert { act = Act(kind: .hops) } }
         .compatOnChange(of: mood) { old, new in turned(from: old, to: new) }
-        .onChange(of: poke) { act = Act(kind: .poke) }
+        .compatOnChange(of: poke) { act = Act(kind: .poke) }
         .task(id: act) { await finishAct() }
     }
 
@@ -480,7 +480,7 @@ struct BotPictureMotion: ViewModifier {
                 .offset(y: stance.dy * size / 100)
         }
         .onAppear { if mood == .alert { hopsFrom = .now } }
-        .onChange(of: mood) { hopsFrom = mood == .alert ? .now : nil }
+        .compatOnChange(of: mood) { hopsFrom = mood == .alert ? .now : nil }
         .task(id: hopsFrom) {
             guard hopsFrom != nil else { return }
             try? await Task.sleep(nanoseconds: UInt64((1.1) * 1_000_000_000))

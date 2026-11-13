@@ -58,7 +58,7 @@ struct RemoteComposer: View {
             if model.draft.hasPrefix("/"), model.commands.isEmpty { await model.loadCommands() }
         }
         .photosPicker(isPresented: $showPhotos, selection: $photos, maxSelectionCount: max(1, Self.maxFiles - model.attachments.count - reading.count), matching: .any(of: [.images, .videos]), preferredItemEncoding: .current)
-        .onChange(of: photos) { items in
+        .compatOnChange(of: photos) { items in
             guard !items.isEmpty else { return }
             photos = []
             Task { await add(photos: items) }

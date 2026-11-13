@@ -132,17 +132,17 @@ struct MainView: View {
             if sizeClass == .regular { split } else { drawerLayout }
         }
         // The drawer and the new conversation page, which have no way to the store themselves.
-        .onChange(of: app.pluginStoreRequest) { token in
+        .compatOnChange(of: app.pluginStoreRequest) { token in
             guard token != nil, scenePhase != .background else { return }
             app.pluginStoreRequest = nil
             openPlugins()
         }
-        .onChange(of: app.webRequest) { token in
+        .compatOnChange(of: app.webRequest) { token in
             guard token != nil, scenePhase != .background else { return }
             app.webRequest = nil
             webOpen = true
         }
-        .onChange(of: app.botTeam.openRequest?.token) { token in
+        .compatOnChange(of: app.botTeam.openRequest?.token) { token in
             guard token != nil, let request = app.botTeam.openRequest else { return }
             app.botTeam.openRequest = nil
             sheet = nil
@@ -152,19 +152,19 @@ struct MainView: View {
             setDrawer(false)
         }
         // The sidebar's own row; the page is also still under Settings.
-        .onChange(of: app.nativeCapabilitiesRequest) { token in
+        .compatOnChange(of: app.nativeCapabilitiesRequest) { token in
             guard token != nil, scenePhase != .background else { return }
             app.nativeCapabilitiesRequest = nil
             sheet = .capabilities
         }
-        .onChange(of: app.remoteRequest) { token in
+        .compatOnChange(of: app.remoteRequest) { token in
             guard token != nil, scenePhase != .background else { return }
             app.remoteRequest = nil
             setDrawer(false)
             sheet = .remote
         }
         // Asked for from the sidebar, a conversation or a page inside a sheet: that sheet goes first.
-        .onChange(of: app.remoteSessionRequest) { request in
+        .compatOnChange(of: app.remoteSessionRequest) { request in
             guard let request, scenePhase != .background else { return }
             app.remoteSessionRequest = nil
             setDrawer(false)
@@ -177,14 +177,14 @@ struct MainView: View {
         }
         .sheet(item: $remoteTarget) { RemoteNewSessionSheet(target: $0).sheetNotices() }
         // Signed out of remote control (or the server ended it): its conversation has nothing to show.
-        .onChange(of: app.remote.signedIn) { signedIn in
+        .compatOnChange(of: app.remote.signedIn) { signedIn in
             if !signedIn, RemoteStore.sessionId(of: selection) != nil { selection = nil }
         }
         // Its computer was taken off the account: the same.
-        .onChange(of: app.remote.departed) { gone in
+        .compatOnChange(of: app.remote.departed) { gone in
             if let id = RemoteStore.sessionId(of: selection), gone.contains(id) { selection = nil }
         }
-        .onChange(of: app.connectorsRequest) { token in
+        .compatOnChange(of: app.connectorsRequest) { token in
             guard token != nil, scenePhase != .background else { return }
             app.connectorsRequest = nil
             sheet = .connectors
@@ -196,9 +196,9 @@ struct MainView: View {
             link = nil
             Task { await follow(request.link) }
         }
-        .onChange(of: workspaceId) { WidgetSnapshotWriter.shared.refresh() }
+        .compatOnChange(of: workspaceId) { WidgetSnapshotWriter.shared.refresh() }
         // A window narrowed past the sidebar has no place beside it for the store.
-        .onChange(of: sizeClass) { size in
+        .compatOnChange(of: sizeClass) { size in
             if size != .regular, storeOpen {
                 storeOpen = false
                 sheet = .store
@@ -215,7 +215,7 @@ struct MainView: View {
         .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { windowWidth = $0 }
         .focusedSceneValue(\.windowCommands, windowCommands)
         .task(id: app.workspaces.map(\.id)) { launched() }
-        .onChange(of: place) { place in
+        .compatOnChange(of: place) { place in
             if placeRestored, let place { UserDefaults.standard.set(place, forKey: Self.placeKey) }
         }
         // Which store this copy came from: only an App Store install is asked for a rating.
@@ -244,8 +244,8 @@ struct MainView: View {
             }
         }
         // Windows take turns: what is read is the one in front.
-        .onChange(of: scenePhase) { phase in if phase == .active { app.currentSession = selection } }
-        .onChange(of: selection) { id in
+        .compatOnChange(of: scenePhase) { phase in if phase == .active { app.currentSession = selection } }
+        .compatOnChange(of: selection) { id in
             app.currentSession = id
             if launchedUnderBot { launchedUnderBot = false } else { botOpen = false }
             if let id {
@@ -255,11 +255,11 @@ struct MainView: View {
             }
         }
         // An archived current session leaves the main view (here, the drawer, a follow push).
-        .onChange(of: app.archived) { archived in
+        .compatOnChange(of: app.archived) { archived in
             if let selection, archived.contains(selection) { self.selection = nil }
         }
         // `app.open(session:)`: toasts, the subagent catalog, schedules…
-        .onChange(of: app.openRequest?.token) { token in
+        .compatOnChange(of: app.openRequest?.token) { token in
             guard token != nil, scenePhase != .background, let id = app.openRequest?.id else { return }
             app.openRequest = nil
             // Asked for over a sheet (a toast there): the sheet goes, or the session opens unseen behind it.
@@ -268,7 +268,7 @@ struct MainView: View {
             selection = id
             setDrawer(false)
         }
-        .onChange(of: app.newSessionRequest?.token) { token in
+        .compatOnChange(of: app.newSessionRequest?.token) { token in
             guard token != nil, scenePhase != .background, let request = app.newSessionRequest else { return }
             app.newSessionRequest = nil
             sheet = nil
@@ -278,7 +278,7 @@ struct MainView: View {
             newConversation(in: target, agentPreset: request.agentPreset, draft: request.draft, prompt: request.prompt)
             setDrawer(false)
         }
-        .onChange(of: app.credentialRequest?.token) { token in
+        .compatOnChange(of: app.credentialRequest?.token) { token in
             guard token != nil, scenePhase != .background, let step = app.credentialRequest?.step else { return }
             app.credentialRequest = nil
             Task { await openCredentials(step) }
@@ -374,7 +374,7 @@ struct MainView: View {
         } message: {
             Text("充值后才能开始新会话，也可稍后在「设置 → 账号与余额」充值。")
         }
-        .onChange(of: app.lastError) { error in if error != nil { Haptics.error() } }
+        .compatOnChange(of: app.lastError) { error in if error != nil { Haptics.error() } }
         .alert("出错了", isPresented: Binding(get: { app.lastError != nil }, set: { if !$0 { app.lastError = nil } })) {
             Button("好", role: .cancel) {}
         } message: {

@@ -133,7 +133,7 @@ struct RemoteNewSessionSheet: View {
         .tint(Palette.ink)
         .interactiveDismissDisabled(creating)
         .onAppear(perform: seed)
-        .onChange(of: deviceId) { deviceChanged() }
+        .compatOnChange(of: deviceId) { deviceChanged() }
         .task(id: deviceId) { if !deviceId.isEmpty { await remote.loadAgents(on: deviceId); pickAgent() } }
         .task(id: "\(deviceId)/\(agentId)") { await prepare() }
     }

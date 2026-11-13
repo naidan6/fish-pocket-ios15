@@ -83,7 +83,7 @@ struct SettingsView: View {
                         Label("语言", systemImage: "globe")
                     }
                     .pickerValueTint()
-                    .onChange(of: languageChoice) { value in
+                    .compatOnChange(of: languageChoice) { value in
                         AppLanguage.chosen = value == "system" ? nil : value
                         languageChanged = true
                     }
@@ -122,8 +122,8 @@ struct SettingsView: View {
                 } footer: {
                     Text(backgroundFooter)
                 }
-                .onChange(of: keepAlive) { BackgroundKeeper.shared.settingsChanged() }
-                .onChange(of: continuedProcessing) { BackgroundKeeper.shared.settingsChanged() }
+                .compatOnChange(of: keepAlive) { BackgroundKeeper.shared.settingsChanged() }
+                .compatOnChange(of: continuedProcessing) { BackgroundKeeper.shared.settingsChanged() }
                 .alert("关闭静音音频？", isPresented: $confirmingKeepAliveOff) {
                     Button("取消", role: .cancel) {}
                     Button("关闭", role: .destructive) { keepAlive = false }
@@ -139,7 +139,7 @@ struct SettingsView: View {
                 } footer: {
                     Text("关掉后，主屏幕和锁屏小组件只显示数量和状态。设备锁定时，标题总会被打码。")
                 }
-                .onChange(of: widgetTitles) { WidgetSnapshotWriter.shared.refresh() }
+                .compatOnChange(of: widgetTitles) { WidgetSnapshotWriter.shared.refresh() }
 
                 Section {
                     NavigationLink { AdvancedSettingsPage() } label: { row("高级", "wrench.and.screwdriver") }

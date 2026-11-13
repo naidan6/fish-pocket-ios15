@@ -25,7 +25,7 @@ struct DshIOSApp: App {
                 .onAppear { engine.start() }
         }
         .commands { ShellCommands() }
-        .onChange(of: scenePhase) { phase in
+        .compatOnChange(of: scenePhase) { phase in
             scenePhaseChanged(phase)
         }
 #else
@@ -35,7 +35,7 @@ struct DshIOSApp: App {
                 .onAppear { engine.start() }
         }
         .commands { ShellCommands() }
-        .onChange(of: scenePhase) { phase in
+        .compatOnChange(of: scenePhase) { phase in
             BackgroundKeeper.shared.scenePhaseChanged(to: phase)
 #if !DSH_IOS15_BACKPORT
             LiveActivityController.shared.scenePhaseChanged(to: phase)

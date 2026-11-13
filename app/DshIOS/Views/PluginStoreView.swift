@@ -41,7 +41,7 @@ struct PluginStoreView: View {
             guard model.readiness == .ready else { return }
             await model.market.loadIndexes(app)
         }
-        .onChange(of: manager.marketEnabled) { enabled in if !enabled { model.marketTurnedOff() } }
+        .compatOnChange(of: manager.marketEnabled) { enabled in if !enabled { model.marketTurnedOff() } }
         .followSettings()
     }
 
@@ -154,8 +154,8 @@ private struct StoreDiscoverPage: View {
         }
         .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width = $0 }
         .sheet(item: $choice) { StoreInstallConfirm(choice: $0, marketTitle: localized(market.result?["title"] ?? .null)) }
-        .onChange(of: searchFocused) { updateSearching() }
-        .onChange(of: search) { updateSearching() }
+        .compatOnChange(of: searchFocused) { updateSearching() }
+        .compatOnChange(of: search) { updateSearching() }
         // Keystrokes settle for 250 ms before a read.
         .task(id: search) {
             guard search != market.query.text else { return }
@@ -727,7 +727,7 @@ struct StoreSourcesSheet: View {
                         .keyboardType(.URL)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
-                        .onChange(of: draft) { _ in market.clearSourceFailure() }
+                        .compatOnChange(of: draft) { _ in market.clearSourceFailure() }
                     if let failure = failureText { Text(failure).font(.caption).foregroundStyle(Palette.removed) }
                     Button("添加") {
                         let url = draft.trimmingCharacters(in: .whitespaces)

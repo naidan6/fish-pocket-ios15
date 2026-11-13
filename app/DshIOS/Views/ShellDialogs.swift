@@ -27,7 +27,7 @@ struct ShellDialogs: ViewModifier {
     func body(content: Content) -> some View {
         content
             // The text is in place before the alert reads it.
-            .onChange(of: app.renameRequest?.id) {
+            .compatOnChange(of: app.renameRequest?.id) {
                 guard let request = app.renameRequest, case .session = request.target else { return }
                 title = request.initial
                 renaming = true

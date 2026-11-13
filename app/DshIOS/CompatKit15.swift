@@ -272,9 +272,6 @@ extension Path {
 // MARK: - 少量 iOS 16 修饰符的降级
 
 extension View {
-    /// `.toolbarBackground(_:for:)`（iOS 16）。
-    func toolbarBackground<S: ShapeStyle>(_ style: S, for bars: ToolbarPlacement...) -> some View { self }
-
     /// `.presentationBackground(_:)`（iOS 16.4）。
     func presentationBackground<S: ShapeStyle>(_ style: S) -> some View { self }
     func presentationBackground<V: View>(_ view: V) -> some View { self }
@@ -324,39 +321,6 @@ struct CompatChart15: View {
             }
         }
         .padding(.vertical, 4)
-    }
-}
-
-// MARK: - ToolbarPlacement / toolbar(_:for:)（iOS 16）
-
-/// 替 `ToolbarPlacement`：只区分导航栏，其余位置在 15.6 上无对应物。
-struct ToolbarPlacement: Hashable {
-    private let name: String
-    private init(_ name: String) { self.name = name }
-
-    static let automatic = ToolbarPlacement("automatic")
-    static let navigationBar = ToolbarPlacement("navigationBar")
-    static let bottomBar = ToolbarPlacement("bottomBar")
-    static let tabBar = ToolbarPlacement("tabBar")
-}
-
-extension View {
-    /// `.toolbar(.hidden, for: .navigationBar)`：15.6 上翻成 `navigationBarHidden`。
-    func toolbar(_ visibility: Visibility, for placements: ToolbarPlacement...) -> some View {
-        modifier(CompatToolbarVisibility(visibility: visibility, placements: placements))
-    }
-}
-
-struct CompatToolbarVisibility: ViewModifier {
-    let visibility: Visibility
-    let placements: [ToolbarPlacement]
-
-    func body(content: Content) -> some View {
-        if placements.contains(.navigationBar) {
-            content.navigationBarHidden(visibility == .hidden)
-        } else {
-            content
-        }
     }
 }
 
@@ -438,6 +402,11 @@ extension View {
     /// 15.6 的 `onChange(of:perform:)` 只给新值、也不带「先跑一次」。
     /// 这两个重载把 17 的调用点原样接住：`initial: true` 在出现时先跑一次。
     func compatOnChange<V: Equatable>(of value: V, initial: Bool = false,
+                                _ action: @escaping () -> Void) -> some View {
+        modifier(CompatOnChange(value: value, initial: initial, action: { _, _ in action() }))
+    }
+
+    func compatOnChange<V: Equatable>(of value: V, initial: Bool = false,
                                 _ action: @escaping (V) -> Void) -> some View {
         modifier(CompatOnChange(value: value, initial: initial, action: { new, _ in action(new) }))
     }
@@ -456,7 +425,7 @@ struct CompatOnChange<V: Equatable>: ViewModifier {
     func body(content: Content) -> some View {
         content
             .onAppear { if initial { action(value, value) } }
-            .onChange(of: value) { new in action(new, new) }
+            .onChange(of: value, perform: { new in action(new, new) })
     }
 }
 

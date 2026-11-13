@@ -28,18 +28,18 @@ struct BotChatView: View {
             .openingOtherSessions($selection, from: bot.sessionId)
             .sheet(isPresented: $detailOpen, onDismiss: { detailTab = .profile }) { BotDetailView(botId: botId, tab: detailTab) }
             .sheet(isPresented: $sideChatOpen) { BotSideChatSheet(botId: botId) }
-            .onChange(of: team.memoryRequest) { request in
+            .compatOnChange(of: team.memoryRequest) { request in
                 guard request == botId else { return }
                 team.memoryRequest = nil
                 detailTab = .memory
                 detailOpen = true
             }
-            .onChange(of: team.sideChatRequest) { request in
+            .compatOnChange(of: team.sideChatRequest) { request in
                 guard request == botId else { return }
                 team.sideChatRequest = nil
                 Task { try? await Task.sleep(nanoseconds: UInt64((350) * 1_000_000)); sideChatOpen = true }
             }
-            .onChange(of: team.scheduleRequest) { request in
+            .compatOnChange(of: team.scheduleRequest) { request in
                 guard request == .bot(botId) else { return }
                 team.scheduleRequest = nil
                 detailTab = .schedules
