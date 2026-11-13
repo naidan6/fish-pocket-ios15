@@ -217,7 +217,7 @@ struct CompatGeometryChange<T: Equatable>: ViewModifier {
                 let value = transform(proxy)
                 Color.clear
                     .onAppear { action(value) }
-                    .onChange(of: value) { action($0) }
+                    .onChange(of: value, perform: { action($0) })
             }
         )
     }

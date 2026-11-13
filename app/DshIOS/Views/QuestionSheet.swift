@@ -14,9 +14,8 @@ struct PinnedActionsSheet<Content: View, Actions: View>: View {
     }
 
     var body: some View {
-        ScrollView(Axis.Set.vertical) {
-            sizedContent
-        }
+        let scroll = ScrollView(.vertical) { sizedContent }
+        return scroll
         .scrollBounceBehavior(.basedOnSize)
         .safeAreaInset(edge: .bottom, spacing: 0) {
             actions()

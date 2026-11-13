@@ -67,6 +67,20 @@ struct RemoteConversationView: View {
     }
 
     @ViewBuilder
+    private func bottomButton(_ proxy: ScrollViewProxy, _ model: RemoteSessionModel) -> some View {
+        ZStack {
+            if !atBottom, !model.rows.isEmpty {
+                FloatingIcon(systemName: "chevron.down", label: "回到底部") {
+                    atBottom = true
+                    scrollToBottom(proxy)
+                }
+                .padding(.trailing, 16)
+                .padding(.bottom, 12)
+                .transition(.opacity.combined(with: .scale(scale: 0.8)))
+            }
+        }
+    }
+
     private func scrollKeeper(_ proxy: ScrollViewProxy) -> TimelineScroll {
         TimelineScroll(keep: { id in
             Task { @MainActor in
@@ -94,18 +108,7 @@ struct RemoteConversationView: View {
                 if case .user? = model.rows.last { atBottom = true; scrollToBottom(proxy) }
             }
             .compatOnChange(of: model.busy) { busy in if busy, atBottom { scrollToBottom(proxy) } }
-            .overlay(alignment: .bottomTrailing) {
-                ZStack {
-                    if !atBottom, !model.rows.isEmpty {
-                        FloatingIcon(systemName: "chevron.down", label: "回到底部") {
-                            atBottom = true
-                            scrollToBottom(proxy)
-                        }
-                        .padding(.trailing, 16)
-                        .padding(.bottom, 12)
-                        .transition(.opacity.combined(with: .scale(scale: 0.8)))
-                    }
-                }
+            .overlay(alignment: .bottomTrailing) { bottomButton(proxy, model) }
                 .animation(.snappy(duration: 0.18), value: atBottom)
             }
         }

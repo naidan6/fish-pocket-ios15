@@ -801,13 +801,12 @@ struct FittedSheet: ViewModifier {
     @State private var height: CGFloat = 320
 
     func body(content: Content) -> some View {
-        ScrollView(Axis.Set.vertical) {
-            sized(content)
-        }
-        .scrollBounceBehavior(.basedOnSize)
-        .compatDetents([.height(height)])
-        .presentationDragIndicator(.hidden)
-        .presentationBackground(Palette.background)
+        let scroll = ScrollView(.vertical) { sized(content) }
+        return scroll
+            .scrollBounceBehavior(.basedOnSize)
+            .compatDetents([.height(height)])
+            .presentationDragIndicator(.hidden)
+            .presentationBackground(Palette.background)
     }
 
     private func sized(_ content: Content) -> some View {
