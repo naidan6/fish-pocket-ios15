@@ -9,9 +9,13 @@ struct PinnedActionsSheet<Content: View, Actions: View>: View {
     @State private var contentHeight: CGFloat = 240
     @State private var actionsHeight: CGFloat = 80
 
+    private var sizedContent: some View {
+        content().compatOnGeometryChange(for: CGFloat.self) { $0.size.height } action: { contentHeight = $0 }
+    }
+
     var body: some View {
-        ScrollView(.vertical) {
-            content().compatOnGeometryChange(for: CGFloat.self) { $0.size.height } action: { contentHeight = $0 }
+        ScrollView(Axis.Set.vertical) {
+            sizedContent
         }
         .scrollBounceBehavior(.basedOnSize)
         .safeAreaInset(edge: .bottom, spacing: 0) {

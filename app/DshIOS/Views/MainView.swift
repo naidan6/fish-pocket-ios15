@@ -128,9 +128,17 @@ struct MainView: View {
 
     /// The width's own layout, with the way into the plugin store.
     private var layout: some View {
+        layoutRequestsB(layoutRequestsA(layoutBase))
+    }
+
+    private var layoutBase: some View {
         Group {
             if sizeClass == .regular { split } else { drawerLayout }
         }
+    }
+
+    private func layoutRequestsA<V: View>(_ base: V) -> some View {
+        base
         // The drawer and the new conversation page, which have no way to the store themselves.
         .compatOnChange(of: app.pluginStoreRequest) { token in
             guard token != nil, scenePhase != .background else { return }
@@ -176,6 +184,10 @@ struct MainView: View {
             }
         }
         .sheet(item: $remoteTarget) { RemoteNewSessionSheet(target: $0).sheetNotices() }
+    }
+
+    private func layoutRequestsB<V: View>(_ base: V) -> some View {
+        base
         // Signed out of remote control (or the server ended it): its conversation has nothing to show.
         .compatOnChange(of: app.remote.signedIn) { signedIn in
             if !signedIn, RemoteStore.sessionId(of: selection) != nil { selection = nil }

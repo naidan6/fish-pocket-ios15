@@ -67,6 +67,15 @@ struct RemoteConversationView: View {
     }
 
     @ViewBuilder
+    private func scrollKeeper(_ proxy: ScrollViewProxy) -> TimelineScroll {
+        TimelineScroll(keep: { id in
+            Task { @MainActor in
+                try? await Task.sleep(nanoseconds: UInt64((60) * 1_000_000))
+                proxy.scrollTo(id, anchor: .top)
+            }
+        }, top: timelineTop)
+    }
+
     private func content(_ model: RemoteSessionModel) -> some View {
         ScrollViewReader { proxy in
             ScrollView(.vertical) {
@@ -74,12 +83,7 @@ struct RemoteConversationView: View {
                     .modifier(LinkOpening())
                 Color.clear.frame(height: 1).id(Self.bottomId)
             }
-            .environment(\.timelineScroll, TimelineScroll(keep: { id in
-                Task { @MainActor in
-                    try? await Task.sleep(nanoseconds: UInt64((60) * 1_000_000))
-                    proxy.scrollTo(id, anchor: .top)
-                }
-            }, top: timelineTop))
+            .environment(\.timelineScroll, scrollKeeper(proxy))
             .compatOnGeometryChange(for: CGFloat.self) { $0.frame(in: .global).minY } action: { timelineTop = $0 }
             .modifier(TimelineAnchor())
             .modifier(BottomFollow(atBottom: $atBottom) { scrollToBottom(proxy, animated: false) })
