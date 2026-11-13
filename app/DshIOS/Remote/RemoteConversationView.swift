@@ -27,6 +27,14 @@ struct RemoteConversationView: View {
 
     private static let bottomId = "remote-timeline-bottom"
 
+    private var takeoverTitle: String {
+        takeoverAsk == true ? "接管这个会话？" : "交还这个会话？"
+    }
+
+    private var takeoverPresented: Binding<Bool> {
+        Binding(get: { takeoverAsk != nil }, set: { if !$0 { takeoverAsk = nil } })
+    }
+
     var body: some View {
         Group {
             if let model {
@@ -160,7 +168,7 @@ struct RemoteConversationView: View {
             .environment(\.systemLists, true)
             .sheetNotices()
         }
-        .alert(takeoverAsk == true ? "接管这个会话？" : "交还这个会话？", isPresented: Binding(get: { takeoverAsk != nil }, set: { if !$0 { takeoverAsk = nil } }), presenting: takeoverAsk) { enable in
+        .alert(takeoverTitle, isPresented: takeoverPresented, presenting: takeoverAsk) { enable in
             Button(enable ? "接管" : "交还") { Task { await model.setTakeover(enable) } }
             Button("取消", role: .cancel) {}
         } message: { enable in

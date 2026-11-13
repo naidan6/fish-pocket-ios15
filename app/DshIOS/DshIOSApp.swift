@@ -25,9 +25,9 @@ struct DshIOSApp: App {
                 .onAppear { engine.start() }
         }
         .commands { ShellCommands() }
-        .compatOnChange(of: scenePhase) { phase in
+        .onChange(of: scenePhase, perform: { phase in
             scenePhaseChanged(phase)
-        }
+        })
 #else
         WindowGroup(id: Self.window, for: SessionWindow.self) { $window in
             RootView(session: window?.session)

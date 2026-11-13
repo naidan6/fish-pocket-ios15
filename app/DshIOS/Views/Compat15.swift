@@ -80,7 +80,7 @@ struct CompatUnavailable: View {
 
     /// `ContentUnavailableView("标题", systemImage: "icon")` 的等价物。
     init(_ titleKey: LocalizedStringKey, systemImage: String) {
-        self.init(label: { Self.icon(titleKey, systemImage: systemImage) })
+        self.init(label: { Self.icon(Text(titleKey), systemImage: systemImage) })
     }
 
     init(_ title: String, systemImage: String) {
@@ -88,7 +88,7 @@ struct CompatUnavailable: View {
     }
 
     init(_ titleKey: LocalizedStringKey, systemImage: String, description: Text) {
-        self.init(label: { Self.icon(titleKey, systemImage: systemImage) },
+        self.init(label: { Self.icon(Text(titleKey), systemImage: systemImage) },
                   description: { description })
     }
 
@@ -97,7 +97,7 @@ struct CompatUnavailable: View {
                   description: { description })
     }
 
-    private static func icon<T: View>(_ title: T, systemImage: String) -> some View {
+    private static func icon(_ title: Text, systemImage: String) -> some View {
         VStack(spacing: 8) {
             Image(systemName: systemImage)
                 .font(.system(size: 40, weight: .light))
@@ -218,38 +218,6 @@ extension CompatLabeledContent where Content == Text {
 }
 
 // MARK: - 补充：调用点实际用到的重载
-
-extension CompatUnavailable where DView == EmptyView {
-    /// `ContentUnavailableView { LView } actions: { … }`：有按钮、没有说明。
-    init(@ViewBuilder label: () -> LView, @ViewBuilder actions: () -> AView) {
-        self.init(label: label, description: { EmptyView() }, actions: actions)
-    }
-}
-
-extension CompatUnavailable where AView == EmptyView {
-    init(@ViewBuilder label: () -> LView, @ViewBuilder description: () -> DView) {
-        self.init(label: label, description: description, actions: { EmptyView() })
-    }
-}
-
-extension CompatUnavailable where DView == EmptyView, AView == EmptyView {
-    init(@ViewBuilder label: () -> LView) {
-        self.init(label: label, description: { EmptyView() }, actions: { EmptyView() })
-    }
-}
-
-extension CompatUnavailable where DView == Text, AView == EmptyView {
-    init(_ titleKey: LocalizedStringKey, systemImage: String, description: Text) {
-        self.init(label: {
-            VStack(spacing: 8) {
-                Image(systemName: systemImage)
-                    .font(.system(size: 40, weight: .light))
-                    .foregroundStyle(.secondary)
-                Text(titleKey).font(.headline)
-            }
-        }, description: { description }, actions: { EmptyView() })
-    }
-}
 
 extension CompatLabeledContent where Content == Text {
     init(_ titleKey: LocalizedStringKey, value: String?) {
