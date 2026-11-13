@@ -136,7 +136,7 @@ final class ComposerModel: ObservableObject {
     let sessionId: String
     let app: AppModel
 
-    var text: String { didSet { if text != oldValue { persistDraft() } } }
+    @Published var text: String { didSet { if text != oldValue { persistDraft() } } }
     @Published private(set) var attachments: [DraftAttachment] = []
     @Published private(set) var pending: [PendingSubmission] = []
     /// A command line being executed: sending waits for it (C-87).

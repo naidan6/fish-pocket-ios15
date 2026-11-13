@@ -156,7 +156,7 @@ final class AppModel: ObservableObject {
     /// A credential step to open (set through `requestCredentials`; the root view consumes it).
     @Published var credentialRequest: (step: CredentialStep, token: UUID)?
     /// The session in the main view, kept by the root view (unread completions skip it).
-    var currentSession: String? { didSet { if let currentSession { completionUnread.remove(currentSession) } } }
+    @Published     var currentSession: String? { didSet { if let currentSession { completionUnread.remove(currentSession) } } }
     /// Sessions whose turn finished while they were not open (the web's completion reminder).
     @Published private(set) var completionUnread: Set<String> = []
     /// Projections read on demand, for sessions `session/control` does not carry (nested subagents).
