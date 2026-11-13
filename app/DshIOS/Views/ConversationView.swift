@@ -130,7 +130,7 @@ struct ConversationView: View {
                     proxy.scrollTo(id, anchor: .top)
                 }
             }, top: timelineTop))
-            .onGeometryChange(for: CGFloat.self) { $0.frame(in: .global).minY } action: { timelineTop = $0 }
+            .compatOnGeometryChange(for: CGFloat.self) { $0.frame(in: .global).minY } action: { timelineTop = $0 }
             .modifier(TimelineAnchor())
             .modifier(BottomFollow(atBottom: $atBottom) { scrollToBottom(proxy, animated: false) })
             // Any drag on the timeline hides the keyboard (`.interactively` only does when the finger reaches it),
@@ -213,7 +213,7 @@ struct ConversationView: View {
             .padding(.bottom, 8)
             .readableWidth()
             .background(Palette.background)
-            .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { app.composerHeight = $0 }
+            .compatOnGeometryChange(for: CGFloat.self) { $0.size.height } action: { app.composerHeight = $0 }
         }
         .modifier(ComposerDrop(composer: model.composer, enabled: model.subagentReadOnly(parentAvailable: parentAvailable(model)) == nil))
         // Under the toolbar: what is inside an inspector's main view does not reach the navigation bar.
@@ -434,8 +434,8 @@ struct ConversationView: View {
         .frame(maxHeight: .infinity, alignment: .top)
         .contentShape(Rectangle())
         .onTapGesture { dismissKeyboard() }
-        .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { heroHeight = $0 }
-        .onGeometryChange(for: CGFloat?.self) { proxy in
+        .compatOnGeometryChange(for: CGFloat.self) { $0.size.height } action: { heroHeight = $0 }
+        .compatOnGeometryChange(for: CGFloat?.self) { proxy in
             proxy.fold.flatMap { $0.width > $0.height ? $0.minY : nil }
         } action: { heroFold = $0 }
         .animation(.snappy(duration: 0.2), value: showsHeadline)
@@ -888,7 +888,7 @@ private struct LoadOlderTrigger: View {
         ProgressView()
             .controlSize(.small)
             .frame(maxWidth: .infinity, minHeight: 36)
-            .onGeometryChange(for: CGFloat.self) { $0.frame(in: .global).maxY } action: { inView = $0 > scroll.top }
+            .compatOnGeometryChange(for: CGFloat.self) { $0.frame(in: .global).maxY } action: { inView = $0 > scroll.top }
             // Again for each page: one that leaves the top in view needs the next.
             .task(id: "\(inView)-\(model.items.first?.id ?? "")") {
                 guard inView else { return }
@@ -966,12 +966,12 @@ private struct UserBubble: View {
                     }
                 }
                 .lineLimit(open ? nil : Self.foldedLines)
-                .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { if !open { foldedHeight = $0 } }
+                .compatOnGeometryChange(for: CGFloat.self) { $0.size.height } action: { if !open { foldedHeight = $0 } }
                 .background(alignment: .topLeading) {
                     Text(text)
                         .fixedSize(horizontal: false, vertical: true)
                         .hidden()
-                        .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { fullHeight = $0 }
+                        .compatOnGeometryChange(for: CGFloat.self) { $0.size.height } action: { fullHeight = $0 }
                 }
                 .font(.callout)
                 .lineSpacing(3)
@@ -1368,12 +1368,12 @@ private struct ApprovalReasonText: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(text)
                     .lineLimit(open ? nil : 2)
-                    .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { if !open { clippedHeight = $0 } }
+                    .compatOnGeometryChange(for: CGFloat.self) { $0.size.height } action: { if !open { clippedHeight = $0 } }
                     .background(alignment: .topLeading) {
                         Text(text)
                             .fixedSize(horizontal: false, vertical: true)
                             .hidden()
-                            .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { fullHeight = $0 }
+                            .compatOnGeometryChange(for: CGFloat.self) { $0.size.height } action: { fullHeight = $0 }
                     }
                 if open || more {
                     Text(open ? "收起" : "全文").font(.footnote.weight(.semibold)).foregroundStyle(Palette.ink)
@@ -1405,7 +1405,7 @@ private struct CommandBlock: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 14)
-                    .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { height = $0 }
+                    .compatOnGeometryChange(for: CGFloat.self) { $0.size.height } action: { height = $0 }
             }
             .frame(height: min(height, limit))
             .scrollBounceBehavior(.basedOnSize)

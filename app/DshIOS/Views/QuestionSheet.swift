@@ -11,12 +11,12 @@ struct PinnedActionsSheet<Content: View, Actions: View>: View {
 
     var body: some View {
         ScrollView(.vertical) {
-            content().onGeometryChange(for: CGFloat.self) { $0.size.height } action: { contentHeight = $0 }
+            content().compatOnGeometryChange(for: CGFloat.self) { $0.size.height } action: { contentHeight = $0 }
         }
         .scrollBounceBehavior(.basedOnSize)
         .safeAreaInset(edge: .bottom, spacing: 0) {
             actions()
-                .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { actionsHeight = $0 }
+                .compatOnGeometryChange(for: CGFloat.self) { $0.size.height } action: { actionsHeight = $0 }
                 .background(Palette.background)
         }
         // Sized to the sheet's real edge; the actions carry their own margin above the home indicator.

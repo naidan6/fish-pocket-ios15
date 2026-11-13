@@ -388,7 +388,7 @@ struct ComposerView: View {
             .focused($focused)
             .tint(Palette.ink)
             .padding(.trailing, tall ? 30 : 0)
-            .onGeometryChange(for: Bool.self) { $0.size.height > threeLines } action: { tall = $0 }
+            .compatOnGeometryChange(for: Bool.self) { $0.size.height > threeLines } action: { tall = $0 }
             .overlay(alignment: .topTrailing) {
                 if tall {
                     Button { refocus = true; showEditor = true } label: {
@@ -802,7 +802,7 @@ struct FittedSheet: ViewModifier {
 
     func body(content: Content) -> some View {
         ScrollView(.vertical) {
-            content.onGeometryChange(for: CGFloat.self) { $0.size.height } action: { height = $0 }
+            content.compatOnGeometryChange(for: CGFloat.self) { $0.size.height } action: { height = $0 }
         }
         .scrollBounceBehavior(.basedOnSize)
         .compatDetents([.height(height)])

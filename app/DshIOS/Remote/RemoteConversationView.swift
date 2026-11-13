@@ -80,7 +80,7 @@ struct RemoteConversationView: View {
                     proxy.scrollTo(id, anchor: .top)
                 }
             }, top: timelineTop))
-            .onGeometryChange(for: CGFloat.self) { $0.frame(in: .global).minY } action: { timelineTop = $0 }
+            .compatOnGeometryChange(for: CGFloat.self) { $0.frame(in: .global).minY } action: { timelineTop = $0 }
             .modifier(TimelineAnchor())
             .modifier(BottomFollow(atBottom: $atBottom) { scrollToBottom(proxy, animated: false) })
             .scrollDismissesKeyboard(.immediately)
@@ -114,7 +114,7 @@ struct RemoteConversationView: View {
                 .padding(.bottom, 8)
                 .readableWidth()
                 .background(Palette.background)
-                .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { app.composerHeight = $0 }
+                .compatOnGeometryChange(for: CGFloat.self) { $0.size.height } action: { app.composerHeight = $0 }
         }
         .navigationTitle(model.meta?.displayTitle ?? "")
         .navigationBarTitleDisplayMode(.inline)
@@ -179,11 +179,15 @@ struct RemoteConversationView: View {
             model.notice = nil
             app.showToast(text, tone: .warning)
         }
-        .alert("出错了", isPresented: Binding(get: { model.error != nil }, set: { if !$0 { model.error = nil } })) {
+        .alert("出错了", isPresented: errorPresented(model)) {
             Button("好", role: .cancel) {}
         } message: {
             Text(model.error ?? "")
         }
+    }
+
+    private func errorPresented(_ model: RemoteSessionModel) -> Binding<Bool> {
+        Binding(get: { model.error != nil }, set: { if !$0 { model.error = nil } })
     }
 
     private func takeoverMessage(_ enable: Bool, _ model: RemoteSessionModel) -> String {
@@ -450,7 +454,7 @@ private struct RemoteLoadOlder: View {
         ProgressView()
             .controlSize(.small)
             .frame(maxWidth: .infinity, minHeight: 36)
-            .onGeometryChange(for: CGFloat.self) { $0.frame(in: .global).maxY } action: { inView = $0 > scroll.top }
+            .compatOnGeometryChange(for: CGFloat.self) { $0.frame(in: .global).maxY } action: { inView = $0 > scroll.top }
             .task(id: "\(inView)-\(model.rows.first?.id ?? "")") {
                 guard inView else { return }
                 try? await Task.sleep(nanoseconds: UInt64((300) * 1_000_000))

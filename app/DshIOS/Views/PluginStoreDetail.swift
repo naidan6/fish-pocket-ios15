@@ -376,7 +376,7 @@ struct StoreInstallConfirm: View {
         }
         .padding(20)
         .fixedSize(horizontal: false, vertical: true)
-        .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { height = $0 }
+        .compatOnGeometryChange(for: CGFloat.self) { $0.size.height } action: { height = $0 }
         .frame(maxHeight: .infinity, alignment: .top)
         .background(Palette.background)
         .compatDetents([.height(height)])

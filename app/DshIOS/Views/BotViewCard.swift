@@ -42,7 +42,7 @@ struct BotViewCard: View {
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { contentHeight = $0 }
+                .compatOnGeometryChange(for: CGFloat.self) { $0.size.height } action: { contentHeight = $0 }
             }
             .scrollBounceBehavior(.basedOnSize)
             .frame(height: min(max(contentHeight, 1), 420))

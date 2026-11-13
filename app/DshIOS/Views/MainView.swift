@@ -164,7 +164,7 @@ struct MainView: View {
             sheet = .remote
         }
         // Asked for from the sidebar, a conversation or a page inside a sheet: that sheet goes first.
-        .compatOnChange(of: app.remoteSessionRequest) { request in
+        .compatOnChange(of: app.remoteSessionRequest) { (request: RemoteSessionTarget?) in
             guard let request, scenePhase != .background else { return }
             app.remoteSessionRequest = nil
             setDrawer(false)
@@ -212,7 +212,7 @@ struct MainView: View {
     private var shell: some View {
         layout
         .tint(Palette.ink)
-        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { windowWidth = $0 }
+        .compatOnGeometryChange(for: CGFloat.self) { $0.size.width } action: { windowWidth = $0 }
         .focusedSceneValue(\.windowCommands, windowCommands)
         .task(id: app.workspaces.map(\.id)) { launched() }
         .compatOnChange(of: place) { place in
@@ -687,7 +687,7 @@ private struct PastTheFold: ViewModifier {
         content
             .padding(.leading, inset)
             .background(Palette.background)
-            .onGeometryChange(for: CGFloat.self) { proxy in
+            .compatOnGeometryChange(for: CGFloat.self) { proxy in
 #if DSH_IOS15_BACKPORT
                 // 15.6 上没有折叠屏的分段几何（`proxy.fold`），留 0。
                 _ = proxy

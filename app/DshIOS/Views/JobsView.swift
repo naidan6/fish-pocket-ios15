@@ -250,7 +250,7 @@ struct JobOutputView: View {
                     }
                     Color.clear.frame(height: 1).id("bottom")
                         // iOS 17 has no scroll geometry; this marker's place in the scroll view says the same.
-                        .onGeometryChange(for: OutputEnd.self) { geometry in
+                        .compatOnGeometryChange(for: OutputEnd.self) { geometry in
 #if DSH_IOS15_BACKPORT
                             // 15.6：拿不到滚动视图自身的边界，距离按 0 记（到底部时内容高度仍会变）。
                             OutputEnd(contentHeight: geometry.frame(in: .named("output")).maxY, distance: 0)

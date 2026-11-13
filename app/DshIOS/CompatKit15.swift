@@ -200,9 +200,9 @@ struct GridRow<Content: View>: View {
 
 extension View {
     /// 替 `.onGeometryChange(for:of:action:)`（iOS 16/17）：用 `GeometryReader` 量同一件事。
-    func onGeometryChange<T: Equatable>(for type: T.Type,
-                                        of transform: @escaping (GeometryProxy) -> T,
-                                        action: @escaping (T) -> Void) -> some View {
+    func compatOnGeometryChange<T: Equatable>(for type: T.Type,
+                                             of transform: @escaping (GeometryProxy) -> T,
+                                             action: @escaping (T) -> Void) -> some View {
         modifier(CompatGeometryChange(transform: transform, action: action))
     }
 }

@@ -735,10 +735,10 @@ private struct SavedPrompt: View {
                 .foregroundStyle(Palette.secondary)
                 .lineLimit(expanded ? nil : 2)
                 .textSelection(.enabled)
-                .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { if !expanded { clampedHeight = $0 } }
+                .compatOnGeometryChange(for: CGFloat.self) { $0.size.height } action: { if !expanded { clampedHeight = $0 } }
                 .background {
                     Text(text).font(.footnote).fixedSize(horizontal: false, vertical: true).hidden()
-                        .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { fullHeight = $0 }
+                        .compatOnGeometryChange(for: CGFloat.self) { $0.size.height } action: { fullHeight = $0 }
                 }
             if expanded || fullHeight > clampedHeight + 1 {
                 Button { withAnimation(.snappy) { expanded.toggle() } } label: {

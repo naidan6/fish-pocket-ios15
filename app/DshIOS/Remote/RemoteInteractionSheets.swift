@@ -572,7 +572,7 @@ private struct RemoteCommandBlock: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 14)
-                    .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { height = $0 }
+                    .compatOnGeometryChange(for: CGFloat.self) { $0.size.height } action: { height = $0 }
             }
             .frame(height: min(height, limit))
             .scrollBounceBehavior(.basedOnSize)
