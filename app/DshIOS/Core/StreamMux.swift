@@ -147,6 +147,14 @@ final class StreamMux: NSObject, @unchecked Sendable, URLSessionWebSocketDelegat
         pending.forEach { $0.resume() }
     }
 
+    /// A failed WebSocket handshake never reaches didOpen/didClose: URLSession reports it here.
+    /// Without this, every stream waiting on `socket()` hangs forever and the session stream
+    /// never starts (the conversation stays blank with no error shown).
+    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        guard let ws = task as? URLSessionWebSocketTask, let error else { return }
+        drop(ws, error)
+    }
+
     func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
         drop(webSocketTask, EngineError(code: "WS_CLOSED", message: String(localized: "连接已断开"), detail: .null))
     }
