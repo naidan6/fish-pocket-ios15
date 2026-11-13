@@ -103,36 +103,16 @@ jobs:
       - name: Assemble engine
         run: scripts/build-engine.sh
 
-      - name: 检查补丁层
+      - name: 检查仓库状态
         run: |
-          if [ ! -f app/DshIOS/Views/Compat16.swift ]; then
-            echo "::error::app/DshIOS/Views/Compat16.swift 不存在。把 patches/Compat16.swift 拷进来并提交。"
-            exit 1
+          test -f app/DshIOS/Views/Compat16.swift || {
+            echo "::error::app/DshIOS/Views/Compat16.swift 不存在"; exit 1; }
+          grep -q 'iOS: "16.1"' app/project.yml || {
+            echo "::error::app/project.yml 的部署目标不是 16.1"; exit 1; }
+          if grep -q 'DshWatch:' app/project.yml; then
+            echo "::error::watch target 还在 project.yml 里"; exit 1
           fi
-
-      - name: 部署目标改 16.1 + 去掉 watch target
-        run: |
-          python3 - <<'PY'
-          import re, pathlib
-          p = pathlib.Path("app/project.yml")
-          t = p.read_text()
-          t, n = re.subn(r'(?m)^(\s*)iOS:\s*"15\.6"\s*$', r'\1iOS: "16.1"', t)
-          if n != 1:
-              raise SystemExit(f"iOS 15.6 匹配 {n} 处，检查 app/project.yml")
-          lines = [l for l in t.splitlines(keepends=True)
-                   if not re.match(r'^\s*- target: DshWatch\s*$', l)]
-          start = next((i for i, l in enumerate(lines)
-                        if re.match(r'^  DshWatch:\s*$', l)), None)
-          if start is not None:
-              end = len(lines)
-              for j in range(start + 1, len(lines)):
-                  if re.match(r'^  \S', lines[j]) or re.match(r'^[A-Za-z]', lines[j]):
-                      end = j
-                      break
-              lines = lines[:start] + lines[end:]
-          p.write_text("".join(lines))
-          print("project.yml -> iOS 16.1, watch target removed")
-          PY
+          echo "配置检查通过：补丁在、部署目标 16.1、无 watch target"
 
       - name: Generate project
         run: |
