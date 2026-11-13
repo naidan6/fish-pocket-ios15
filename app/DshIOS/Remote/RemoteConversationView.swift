@@ -79,6 +79,7 @@ struct RemoteConversationView: View {
                 .transition(.opacity.combined(with: .scale(scale: 0.8)))
             }
         }
+        .animation(.snappy(duration: 0.18), value: atBottom)
     }
 
     private func scrollKeeper(_ proxy: ScrollViewProxy) -> TimelineScroll {
@@ -109,8 +110,6 @@ struct RemoteConversationView: View {
             }
             .compatOnChange(of: model.busy) { busy in if busy, atBottom { scrollToBottom(proxy) } }
             .overlay(alignment: .bottomTrailing) { bottomButton(proxy, model) }
-                .animation(.snappy(duration: 0.18), value: atBottom)
-            }
         }
         .background(Palette.background)
         .overlay { placeholder(model) }
