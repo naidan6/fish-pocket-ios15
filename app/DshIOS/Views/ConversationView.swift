@@ -735,7 +735,7 @@ private struct TimelineList: View {
                         info: Self.turn(of: item).flatMap { model.turnInfo[$0] },
                         arrives: arrives(item)
                     )
-                    .equatable()
+                    .border(Color.red.opacity(0.55), width: 1)   // 诊断：行存在就会看到红框
                     .id(item.id)
                 }
             }
