@@ -119,25 +119,6 @@ struct ConversationView: View {
         let started = !blank && model.subagentAddress == nil && !(!model.loaded && app.sessions[sessionId]?.blank == true)
         ScrollViewReader { proxy in
             ScrollView {
-                #if DSH_IOS15_BACKPORT
-                // 临时诊断条：定位「会话空白」用，看到数字后可以删。
-                Text("DIAG " + model.diagLine)
-                    .font(.caption2.monospaced())
-                    .fixedSize(horizontal: false, vertical: true)
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 20)
-                    .padding(.top, 4)
-                #endif
-                #if DSH_IOS15_BACKPORT
-                // 对照：直接把 items 逐条画成文本。这里能显示而列表不显示，就是 TimelineRow 的问题。
-                VStack(alignment: .leading, spacing: 2) {
-                    ForEach(Array(model.items.enumerated()), id: \.offset) { i, item in
-                        Text("ROW\(i) " + item.diag).font(.caption2)
-                    }
-                }
-                .padding(.horizontal, 20)
-                #endif
                 TimelineList(model: model)
                     .modifier(LinkOpening())
                 Color.clear.frame(height: 1).id(Self.bottomId)
@@ -712,12 +693,6 @@ private struct TimelineList: View {
         // timeline grows the estimate leaves the bottom-anchored viewport past the real end (a blank page
         // after sending). The snapshot holds only the recent history and rows skip unchanged redraws.
         VStack(alignment: .leading, spacing: 20) {
-            #if DSH_IOS15_BACKPORT
-            // 诊断：TimelineList 自己看到的 items 和 bot（bot 非 nil 会过滤掉行）
-            Text("LIST n=\(items.count) raw=\(model.items.count) bot=\(bot == nil ? "nil" : "SET") loaded=\(model.loaded ? 1 : 0)")
-                .font(.caption2.monospaced())
-                .foregroundStyle(.red)
-            #endif
             if model.hasMoreHistory { LoadOlderTrigger(model: model) }
             // A Bot's chat moves to a fresh part when it grows long; the earlier parts come from ds-bot.
             if !model.hasMoreHistory, model.loaded, let from = bot?.earlierFrom { BotEarlierParts(sessionId: from) }
@@ -741,7 +716,6 @@ private struct TimelineList: View {
                         info: Self.turn(of: item).flatMap { model.turnInfo[$0] },
                         arrives: arrives(item)
                     )
-                    .border(Color.red.opacity(0.55), width: 1)   // 诊断：行存在就会看到红框
                     .id(item.id)
                 }
             }
