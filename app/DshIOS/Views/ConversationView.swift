@@ -712,6 +712,12 @@ private struct TimelineList: View {
         // timeline grows the estimate leaves the bottom-anchored viewport past the real end (a blank page
         // after sending). The snapshot holds only the recent history and rows skip unchanged redraws.
         VStack(alignment: .leading, spacing: 20) {
+            #if DSH_IOS15_BACKPORT
+            // 诊断：TimelineList 自己看到的 items 和 bot（bot 非 nil 会过滤掉行）
+            Text("LIST n=\(items.count) raw=\(model.items.count) bot=\(bot == nil ? "nil" : "SET") loaded=\(model.loaded ? 1 : 0)")
+                .font(.caption2.monospaced())
+                .foregroundStyle(.red)
+            #endif
             if model.hasMoreHistory { LoadOlderTrigger(model: model) }
             // A Bot's chat moves to a fresh part when it grows long; the earlier parts come from ds-bot.
             if !model.hasMoreHistory, model.loaded, let from = bot?.earlierFrom { BotEarlierParts(sessionId: from) }
