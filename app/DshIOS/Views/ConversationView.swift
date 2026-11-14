@@ -696,7 +696,7 @@ extension SessionModel {
 /// The timeline. Its own view so that projection and session-list updates, which
 /// redraw `ConversationView`, do not re-diff every row.
 private struct TimelineList: View {
-    let model: SessionModel
+    @ObservedObject var model: SessionModel
     @Environment(\.botTimeline) private var bot
     @Environment(\.botComposer) private var botChat
     /// The last user message there was when a Bot page opened: the ones after it arrive as they are sent.
